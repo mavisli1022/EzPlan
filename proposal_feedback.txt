@@ -6,23 +6,40 @@ WHAT:
     Google calendar for class timetables.
 
 POTENTIAL:
-    While this sounds like an interesting concept this would be as easy as uploading my timetables to my google calendar and sharing them with my friends. While this is pretty easy to do the real challenge is to display things right. You can make a real difference if you start thinking in terms of presenting google calendar in more insightful ways.
+    While this sounds like an interesting concept this would be as easy as
+    uploading my timetables to my google calendar and sharing them with my
+    friends. While this is pretty easy to do the real challenge is to display
+    things right. You can make a real difference if you start thinking in terms
+    of presenting google calendar in more insightful ways.
 
 NOTES:
-    - For the sake of this assignment, I guess it will be really helpful if you can skip the user register option (until it's really important). I mean there is nothing "fancy" about a signup form and you don't basically learn anything new.
-    - If you want to use Google/Facebook Login/SSO, make sure to use their vanilla oauth APIs without using any 3rd party wrapper.
+    - For the sake of this assignment, I guess it will be really helpful if you
+      can skip the user register option (until it's really important). I mean
+      there is nothing "fancy" about a signup form and you don't basically learn
+      anything new.
+    - If you want to use Google/Facebook Login/SSO, make sure to use their
+      vanilla oauth APIs without using any 3rd party wrapper.
     - Generally I appreciate the idea of using oauth for authentication as it:
         1. Removes the user management headache, completely.
-        2. Helps you to leave the security to the big guys who have learned from their mistakes and are constantly updating their security mechanisms.
+        2. Helps you to leave the security to the big guys who have learned from
+           their mistakes and are constantly updating their security mechanisms.
         3. You always get the latest and correct information about the user.
-    - For the major part, the proposal only covers on how to get the user onboard. I would recommend thinking after what happens when the user is on board. How can you compare 2 users and make it visually clear on what they are choosing. What happens when you're comparing timetables of 10 users?
-    - Think about an efficient data structure to store timetables which can make it a breeze to compare them when required.
-    - Can comparison help us recommend study partners for the user? (It should be a trivial solution and not require anything complex, like ML)
+    - For the major part the proposal only covers on how to get the user onboard.
+      I would recommend thinking after what happens when the user is on board.
+      How can you compare 2 users and make it visually clear on what they are
+      choosing. What happens when you're comparing timetables of 10 users?
+    - Think about an efficient data structure to store timetables which can make
+      it a breeze to compare them when required.
+    - Can comparison help us recommend study partners for the user? (It should be
+      a trivial solution and not require anything complex, like ML)
 
 TA Message:
-    This is my understanding about the project, you can use this to improve your proposal and slides to convey more effectively what you want to present.
+    This is my understanding about the project, you can use this to improve your
+    proposal and presentation to explain your project effectively.
 
 Looking forward to meet you guys to discuss this further.
 
 Nishant
-PS: I always love beautifully written, maintainable code that follows standard coding style guides. The ideal code actually walks you through itself and is efficient at the same time.
+PS: I always love beautifully written, maintainable code that follows standard
+    coding style guides. The ideal code actually walks you through itself and is
+    efficient at the same time.
