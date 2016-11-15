@@ -1,4 +1,4 @@
-PROJECT : Minions
+TEAM : Minions
 
 MARKS: 8
 
