@@ -1,0 +1,32 @@
+Frontend:
+- Displaying timetables of both students
+- views in our app
+
+Backend:
+- comparing timetables
+- getting data from database
+- recommended friends
+- facebook api
+- uploading calanders
+- privacy settings
+- search friends
+- deleting users
+
+Shrey:
+Login - facebook api
+privacy settings
+
+
+Mavis:
+writing data structure to file. importing .ics file to json
+
+Stephanie:
+comparing two timetables through json
+
+Sebastian: 
+- recommended friends
+- search classmates by course code
+
+try to finish by 23rd november
+
+meet again on 28th november
