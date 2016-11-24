@@ -1,8 +1,5 @@
-var fs = require('fs');
 var express = require('express');
 var bodyParser = require('body-parser');
-var multer = require('multer');
-var routes = require('./routes.js');
 var FB = require('fb');
 
 var app = express();
@@ -16,5 +13,5 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 }));
 
-app.listen(3000);
+app.listen(process.env.PORT || 3000);
 console.log('Listening on port 3000');
