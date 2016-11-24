@@ -3,6 +3,8 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var multer = require('multer');
 var routes = require('./routes.js');
+var FB = require('fb');
+
 var app = express();
 
 //assets and files
