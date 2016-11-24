@@ -1,0 +1,53 @@
+/* import fonts */
+@import url('https://fonts.googleapis.com/css?family=NTR');
+
+body {
+  font-family: 'NTR', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #2a58fc;
+}
+h1 {
+  
+}
+.login-box {
+  text-align: center;
+  height: 250px;
+  width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.login-box #fb-login-bt {
+  background-color: #3B5998;
+  color: #fff;
+  width: auto;
+  min-width: 100px;
+  display: inline-block;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-radius: 10px;
+  font-size: 18px;
+  text-decoration: none;
+  padding-right: 15px;
+  padding-left: 40px;
+  position: relative;
+}
+.login-box #fb-login-bt .fa-facebook {
+  margin-right: 10px;
+  position: absolute;
+  left: 12px;
+  top: 7px;
+  font-size: 32px;
+}
+
+#logo {
+  margin-top: 200px;
+  text-align: center;
+  font-size: 50px;
+}
+#logo .first {
+  color: #FFF;
+}
+#logo .second {
+  color: #e21f1f;
+}

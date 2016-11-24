@@ -1,0 +1,26 @@
+{
+  "name": "minions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "routes.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CSC309-Fall-2016/Minions.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CSC309-Fall-2016/Minions/issues"
+  },
+  "homepage": "https://github.com/CSC309-Fall-2016/Minions#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "fs": "0.0.1-security",
+    "multer": "^1.2.0"
+  }
+}

@@ -1,46 +1,19 @@
 <!DOCTYPE html>
 <html>
-<body onload="chooseFile()">
-
-<form action="/upload" enctype="multipart/form-data" method="post">
-  <input type="file" id="myFile" name = "calendar_user" onchange="chooseFile()">
-  <button id="upload">Upload</button> 
-
-</form>
-
-<p id = "show_file_info"></p>
-
-</body>
-
-<script>
-function chooseFile(){
-    var x = document.getElementById("myFile");
-    var txt = "";
-    if ('files' in x) {
-        if (x.files.length == 0) {
-            txt = "Import your calender";
-        } else {
-            txt += "<br><strong>" +  ". file</strong><br>";
-            var file = x.files;
-            if ('name' in file) {
-                txt += "name: " + file.name + "<br>";
-            }
-            if ('size' in file) {
-                txt += "size: " + file.size + " bytes <br>";
-            }
-            
-        }
-    }
-    else {
-        if (x.value == "") {
-            txt += "Import your calender";
-        } else {
-            txt += "The files property is not supported by your browser!";
-            txt  += "<br>The path of the selected file: " + x.value; // If the browser does not support the files property, it will return the path of the selected file instead.
-        }
-    }
-    document.getElementById("show_file_info").innerHTML = txt;
-}
-</script>
-
+  <head>
+    <link href="imports/font-awesome/css/font-awesome.css" rel="stylesheet"
+                                                              media="screen" />
+    <link href="css/style.css" rel="stylesheet" media="screen" />
+  </head>
+  <body>
+    <h1 id="logo">
+      <span class="first">EZ</span>
+      <span class="second">PLAN</span>
+    </h1><br />
+    <div class="login-box">
+      <a href="#" id="fb-login-bt"><i class="fa fa-facebook"></i> Login with Facebook</a>
+      <label>Form:</label>
+      <input type="text"  />
+    </div>
+  </body>
 </html>
