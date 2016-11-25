@@ -13,7 +13,7 @@ h1 {
 .login-box {
   text-align: center;
   height: 250px;
-  width: 290px;
+  width: 500px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -31,6 +31,7 @@ h1 {
   padding-right: 15px;
   padding-left: 50px;
   position: relative;
+  margin-bottom: 10px;
 }
 .login-box #fb-login-bt .fa-facebook {
   margin-right: 10px;
@@ -39,12 +40,37 @@ h1 {
   top: 13px;
   font-size: 32px;
 }
-
+.login-box label,
+.login-box input {
+  display: inline-block;
+}
+.login-box label {
+  width: 60%;
+  text-align: left;
+  color: #fff;
+  font-weight: 300;
+}
+.login-box input {
+  text-align: center;
+  border: 3px #525252 solid;
+  height: 35px;
+  width: 301px;
+  outline: none;
+  font-size: 25px;
+}
+.login-box input:focus {
+  border-color: #000;
+}
+.login-box #login-bt {
+  width: 61%;
+  height: 35px;
+  margin-top: 47px;
+}
 #logo {
-  margin-top: 200px;
+  margin-top: 100px;
   text-align: center;
   font-size: 50px;
-  margin-bottom: 0px;
+  margin-bottom: -23px;
 }
 #logo .first {
   color: #FFF;
