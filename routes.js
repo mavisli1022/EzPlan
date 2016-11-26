@@ -36,11 +36,17 @@ exports.processCourse= function(courseSummary, name){
 
 
 exports.compare= function(req, res){
-    var name1 = '1';
-    var name2 = '2';
+    var name1 = '1';   //current user
+    var name2 = '2';    // friend
 
-    var a;
-    var b;    
+    if(req.query.compare!=null){
+        var compare = req.query.compare;
+        name1 = compare[0];
+        name2 = compare[1];
+     }
+
+    var a = null;
+    var b = null;    
 
     //console.log("into"+ JSON.stringify(ttObj));
     for(var i=0; i<ttObj.length;i++){
@@ -49,23 +55,38 @@ exports.compare= function(req, res){
         else if(ttObj[i].name == name2)
             b= ttObj[i];
     }
+    if(a == null){
+        res.send("You need to upload your timetable first before comparison.");
+    }
+    else if( b == null){
+        res.send("Your friend did not uploaded his/her timetable.");
+    }
 
-    var returnOBJ=[];
+    var returnOBJ={"commonCourse": [], "count":"" };
     var count=0;
+    var exsist = false;
 
     for(var j=0; j<a.courseSummary.length;j++){
         for(var m=0; m<b.courseSummary.length;m++){
-            if(a.courseSummary[j] == b.courseSummary[m])
+            for(var n=0; n<count; n++) {
+                if (returnOBJ['commonCourse'][n] == b.courseSummary[m]){
+                    exsist=true;
+                    break;
+                }
+            }
+            if(exsist == true){
+                exsist = false;
+            }
+            else if(a.courseSummary[j] == b.courseSummary[m] )
                 {
-                returnOBJ[count]=a.courseSummary[j];
+                returnOBJ.commonCourse[count]=a.courseSummary[j];
                 count++;
                 }
 
             }
         }
-
+        returnOBJ.count = count;
         res.send(returnOBJ);
-
 }
 
 
