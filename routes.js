@@ -60,12 +60,25 @@ exports.convertCal= function(filename){
 //process data as json
 exports.processCourse= function(courseSummary, name){
     console.log(courseSummary)
+    var resultCourseSummary = JSON.parse('[]');
+    var index = 0;
+    
+    for (var i = 0; i<courseSummary.length/4; i++){
+        var resultCourse = JSON.parse('{}');
+        resultCourse['summary'] = courseSummary[4*i];
+        resultCourse['day'] = courseSummary[4*i+1];
+        resultCourse['start'] = courseSummary[4*i+2];
+        resultCourse['end'] = courseSummary[4*i+3];
+        resultCourseSummary[index] = resultCourse;
+        index ++;
+    }
+    
+    console.log(resultCourseSummary)
     var personCal = JSON.parse('{}');
     personCal['name'] = name;
-    personCal['courseSummary'] = courseSummary;
+    personCal['courseSummary'] = resultCourseSummary;
     return personCal
 }
-
 
 exports.compare= function(req, res){
     var name1 = '1';   //current user
