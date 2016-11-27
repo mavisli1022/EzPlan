@@ -30,15 +30,15 @@ exports.convertCal= function(filename){
         //format data as Date type
         //2016-09-14T1:10:00
         //new Date("2015-03-25T12:00:00");
-
+        
         else if (lines[line].includes("DTSTART")){
             var date = lines[line].replace('DTSTART;TZID=America/Toronto:','');
             var dateFormat = date.slice(0, 4) + '-' + date.slice(4,6) + '-' + date.slice(6,11)
                 + ':' + date.slice(11,13) + ':' + date.slice(13,15);
-            var date = new Date(dateFormat);
-            var weekday = date.getDay()-1;
+            var dateD = new Date(dateFormat);
+            var weekday = dateD.getDay()-1;
             string.push(weekDay[weekday]);
-            string.push(dateFormat);
+            string.push(date.slice(9,11));
 
         }
 
@@ -46,7 +46,7 @@ exports.convertCal= function(filename){
             var date = lines[line].replace('DTEND;TZID=America/Toronto:','');
             var dateFormat = date.slice(0, 4) + '-' + date.slice(4,6) + '-' + date.slice(6,11)
                 + ':' + date.slice(11,13) + ':' + date.slice(13,15);
-            string.push(dateFormat);
+            string.push(date.slice(9,11));
         }
 
     };
