@@ -71,6 +71,7 @@ exports.compare= function(req, res){
     var name1 = '1';   //current user
     var name2 = '2';    // friend
 
+
     if(req.query.compare!=null){
         var compare = req.query.compare;
         name1 = compare[0];
