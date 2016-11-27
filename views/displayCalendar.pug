@@ -6,15 +6,8 @@ body
 	- var k = {array}
 
 	table
-		thead
-			tr
-				th Student Number
-				th Given Name
 
 		for i in k
 			for j in i
 				for m in j.courseSummary
-					- var kk = 0
-					if kk%3 == 0
-						td !{JSON.stringify(m)}
-						- kk=kk+1
+					td !{JSON.stringify(m)}

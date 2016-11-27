@@ -40,7 +40,7 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
 
     //TODO: SEND DATA TO DISPLAYCALENDAR
     //res.send(array);
-	//res.render('displayCalendar', {array: array}); 
+	res.render('displayCalendar', {array: array}); 
 });
 
 app.post('/compare', routes.compare)
