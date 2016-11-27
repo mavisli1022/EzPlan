@@ -8,17 +8,46 @@ var fs = require("fs");
     ttObj = JSON.parse(data);
     });
 
+var weekDay = ["MONDAY","TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"]
 //read file and get the coursecode as well as section from calendar
 exports.convertCal= function(filename){
     var fs = require('fs'),
         file = fs.readFileSync(filename, "utf8");
     
+    //get data from file save it to json
+    //display calendar 
+    //DTSTART;TZID=America/Toronto:20160913T130000
+
+
     var lines = file.split('\r\n');
     var string = [];
     for(var line = 0; line < lines.length; line++){
         if (lines[line].includes("SUMMARY")){
             string.push(lines[line].replace('SUMMARY:', ''));
         }
+
+        //format data as Date type
+        //2016-09-14T1:10:00
+        //new Date("2015-03-25T12:00:00");
+
+        else if (lines[line].includes("DTSTART")){
+            var date = lines[line].replace('DTSTART;TZID=America/Toronto:','');
+            var dateFormat = date.slice(0, 4) + '-' + date.slice(4,6) + '-' + date.slice(6,11)
+                + ':' + date.slice(11,13) + ':' + date.slice(13,15);
+            var date = new Date(dateFormat);
+            var weekday = date.getDay()-1;
+            string.push(weekDay[weekday]);
+            string.push(dateFormat);
+
+        }
+
+        else if (lines[line].includes("DTEND")){
+            var date = lines[line].replace('DTEND;TZID=America/Toronto:','');
+            var dateFormat = date.slice(0, 4) + '-' + date.slice(4,6) + '-' + date.slice(6,11)
+                + ':' + date.slice(11,13) + ':' + date.slice(13,15);
+            string.push(dateFormat);
+        }
+
     };
 
     return string
