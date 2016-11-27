@@ -24,7 +24,7 @@ $(function(){
       //+150
       $("#login-nav .selected").animate({
         left: "-=150"
-      }, 1000, function(){
+      }, 700, function(){
         //if this is not active, hide this and show other one
         $(".sign-up-box").fadeOut("slow", function(){
           $(".login-box").fadeIn("slow");
@@ -41,7 +41,7 @@ $(function(){
 
       $("#login-nav .selected").animate({
         left: "+=150"
-      }, 1000, function(){
+      }, 700, function(){
         //if this is not active, hide this and show other one
         $(".login-box").fadeOut("slow", function(){
           $(".sign-up-box").fadeIn("slow");
