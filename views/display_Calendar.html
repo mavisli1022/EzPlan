@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, td {
+    border: 1px solid black;
+}
+</style>
+</head>
+<body onload="myFunction()">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+$(document).ready(function () {
+    $.get( "/upload", function( data ) {
+        array = data;
+    });
+
+});
+
+
+console.log(data);
+
+function myFunction() {
+    weekdays = ["time","monday", "tuesday", "wednesday", "thursday", "friday"];
+    var x = document.createElement("TABLE");
+    x.setAttribute("id", "myTable");
+    document.body.appendChild(x);
+
+    for (var i = 0; i<5; i++){
+        var y = document.createElement("TD");
+        y.setAttribute("id", i);
+        document.getElementById("myTable").appendChild(y);
+
+        var z = document.createElement("TH");
+        var t = document.createTextNode(weekdays[i]);
+        z.appendChild(t);
+        document.getElementById(i).appendChild(z);
+    }
+
+    for (var i = 0; i<14; i++){
+        var table = document.getElementById("myTable");
+        var row = table.insertRow(-1);
+        var cell1 = row.insertCell(0);
+        cell1.innerHTML = i+8 + ":00";
+    }
+    
+    //put course into correct time
+
+}
+</script>
+
+</body>
+</html>
