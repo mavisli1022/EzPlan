@@ -53,7 +53,8 @@ function show(){
           else{
             console.log(JSON.stringify(data));
             common = data;
-
+             myFunction("myTable-1");
+              myFunction("myTable-2");
             var string;
             var courses="";
             if(common.count == 0){
@@ -63,9 +64,7 @@ function show(){
               for(var i=0; i< common.commonCourse.length;i++){
                 courses= courses+common.commonCourse[i].summary + " , ";
               }
-              string= "You two have " + common.count + "common courses. They are: " + courses;
-                  myFunction("myTable-1");
-                  myFunction("myTable-2");
+              string= "You two have " + common.count + " common courses. They are: " + courses;
             } 
             document.getElementById("demo").innerHTML = string;
 
@@ -136,15 +135,16 @@ function showTable(array){
           for (time; time < stoptime; time ++){
                 if(valueTable_1.rows[time + 1].cells[dayofweek].innerHTML == array[i].courseSummary[j].summary)
                 valueTable_1.rows[time + 1].cells[dayofweek].bgColor = "Red";
-                else
+                else if(!valueTable_1.rows[time + 1].cells[dayofweek].innerHTML.includes(array[i].courseSummary[j].summary))
                   valueTable_1.rows[time + 1].cells[dayofweek].innerHTML += array[i].courseSummary[j].summary;
+                
             }
         }
         else{
           for (time; time < stoptime; time ++){
             if(valueTable_2.rows[time + 1].cells[dayofweek].innerHTML == array[i].courseSummary[j].summary)
                 valueTable_2.rows[time + 1].cells[dayofweek].bgColor = "Red";
-                else
+                else if(!valueTable_2.rows[time + 1].cells[dayofweek].innerHTML.includes(array[i].courseSummary[j].summary))
                   valueTable_2.rows[time + 1].cells[dayofweek].innerHTML += array[i].courseSummary[j].summary;
             }
           }
