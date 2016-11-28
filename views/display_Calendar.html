@@ -7,42 +7,50 @@ table, td {
 }
 </style>
 </head>
-<body onload="myFunction()">
-<table id="myTable"></table>
+<body onload="load()">
+<table id="myTable-1"></table>
+<table id="myTable-2"></table>
 <button onclick="show()">show</button>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script>
 
-function myFunction() {
+function load(){
+    myFunction("myTable-1");
+    myFunction("myTable-2");
+}
+
+function myFunction(Id) {
     weekdays = ["time","MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
-    var x = document.getElementById("myTable");
+    var x = document.getElementById(Id);
 
     for (var i = 0; i<6; i++){
         var y = document.createElement("TD");
-        y.setAttribute("id", i);
-        document.getElementById("myTable").appendChild(y);
+        y.setAttribute("id", i+Id);
+        x.appendChild(y);
 
         var z = document.createElement("TH");
         var t = document.createTextNode(weekdays[i]);
         z.appendChild(t);
-        document.getElementById(i).appendChild(z);
+        document.getElementById(i+Id).appendChild(z);
     }
 
-    var table = document.getElementById("myTable");
     for (var i = 0; i<14; i++){
-        var row = table.insertRow(-1);
+        var row = x.insertRow(-1);
         for (var j = 0; j<6; j++){
             row.insertCell(0);
         }
-        var cell1 = table.rows[i].cells[0];
+        var cell1 = x.rows[i].cells[0];
         cell1.innerHTML = i+8 + ":00";
     }
+
 }
 
 function show(){
     weekdays = ["time","MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];    
     var table = document.getElementById("hiddenTable");
-    var valueTable = document.getElementById("myTable");
+    var valueTable_1 = document.getElementById("myTable-1");
+    var valueTable_2 = document.getElementById("myTable-2");
+
     var array = [];
 
     for (var i = 0; i<table.rows.length; i++){
@@ -51,22 +59,30 @@ function show(){
     
     //all info
     
-    for (var i =0; i<array.length/4; i++){
+    var term = array[4];
+
+    for (var i =0; i<array.length/5; i++){
         //weekday
         var dayofweek;
         for (var j = 1; j<6; j++){
-            if (('"'+weekdays[j]+'"') == array[4*i+1]){
+            if (('"'+weekdays[j]+'"') == array[5*i+1]){
                 dayofweek = j;
             }
         }
         //start time
-        var time = Number(array[4*i+2].substr(1,2)) - 9;
-        var stoptime = Number(array[4*i+3].substr(1,2)) - 9;
-        
-        for (time; time < stoptime; time ++){
-
-            valueTable.rows[time + 1].cells[dayofweek].innerHTML = array[4*i];
+        var time = Number(array[5*i+2].substr(1,2)) - 9;
+        var stoptime = Number(array[5*i+3].substr(1,2)) - 9;
+        if (array[5*i+4] == term){
+            for (time; time < stoptime; time ++){
+                valueTable_1.rows[time + 1].cells[dayofweek].innerHTML = array[5*i];
+            }
         }
+        else {
+            for (time; time < stoptime; time ++){
+                valueTable_2.rows[time + 1].cells[dayofweek].innerHTML = array[5*i];
+            }
+        }
+        
 
     }
 
