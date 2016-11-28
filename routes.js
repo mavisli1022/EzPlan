@@ -8,6 +8,9 @@ fs.readFile('jsonfile.json', 'utf-8', function(err, data) {
     ttObj = JSON.parse(data);
 });
 
+// Placeholder that contains all of the user objects to be searched through.
+var userList;
+
 var temp = {name1: "", name2: ""};
 
 
@@ -75,7 +78,7 @@ exports.processCourse= function(courseSummary, name){
         index ++;
     }
     
-    console.log(resultCourseSummary)
+    console.log(resultCourseSummary);
     var personCal = JSON.parse('{}');
     personCal['name'] = name;
     personCal['courseSummary'] = resultCourseSummary;
@@ -142,6 +145,128 @@ exports.compare= function(req, res){
         res.send(returnOBJ);
     }
 }
+
+// Note: Until the compare function is modularized, I will assume there is a helper that carries out the
+// comparison for us.
+/*  A function to search the database for recommended friends based on schedule similarity.
+ *  The function returns a list of users who were 'hits', ranked by how closely the matched the search terms.
+ *  TODO: A placeholder JSON object is used 'userList'. Also assuming 'compare_users' is a function that returns the
+ *  number of common courses two users (specified by user id) have.
+ * */
+exports.recommendedFriends = function(req, res){
+
+    var uid = req.query.uid;
+    var results = [];
+    var results_temp = [];
+
+    for(var i = 0; i < userList.length; i++){
+        if (userList[i].userid != uid){
+            results_temp.push([{"user" : userList[i], "count" : compare_users(userList[i].userid, uid)}]);
+        }
+    }
+
+    results_temp.sort(comparison);
+
+    for(i = 0; i < results_temp.length; i++) {
+        results[i] = results_temp[i]["user"];
+    }
+
+    // Send back a sorted list of user objects to be displayed in recommended friends.
+    res.send(results);
+};
+
+
+/* A function to search the database for classmates based on search queries.
+*  The function returns a list of users who were 'hits', ranked by how closely the matched the search terms.
+*  TODO: A placeholder JSON object is used 'userList'
+* */
+exports.searchClassmates = function(req, res){
+
+    // The request contains a search query. Each word in the query is compared to all users. The format of the query is
+    // as follows:
+    // Example: /search?q=Seb+Balda+CSC365
+    // req.query.q: the body of the search, the terms to be searched for.
+
+    // Split the search terms into array elements to be iterated through.
+    var search_terms = req.query.q.split(" ");
+
+    // The array containing the "hits" from the search. Contains a pair of userid and count (number of hits to sort by)
+    var results_obj = [];
+    var results = [];
+
+    // For every search term.
+    for (var i = 0; i < search_terms.length; i++){
+
+        // Compare the term with the user's attributes
+        for(var j = 0; j < userList.length; j++){
+
+            // If the search term matches on of their names.
+            if (search_terms[i] == userList[j].firstname || search_terms[i] == userList[j].lastname){
+                add_or_inc(userList[j].userid, results_obj);
+            }
+
+            // If the search term matches a course that the user is taking.
+            else if (is_taking(userList[j].userid, search_terms[i])){
+                add_or_inc(userList[j].userid, results_obj);
+            }
+        }
+    }
+
+    // Now we have an array of objects with a uid/count pairing.
+    // Next lets construct a new array that only contains ids, sorted by search relevance
+
+    results_obj.sort(comparison);
+
+    for (i = 0; i < results_obj.length; i++){
+        results.push(results_obj[i]["id"]);
+    }
+
+
+
+    res.send(results)
+
+};
+
+// HELPER FUNCTION
+// Searches the results list. If the user is already there, increment the counter,
+// if the user is not there, add the object
+function add_or_inc(uid, results){
+
+    var found = 0;
+
+    for (var k = 0; k < results.length; k++){
+
+        if(results[k].id == uid){
+            found = 1;
+            results[k].count += 1;
+            break;
+        }
+    }
+
+    if (found == 0){
+        results.concat([{"id" : uid, "count" : 1}]);
+    }
+
+}
+
+// TODO: Implement is_taking, a helper function that checks if a specified uid is taking a specified course.
+
+// HELPER FUNCTION
+// Searches the list of users, checking if each is taking a specified course.
+// If they are taking the specified course, return 1, else return 0.
+function is_taking(uid, course){
+    return 1;
+}
+
+// Helper function to sort based on number of hits in the search function.
+function comparison(a,b) {
+    if (a.count < b.count)
+        return -1;
+    if (a.count > b.count)
+        return 1;
+    return 0;
+}
+
 
 exports.tempstore= function(req,res){
 temp.name1 = req.body.a;
