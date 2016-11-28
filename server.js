@@ -2,8 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var md5 = require('js-md5');
 var MongoClient = require('mongodb').MongoClient;
-
-var FB = require('fb');
+var session = require('client-sessions');
 
 var app = express();
 
@@ -16,111 +15,111 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 }));
 
+//define session variable
+app.use(session({
+  cookieName: 'session',
+  secret: 'ezplansecret',
+  duration: 9000000,
+  activeDuration: 9000000
+}))
+
+
 function login(req, res){
   var email = req.body.email;
   var password = req.body.password;
-  var ret = {errors: []};
 
-  var validEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  var validPwd = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{5,}$/;
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    if(err){ console.log(err)}
+    db.collection("users").findOne({
+      email: email,
+      password: md5(password)
+    }, function(err, doc){
+      var ret = {errors: []};
+      if(doc == null){
+        ret.errors.push({
+          field: "general",
+          msg: "Username and Password not found."
+        })
+      } else {
+        //login here
+        req.session.user = doc.userid;
+      }
+      res.send(ret);
+    })
 
-  if(!validEmail.test(email)){
-    ret.errors.push({
-      field: "email",
-      msg: "Invalid Email."
-    });
-  }
-  if(!validPwd.test(password)){
-    ret.errors.push({
-      field: "password",
-      msg: "Please enter a valid password. Passwords must include 1 uppercase, 1 lowercase, 1 special character and must have a minimum length of 5"
-    });
-  }
+  });
 
-  if(ret.errors.length == 0){
-    //search db
-  }
-
-  res.send(ret);
 
 }
 
 function signup(req, res){
-  console.log("Recieved: ");
-  console.log(req.body);
-
   var firstname = req.body.firstname;
   var lastname = req.body.lastname;
   var email = req.body.email;
   var password = req.body.password;
   var confirmpwd = req.body.confirmpwd;
-  var ret = {errors: []};
 
   var validEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   var validPwd = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{5,}$/;
   var validFname = /^[A-Z][a-z]+$/;
   var validLname = /^[A-Z][a-z]+$/;
 
-  if(!validFname.test(firstname)){
-    ret.errors.push({
-      field: "firstname",
-      msg: "Invalid Firstname"
-    })
-  }
+  //console.log(firstname);
+  //console.log(lastname);
 
-  if(!validLname.test(lastname)){
-    ret.errors.push({
-      field: "lastname",
-      msg: "Invalid Lastname"
-    })
-  }
-
-  if(!validEmail.test(email)){
-    ret.errors.push({
-      field: "email",
-      msg: "Invalid Email."
-    });
-  }
-
-  if(password != confirmpwd){
-    ret.errors.push({
-      field: ["password", "confirmpwd"],
-      msg: "Passwords do not match."
-    })
-  } else if(!validPwd.test(password)){
-    ret.errors.push({
-      field: "password",
-      msg: "Please enter a valid password. Passwords must include 1 uppercase, 1 lowercase, 1 special character and must have a minimum length of 5"
-    })
-  }
-
-  //connect to db and add
-  if(ret.errors.length == 0){
-    console.log("connect to db");
-    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-      if(err){
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    if(err){ console.log(error) }
+    db.collection("users").count({email: email}, function(error, num){
+      if(error){ console.log(error) }
+      var ret = {"errors": []};
+      //console.log(validFname.test(firstname));
+      /* FORM VALIDATION */
+      if(firstname.charAt(0) != firstname.charAt(0).toUpperCase()){
         ret.errors.push({
-          field: "general",
-          msg: err
+          field: "firstname",
+          msg: "Invalid Firstname"
         })
-      } else {
-        console.log("connected to db!");
+      }
 
-        //connect to db find users
-        var userids = [];
-        db.collection("users").find().each(function(err, item){
+      if(lastname.charAt(0) != lastname.charAt(0).toUpperCase()){
+        ret.errors.push({
+          field: "lastname",
+          msg: "Invalid Lastname"
+        })
+      }
 
-          if(item != null){
-            userids.push(item.userid);
-            if(item.email == email){
-              //there is a duplicate email!
-              console.log("duplicate");
-              db.close();
-              return;
-            }
-          } else {
-            var newid =  Math.max(...userids) + 1;
+      if(!validEmail.test(email)){
+        ret.errors.push({
+          field: "email",
+          msg: "Invalid Email."
+        });
+      }
 
+      if(password != confirmpwd){
+        ret.errors.push({
+          field: ["password", "confirmpwd"],
+          msg: "Passwords do not match."
+        })
+      } else if(!validPwd.test(password)){
+        ret.errors.push({
+          field: "password",
+          msg: "Please enter a valid password. Passwords must include 1 uppercase, 1 lowercase, 1 special character and must have a minimum length of 5"
+        })
+      }
+
+
+      if(ret.errors.length == 0){
+
+
+        if(num > 0){
+          ret.errors.push({
+            field: "email",
+            msg: "Email taken."
+          })
+        } else {
+          //find the new id
+          db.collection("users").find().sort({"userid":-1}).limit(1).forEach(function(doc){
+            var newid = doc.userid + 1;
             //insert it into database
             try {
               db.collection("users").insertOne({
@@ -131,25 +130,73 @@ function signup(req, res){
                 password: md5(password),
                 emailverified: false,
                 fbconnected: false
+              }, function(err, doc){
+                //finish everything
+                db.close();
               })
             } catch(e){
               console.log(e);
             }
-          }
-        })
+          })
+        }
 
       }
 
+      res.send(ret);
+
     });
-  }
-
-
-  res.send(ret);
+  });
 }
+
+function signupFB(req, res){
+  var firstname = req.body.firstname;
+  var lastname = req.body.lastname;
+  var email = req.body.email;
+
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    if(err){console.log(err)}
+    db.collection("users").count({email: email}, function(error, num){
+      var ret = {"errors": []};
+      if(num > 0){
+        //email already taken
+        //dont add anything
+        ret.errors.push({
+          field: "email",
+          msg: "Email taken."
+        })
+
+      } else {
+
+        db.collection("users").find().sort({"userid":-1}).limit(1).forEach(function(doc){
+          try {
+            var newID = doc.userid + 1;
+            db.collection("users").insertOne({
+              userid: newID,
+              firstname: firstname,
+              lastname: lastname,
+              email: email,
+              password: null,
+              emailverified: false,
+              fbconnected: true
+            }, function(err, doc){
+              //finish everything
+              db.close();
+            })
+          } catch(e){
+            console.log(e);
+          }
+        });
+      }
+    });
+  });
+}
+
+
 
 //routes
 app.post('/login', login);
 app.post('/signup', signup);
+app.post('/signupfb', signupFB);
 
 app.listen(process.env.PORT || 3000);
 console.log('Listening on port 3000');

@@ -9,11 +9,31 @@ $(function(){
     });
     FB.login(function(response) {
       // handle the response
-      FB.api('/me', function(response) {
-        console.log(response);
+      FB.api('/me?fields=email,name', function(response) {
+        var fbID = response.id;
+        var name = response.name;
+        var email = response.email;
+
+        var fullName = name.split(" ");
+        var firstname = fullName[0];
+        var lastname = fullName[1];
+
+        var user = {
+          firstname: firstname,
+          lastname: lastname,
+          email: email
+        }
+        
+        $.post("/signupFB", user, function(data){
+          console.log(data);
+        })
+
+        console.log(user);
+
+
       });
 
-    }, {scope: 'public_profile,email'});
+    }, {scope: 'public_profile, email'});
   })
 
   $("#login-link").click(function(e){
