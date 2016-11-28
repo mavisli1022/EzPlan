@@ -37,7 +37,7 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
     var d = routes.processCourse(c,'2');
     array.push(b);
     array.push(d);
-    fs.writeFile('jsonfile.JSON', array, function (err) {
+    fs.writeFile('jsonfile.json', array, function (err) {
     if (err) 
         return console.log(err);
     

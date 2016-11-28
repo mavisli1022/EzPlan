@@ -3,10 +3,12 @@ var util = require("util");
 var fs = require("fs");
 
 var ttObj;
-fs.readFile('jsonfile.JSON', 'utf-8', function(err, data) {
+fs.readFile('jsonfile.json', 'utf-8', function(err, data) {
     if(err) throw err;
     ttObj = JSON.parse(data);
 });
+
+var temp = {name1: "", name2: ""};
 
 
 var weekDay = ["MONDAY","TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"]
@@ -81,19 +83,21 @@ exports.processCourse= function(courseSummary, name){
 }
 
 exports.compare= function(req, res){
-    var name1 = '1';   //current user
-    var name2 = '2';    // friend
+   // var name1 = '1';   //current user
+    //var name2 = '2';    // friend
 
 
-    if(req.query.compare!=null){
-        var compare = req.query.compare;
-        name1 = compare[0];
-        name2 = compare[1];
+    if(req.query.name!=null){
+        var name = req.query.name;
+        name1 = name[0];
+        name2 = name[1];
      }
-
+     console.log(name1 + name2)
     var a = null;
     var b = null;    
-
+    var returnOBJ={"commonCourse": [], "count":"" };
+    var count=0;
+    var exsist = false;
     //console.log("into"+ JSON.stringify(ttObj));
     for(var i=0; i<ttObj.length;i++){
         if(ttObj[i].name == name1)
@@ -108,15 +112,16 @@ exports.compare= function(req, res){
         res.send("Your friend did not uploaded his/her timetable.");
     }
 
-    var returnOBJ={"commonCourse": [], "count":"" };
-    var count=0;
-    var exsist = false;
+    
 
-
+    else{
     for(var j=0; j<a.courseSummary.length;j++){
         for(var m=0; m<b.courseSummary.length;m++){
+            //console.log(b.courseSummary[m].summary);
+            //console.log(a.courseSummary[j].summary);
             for(var n=0; n<count; n++) {
-                if (returnOBJ['commonCourse'][n] == b.courseSummary[m]){
+                //console.log(returnOBJ['commonCourse'][n].summary);
+                if (returnOBJ['commonCourse'][n].summary == b.courseSummary[m].summary){
                     exsist=true;
                     break;
                 }
@@ -124,7 +129,7 @@ exports.compare= function(req, res){
             if(exsist == true){
                 exsist = false;
             }
-            else if(a.courseSummary[j] == b.courseSummary[m] )
+            else if(a.courseSummary[j].summary == b.courseSummary[m].summary)
                 {
                 returnOBJ.commonCourse[count]=a.courseSummary[j];
                 count++;
@@ -133,7 +138,20 @@ exports.compare= function(req, res){
             }
         }
         returnOBJ.count = count;
+        console.log(JSON.stringify(returnOBJ));
         res.send(returnOBJ);
+    }
 }
 
+exports.tempstore= function(req,res){
+temp.name1 = req.body.a;
+temp.name2 = req.body.b;
+//console.log(JSON.stringify(temp));
+res.send();
+}
+
+exports.tempget = function(req,res){
+   console.log(JSON.stringify(temp));
+    res.send(temp);
+}
 
