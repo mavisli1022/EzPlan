@@ -8,17 +8,16 @@ table, td {
 </style>
 </head>
 <body onload="myFunction()">
-
+<table id="myTable"></table>
+<button onclick="show()">show</button>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script>
 
 function myFunction() {
-    weekdays = ["time","monday", "tuesday", "wednesday", "thursday", "friday"];
-    var x = document.createElement("TABLE");
-    x.setAttribute("id", "myTable");
-    document.body.appendChild(x);
+    weekdays = ["time","MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
+    var x = document.getElementById("myTable");
 
-    for (var i = 0; i<5; i++){
+    for (var i = 0; i<6; i++){
         var y = document.createElement("TD");
         y.setAttribute("id", i);
         document.getElementById("myTable").appendChild(y);
@@ -29,14 +28,47 @@ function myFunction() {
         document.getElementById(i).appendChild(z);
     }
 
+    var table = document.getElementById("myTable");
     for (var i = 0; i<14; i++){
-        var table = document.getElementById("myTable");
         var row = table.insertRow(-1);
-        var cell1 = row.insertCell(0);
+        for (var j = 0; j<6; j++){
+            row.insertCell(0);
+        }
+        var cell1 = table.rows[i].cells[0];
         cell1.innerHTML = i+8 + ":00";
     }
+}
+
+function show(){
+    weekdays = ["time","MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];    
+    var table = document.getElementById("hiddenTable");
+    var valueTable = document.getElementById("myTable");
+    var array = [];
+
+    for (var i = 0; i<table.rows.length; i++){
+        array.push(table.rows[i].cells[0].innerHTML);
+    }
     
-    //put course into correct time
+    //all info
+    
+    for (var i =0; i<array.length/4; i++){
+        //weekday
+        var dayofweek;
+        for (var j = 1; j<6; j++){
+            if (('"'+weekdays[j]+'"') == array[4*i+1]){
+                dayofweek = j;
+            }
+        }
+        //start time
+        var time = Number(array[4*i+2].substr(1,2)) - 9;
+        var stoptime = Number(array[4*i+3].substr(1,2)) - 9;
+        
+        for (time; time < stoptime; time ++){
+
+            valueTable.rows[time + 1].cells[dayofweek].innerHTML = array[4*i];
+        }
+
+    }
 
 }
 </script>
