@@ -14,10 +14,20 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 }));
 
+app.use(express.static(__dirname + '/assets'));
+app.use(express.static(__dirname + '/'));
+
+
 var upload = multer({dest: './upload/'});
 
 app.get('/', function(req, res) {
-    res.sendfile('./views/calander.html');
+    //res.sendfile('./views/calander.html');
+    res.sendfile('./views/test.html');
+});
+
+app.post('/comparePage', function(req, res) {
+    //res.sendfile('./views/calander.html');
+    res.sendfile('./views/comparison.html');
 });
 
 
@@ -29,9 +39,9 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
 
 
     var b = routes.processCourse(a,'1');
-    //var d = routes.processCourse(c,'2');
+    var d = routes.processCourse(c,'2');
     array.push(b);
-    //array.push(d);
+    array.push(d);
     fs.writeFile('jsonfile.JSON', JSON.stringify(array), function (err) {
     if (err) 
         return console.log(err);
@@ -39,11 +49,14 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
     });
 
     //TODO: SEND DATA TO DISPLAYCALENDAR
-    //res.send(array);
-	res.render('displayCalendar', {array: array}); 
+   res.send(array);
+	//res.render('displayCalendar', {array: array}); 
 });
 
-app.post('/compare', routes.compare)
+app.post('/tempstore', routes.tempstore);
+app.get('/tempget', routes.tempget);
+
+app.get('/compare', routes.compare);
 
 
 

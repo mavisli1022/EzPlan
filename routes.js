@@ -3,10 +3,12 @@ var util = require("util");
 var fs = require("fs");
 
 var ttObj;
-fs.readFile('jsonfile.JSON', 'utf-8', function(err, data) {
+fs.readFile('jsonfile.json', 'utf-8', function(err, data) {
     if(err) throw err;
     ttObj = JSON.parse(data);
 });
+
+var temp = {name1: "", name2: ""};
 
 
 var weekDay = ["MONDAY","TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"]
@@ -30,7 +32,7 @@ exports.convertCal= function(filename){
         //format data as Date type
         //2016-09-14T1:10:00
         //new Date("2015-03-25T12:00:00");
-
+        
         else if (lines[line].includes("DTSTART")){
             var date = lines[line].replace('DTSTART;TZID=America/Toronto:','');
             var dateFormat = date.slice(0, 4) + '-' + date.slice(4,6) + '-' + date.slice(6,11)
@@ -81,13 +83,11 @@ exports.processCourse= function(courseSummary, name){
         index ++;
     }
     
-    //console.log(resultCourseSummary)
     var personCal = JSON.parse('{}');
     personCal['name'] = name;
     personCal['courseSummary'] = resultCourseSummary;
     return personCal
 }
-
 
 exports.compare= function(req, res){
    // var name1 = '1';   //current user
@@ -160,6 +160,4 @@ res.send();
 exports.tempget = function(req,res){
    console.log(JSON.stringify(temp));
     res.send(temp);
-}
-
 

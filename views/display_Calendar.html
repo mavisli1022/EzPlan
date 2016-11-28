@@ -7,12 +7,15 @@ table, td {
 }
 </style>
 </head>
+
 <body onload="load()">
 <table id="myTable-1"></table>
 <table id="myTable-2"></table>
+
 <button onclick="show()">show</button>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script>
+
 
 function load(){
     myFunction("myTable-1");
@@ -22,7 +25,6 @@ function load(){
 function myFunction(Id) {
     weekdays = ["time","MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
     var x = document.getElementById(Id);
-
     for (var i = 0; i<6; i++){
         var y = document.createElement("TD");
         y.setAttribute("id", i+Id);
@@ -34,6 +36,7 @@ function myFunction(Id) {
         document.getElementById(i+Id).appendChild(z);
     }
 
+    var table = document.getElementById("myTable");
     for (var i = 0; i<14; i++){
         var row = x.insertRow(-1);
         for (var j = 0; j<6; j++){
@@ -42,7 +45,6 @@ function myFunction(Id) {
         var cell1 = x.rows[i].cells[0];
         cell1.innerHTML = i+8 + ":00";
     }
-
 }
 
 function show(){
