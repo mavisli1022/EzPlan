@@ -35,10 +35,10 @@ exports.convertCal= function(filename){
             var date = lines[line].replace('DTSTART;TZID=America/Toronto:','');
             var dateFormat = date.slice(0, 4) + '-' + date.slice(4,6) + '-' + date.slice(6,11)
                 + ':' + date.slice(11,13) + ':' + date.slice(13,15);
-            var date = new Date(dateFormat);
-            var weekday = date.getDay()-1;
+            var dateD = new Date(dateFormat);
+            var weekday = dateD.getDay()-1;
             string.push(weekDay[weekday]);
-            string.push(dateFormat);
+            string.push(date.slice(9,11));
 
         }
 
@@ -46,7 +46,13 @@ exports.convertCal= function(filename){
             var date = lines[line].replace('DTEND;TZID=America/Toronto:','');
             var dateFormat = date.slice(0, 4) + '-' + date.slice(4,6) + '-' + date.slice(6,11)
                 + ':' + date.slice(11,13) + ':' + date.slice(13,15);
-            string.push(dateFormat);
+            string.push(date.slice(9,11));
+        }
+
+        else if (lines[line].includes("UNTIL")){
+            var untilDate = lines[line].replace('RRULE:FREQ=WEEKLY;WKST=MO;UNTIL=','');
+            var untilDate = untilDate.slice(0,4);
+            string.push(untilDate);
         }
 
     };
@@ -59,28 +65,46 @@ exports.convertCal= function(filename){
 
 //process data as json
 exports.processCourse= function(courseSummary, name){
-    console.log(courseSummary)
+    //console.log(courseSummary)
+    var resultCourseSummary = JSON.parse('[]');
+    var index = 0;
+    //var term = courseSummary[4];
+
+    for (var i = 0; i<courseSummary.length/5; i++){
+        var resultCourse = JSON.parse('{}');
+        resultCourse['summary'] = courseSummary[5*i];
+        resultCourse['day'] = courseSummary[5*i+1];
+        resultCourse['start'] = courseSummary[5*i+2];
+        resultCourse['end'] = courseSummary[5*i+3];
+        resultCourse['term'] = courseSummary[5*i+4];
+        resultCourseSummary[index] = resultCourse;
+        index ++;
+    }
+    
+    //console.log(resultCourseSummary)
     var personCal = JSON.parse('{}');
     personCal['name'] = name;
-    personCal['courseSummary'] = courseSummary;
+    personCal['courseSummary'] = resultCourseSummary;
     return personCal
 }
 
 
 exports.compare= function(req, res){
-    var name1 = '1';   //current user
-    var name2 = '2';    // friend
+   // var name1 = '1';   //current user
+    //var name2 = '2';    // friend
 
 
-    if(req.query.compare!=null){
-        var compare = req.query.compare;
-        name1 = compare[0];
-        name2 = compare[1];
+    if(req.query.name!=null){
+        var name = req.query.name;
+        name1 = name[0];
+        name2 = name[1];
      }
-
+     console.log(name1 + name2)
     var a = null;
     var b = null;    
-
+    var returnOBJ={"commonCourse": [], "count":"" };
+    var count=0;
+    var exsist = false;
     //console.log("into"+ JSON.stringify(ttObj));
     for(var i=0; i<ttObj.length;i++){
         if(ttObj[i].name == name1)
@@ -95,15 +119,16 @@ exports.compare= function(req, res){
         res.send("Your friend did not uploaded his/her timetable.");
     }
 
-    var returnOBJ={"commonCourse": [], "count":"" };
-    var count=0;
-    var exsist = false;
+    
 
-
+    else{
     for(var j=0; j<a.courseSummary.length;j++){
         for(var m=0; m<b.courseSummary.length;m++){
+            //console.log(b.courseSummary[m].summary);
+            //console.log(a.courseSummary[j].summary);
             for(var n=0; n<count; n++) {
-                if (returnOBJ['commonCourse'][n] == b.courseSummary[m]){
+                //console.log(returnOBJ['commonCourse'][n].summary);
+                if (returnOBJ['commonCourse'][n].summary == b.courseSummary[m].summary){
                     exsist=true;
                     break;
                 }
@@ -111,7 +136,7 @@ exports.compare= function(req, res){
             if(exsist == true){
                 exsist = false;
             }
-            else if(a.courseSummary[j] == b.courseSummary[m] )
+            else if(a.courseSummary[j].summary == b.courseSummary[m].summary)
                 {
                 returnOBJ.commonCourse[count]=a.courseSummary[j];
                 count++;
@@ -120,7 +145,21 @@ exports.compare= function(req, res){
             }
         }
         returnOBJ.count = count;
+        console.log(JSON.stringify(returnOBJ));
         res.send(returnOBJ);
+    }
+}
+
+exports.tempstore= function(req,res){
+temp.name1 = req.body.a;
+temp.name2 = req.body.b;
+//console.log(JSON.stringify(temp));
+res.send();
+}
+
+exports.tempget = function(req,res){
+   console.log(JSON.stringify(temp));
+    res.send(temp);
 }
 
 
