@@ -90,9 +90,8 @@ exports.processCourse= function(courseSummary, name){
 }
 
 exports.compare= function(req, res){
-   // var name1 = '1';   //current user
-    //var name2 = '2';    // friend
-
+    var name1;
+    var name2;
 
     if(req.query.name!=null){
         var name = req.query.name;
@@ -118,8 +117,6 @@ exports.compare= function(req, res){
     else if( b == null){
         res.send("Your friend did not uploaded his/her timetable.");
     }
-
-    
 
     else{
     for(var j=0; j<a.courseSummary.length;j++){
@@ -161,4 +158,24 @@ res.send();
 exports.tempget = function(req,res){
    console.log(JSON.stringify(temp));
     res.send(temp);
+}
+
+exports.findOne = function(req,res){
+    var user;
+    if(req.query.user!=null){
+        user  = req.query.user;
+     }
+    var a = null;
+     for(var i=0; i<ttObj.length;i++){
+        if(ttObj[i].name == user)
+            a = ttObj[i];
+    }
+    if(a == null)
+        res.send("No such user: " + user);
+    else {
+        console.log(JSON.stringify(a));
+        res.send(a);
+
+    }
+
 }
