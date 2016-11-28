@@ -57,7 +57,7 @@ function show(){
             var string;
             var courses="";
             if(common.count == 0){
-              string= "You two have " + common.count + "common courses. "
+              string= "You two have " + common.count + " common courses. "
             }
             else {
               for(var i=0; i< common.commonCourse.length;i++){
