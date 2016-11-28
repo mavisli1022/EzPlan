@@ -99,7 +99,7 @@ exports.compare= function(req, res){
         name1 = name[0];
         name2 = name[1];
      }
-     console.log(name1 + name2)
+     //console.log(name1 + name2)
     var a = null;
     var b = null;    
     var returnOBJ={"commonCourse": [], "count":"" };
@@ -136,7 +136,8 @@ exports.compare= function(req, res){
             if(exsist == true){
                 exsist = false;
             }
-            else if(a.courseSummary[j].summary == b.courseSummary[m].summary)
+            else if(a.courseSummary[j].summary == b.courseSummary[m].summary && 
+                a.courseSummary[j].term == b.courseSummary[m].term)
                 {
                 returnOBJ.commonCourse[count]=a.courseSummary[j];
                 count++;
@@ -160,4 +161,4 @@ res.send();
 exports.tempget = function(req,res){
    console.log(JSON.stringify(temp));
     res.send(temp);
-
+}
