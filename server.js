@@ -6,6 +6,8 @@ var session = require('client-sessions');
 
 var app = express();
 
+var userID = "";
+
 //assets and files
 app.use(express.static(__dirname + '/assets'));
 app.use(express.static(__dirname + '/views'));
@@ -42,7 +44,7 @@ function login(req, res){
         })
       } else {
         //login here
-        req.session.user = doc.userid;
+        userID = doc.userid;
       }
       res.send(ret);
     })
@@ -158,15 +160,16 @@ function signupFB(req, res){
     db.collection("users").count({email: email}, function(error, num){
       var ret = {"errors": []};
       if(num > 0){
-        //email already taken
-        //dont add anything
-        ret.errors.push({
-          field: "email",
-          msg: "Email taken."
+        //email already registered
+        //just log them in
+        db.collection("users").findOne({
+          email: email
+        }, function(err, doc){
+          userID = doc.userid;
         })
 
-      } else {
 
+      } else {
         db.collection("users").find().sort({"userid":-1}).limit(1).forEach(function(doc){
           try {
             var newID = doc.userid + 1;
@@ -180,6 +183,7 @@ function signupFB(req, res){
               fbconnected: true
             }, function(err, doc){
               //finish everything
+              userID = newID;
               db.close();
             })
           } catch(e){
@@ -187,16 +191,37 @@ function signupFB(req, res){
           }
         });
       }
+      res.send(ret);
     });
   });
 }
 
+function getProfile(req, res){
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    var userid = userID;
+    db.collection("users").findOne({userid: userid}, function(error, doc){
+      if(error){ console.log(error) }
+      res.send(doc);
+      db.close();
+    });
+  });
+}
 
+function verifyEmail(req, res){
+
+}
 
 //routes
 app.post('/login', login);
 app.post('/signup', signup);
 app.post('/signupfb', signupFB);
+app.post('/verify', verifyEmail);
+app.get('/session', getProfile);
+
+//view routes
+app.get('/email', function(req, res){
+  res.sendfile("views/email.html");
+});
 
 app.listen(process.env.PORT || 3000);
 console.log('Listening on port 3000');

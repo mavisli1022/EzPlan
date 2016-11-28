@@ -23,14 +23,14 @@ $(function(){
           lastname: lastname,
           email: email
         }
-        
+
         $.post("/signupFB", user, function(data){
-          console.log(data);
+          if(data.errors.length == 0){
+            //everything went well, redirect to email verification
+            
+          }
+
         })
-
-        console.log(user);
-
-
       });
 
     }, {scope: 'public_profile, email'});
