@@ -79,8 +79,6 @@ function show(){
         array.push(table.rows[i].cells[0].innerHTML);
     }
     
-    //all info
-    
     var term = array[4];
 
     for (var i =0; i<array.length/5; i++){
@@ -95,17 +93,21 @@ function show(){
         var time = Number(array[5*i+2].substr(1,2)) - 9;
         var stoptime = Number(array[5*i+3].substr(1,2)) - 9;
         if (array[5*i+4] == term){
-            for (time; time < stoptime; time ++){
-                valueTable_1.rows[time + 1].cells[dayofweek].innerHTML = array[5*i];
+            
+            valueTable_1.rows[time+1].cells[dayofweek].innerHTML = array[5*i];
+            for (var k = time; k < stoptime-1; k ++){
+                valueTable_1.rows[k + 2].deleteCell(dayofweek);
             }
+            valueTable_1.rows[time+1].cells[dayofweek].rowSpan = stoptime - time;
         }
-        else {
-            for (time; time < stoptime; time ++){
-                valueTable_2.rows[time + 1].cells[dayofweek].innerHTML = array[5*i];
-            }
-        }
-        
 
+        else {
+            valueTable_2.rows[time+1].cells[dayofweek].innerHTML = array[5*i];
+            for (var k = time; k < stoptime-1; k ++){
+                valueTable_2.rows[k + 2].deleteCell(dayofweek);
+            }
+            valueTable_2.rows[time+1].cells[dayofweek].rowSpan = stoptime - time;
+        }
     }
 
 }
