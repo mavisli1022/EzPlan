@@ -23,6 +23,7 @@
     "express": "^4.14.0",
     "fb": "^1.1.1",
     "fs": "0.0.1-security",
-    "multer": "^1.2.0"
+    "multer": "^1.2.0",
+    "nodemailer": "^2.6.4"
   }
 }

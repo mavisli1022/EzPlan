@@ -2,11 +2,16 @@ $(function(){
   var sessionID;
   var sessionEmail;
   $.get("/session", function(data){
-    var email = data.email;
-    var userid = data.userid;
-    $(".emailed").text(email);
+    var obj = {
+      email: data.email,
+      userid: data.userid,
+      fname: data.firstname
+    }
+    console.log(obj);
+    //post to server
+    $.post("/verify", obj, function(data){
+      console.log(data);
+    })
 
-    //send email now
-    
   })
 })

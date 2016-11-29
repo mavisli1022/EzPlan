@@ -1,7 +1,7 @@
 $(function(){
   $('#fb-login-bt').click(function(){
     FB.init({
-      appId      : '1805734163039739',
+      appId      : '1805953083025948',
       cookie     : true,  // enable cookies to allow the server to access
                           // the session
       xfbml      : true,  // parse social plugins on this page
@@ -14,6 +14,7 @@ $(function(){
         var name = response.name;
         var email = response.email;
 
+        console.log(response);
         var fullName = name.split(" ");
         var firstname = fullName[0];
         var lastname = fullName[1];
@@ -21,19 +22,22 @@ $(function(){
         var user = {
           firstname: firstname,
           lastname: lastname,
-          email: email
+          email: email,
+          fbid: fbID
         }
 
-        $.post("/signupFB", user, function(data){
-          if(data.errors.length == 0){
-            //everything went well, redirect to email verification
-            
-          }
+        FB.api("/me/friends", function (response) {
+          if(response.error) { console.log(response.error)}
+          user.friends = response.data;
 
-        })
+          $.post("/signupfb", user, function(resp){
+            console.log(resp);
+          })
+
+        });
       });
 
-    }, {scope: 'public_profile, email'});
+    }, {scope: 'public_profile, email, user_friends'});
   })
 
   $("#login-link").click(function(e){

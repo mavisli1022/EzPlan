@@ -111,8 +111,6 @@ function signup(req, res){
 
 
       if(ret.errors.length == 0){
-
-
         if(num > 0){
           ret.errors.push({
             field: "email",
@@ -134,6 +132,7 @@ function signup(req, res){
                 fbconnected: false
               }, function(err, doc){
                 //finish everything
+                userID = newid;
                 db.close();
               })
             } catch(e){
@@ -154,6 +153,8 @@ function signupFB(req, res){
   var firstname = req.body.firstname;
   var lastname = req.body.lastname;
   var email = req.body.email;
+  var friends = req.body.friends;
+  var fbID = req.body.fbid;
 
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
     if(err){console.log(err)}
@@ -173,6 +174,7 @@ function signupFB(req, res){
         db.collection("users").find().sort({"userid":-1}).limit(1).forEach(function(doc){
           try {
             var newID = doc.userid + 1;
+            console.log(fbID);
             db.collection("users").insertOne({
               userid: newID,
               firstname: firstname,
@@ -180,11 +182,53 @@ function signupFB(req, res){
               email: email,
               password: null,
               emailverified: false,
-              fbconnected: true
+              fbconnected: true,
+              fbID: fbID
             }, function(err, doc){
-              //finish everything
-              userID = newID;
-              db.close();
+              //populate friends list
+              console.log("init total friends");
+              var totalFriends = [];
+              for(var i = 0; i < friends.length; i++){
+                db.collection("users").findOne({
+                  fbID: friends[i].id
+                }, function(err, doc){
+                  //if nothing is found, dont do anything
+                  if(doc != null){
+                    //you are now friends with this person today
+                    var today = new Date();
+                    var year = today.getFullYear();
+                    var day = today.getDate();
+                    var month = today.getMonth()+1;
+
+                    var fullDate = day + "/" + month + "/" + year;
+
+                    var friend = {
+                      userid: doc.userid,
+                      datefriended: fullDate
+                    }
+                    totalFriends.push(friend);
+                  }
+                })
+              }
+
+              //wait for friends to finish populating
+              setTimeout(function(){
+                //now insert this shit into friends
+                var newUser = {
+                  userid: newID,
+                  friends: totalFriends
+                }
+
+                db.collection("friends").insertOne(newUser, function(err, doc){
+                  //finally set session
+                  if(err){console.log(err)}
+
+                  userID = newID;
+                  db.close();
+                })
+              }, 500);
+
+
             })
           } catch(e){
             console.log(e);
@@ -208,6 +252,12 @@ function getProfile(req, res){
 }
 
 function verifyEmail(req, res){
+  var email = req.body.email;
+  var userid = req.body.userid;
+  var name = req.body.fname;
+
+  //send email to "email"
+  
 
 }
 
