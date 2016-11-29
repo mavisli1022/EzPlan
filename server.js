@@ -14,7 +14,7 @@ app.use(express.static(__dirname + '/views'));
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-    extended: true
+    extended: false
 }));
 
 //define session variable
@@ -257,8 +257,55 @@ function verifyEmail(req, res){
   var name = req.body.fname;
 
   //send email to "email"
-  
 
+
+}
+
+function getFriends(req, res){
+  var sessionUser = userID;
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    db.collection("friends").findOne({
+      userid: sessionUser
+    }, function(err, doc){
+      res.send(doc);
+    })
+  });
+
+}
+
+function getUserByID(req, res){
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    var currentID = req.params.id;
+    var query = {
+      userid: parseInt(currentID)
+    }
+    db.collection("users").findOne(query, function(err, doc){
+      res.send(doc);
+      db.close();
+    })
+  });
+}
+
+function removeFriendByID(req, res){
+  var sessionID = userID;
+  var currentID = parseInt(req.params.id);
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    //res.send("Sent:" + sessionID);
+    db.collection("friends").update(
+      {
+        userid: sessionID
+      },
+      {
+        $pull: {
+          "friends": {
+            userid: currentID
+          }
+        }
+      }, function(err, doc){
+        res.redirect('/friends');
+        db.close();
+      });
+  });
 }
 
 //routes
@@ -267,11 +314,17 @@ app.post('/signup', signup);
 app.post('/signupfb', signupFB);
 app.post('/verify', verifyEmail);
 app.get('/session', getProfile);
+app.get('/getfriends', getFriends);
+app.get('/getuser/:id', getUserByID);
+app.get('/removefriend/:id', removeFriendByID);
 
 //view routes
 app.get('/email', function(req, res){
   res.sendfile("views/email.html");
 });
+app.get('/friends', function(req, res){
+  res.sendfile("views/friends.html");
+})
 
 app.listen(process.env.PORT || 3000);
 console.log('Listening on port 3000');
