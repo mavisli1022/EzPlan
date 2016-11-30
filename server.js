@@ -42,19 +42,16 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
     //var d = routes.processCourse(c,'2');
     //array.push(b);
     //array.push(d);
-    console.log("in post");
 
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
         if (err){
             console.log(error)
         }
-        db.collection("timetable").findOne({userid: current_userid}), function(err,doc){
+        db.collection("timetable").findOne({userid: current_userid}, function(err,doc){
             var ret = {errors: []};
             if(doc == null){
-                //not upload calendar so far
-                console.log("here----")
+                
                 try {
-                    console.log("in try----")
                     db.collection("timetable").insertOne({
                         userid: current_userid,
                         courseSummary: b
@@ -72,17 +69,11 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
                 })
                 
             }
-        }
+        })
     });
-    //fs.writeFile('jsonfile.JSON', JSON.stringify(array), function (err) {
-    //if (err) 
-    //    return console.log(err);
     
-    //});
-    //console.log(b)
 	res.render('displayCalendar', {array: b}); 
 });
-
 
 app.get('/findUser', routes.findOne);
 
