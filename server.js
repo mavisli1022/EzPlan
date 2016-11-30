@@ -2,7 +2,7 @@ var fs = require('fs');
 var express = require('express');
 var bodyParser = require('body-parser');
 var multer = require('multer');
-
+var MongoClient = require('mongodb').MongoClient;
 var routes = require('./routes.js');
 
 
@@ -32,16 +32,14 @@ app.post('/comparePage', function(req, res) {
 
 
 app.post('/upload', upload.single('calendar_user'), function(req, res, next){
-    var a = routes.convertCal('./upload/coursesCalendar.ics');
-    //var c =  routes.convertCal('./upload/courses_Calendar.ics');
+    //var a = routes.convertCal('./upload/coursesCalendar.ics');
+    var c =  routes.convertCal('./upload/courses_Calendar.ics');
 
     //var array = [];
 
-    current_userid = '1';
-    var b = routes.processCourse(a,'1');
-    //var d = routes.processCourse(c,'2');
-    //array.push(b);
-    //array.push(d);
+    current_userid = '2';
+    var b = routes.processCourse(c,'2');
+  
 
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
         if (err){
@@ -54,7 +52,11 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
                 try {
                     db.collection("timetable").insertOne({
                         userid: current_userid,
+<<<<<<< HEAD
+                        courseSummary: b[courseSummary]
+=======
                         courseSummary: b['courseSummary']
+>>>>>>> 84740109cddb609c091deca513cc49deec3d42f6
                     }, function(err, doc){
                         db.close();
                     })
@@ -69,7 +71,8 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
                 })
                 
             }
-        })
+        });
+        db.close();
     });
     
 	res.render('displayCalendar', {array: b}); 
