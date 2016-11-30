@@ -308,6 +308,100 @@ function removeFriendByID(req, res){
   });
 }
 
+function getFriendsByFname(req, res){
+  var name = req.params.name;
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    var ret = [];
+    db.collection("users").find({
+      firstname: name
+    }).forEach(function(doc){
+      if(doc.userid != userID){
+        ret.push(doc);
+      }
+    })
+
+    setTimeout(function(){
+      res.send(ret);
+    }, 500);
+
+  });
+}
+
+function getFriendsByEmail(req, res){
+  var email = req.params.email;
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    var ret = [];
+    db.collection("users").find({
+      email: email
+    }).forEach(function(doc){
+      if(doc.userid != userID){
+        ret.push(doc);
+      }
+    })
+
+    setTimeout(function(){
+      res.send(ret);
+    }, 500);
+
+  });
+}
+
+function getFriendsByFullName(req, res){
+  var firstname = req.params.first;
+  var lastname = req.params.last;
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    var ret = [];
+    db.collection("users").find({
+      firstname: firstname,
+      lastname: lastname
+    }).forEach(function(doc){
+      if(doc.userid != userID){
+        ret.push(doc);
+      }
+    });
+
+    setTimeout(function(){
+      res.send(ret);
+      db.close();
+    }, 500);
+
+  });
+
+}
+
+function addFriendByID(req, res){
+  //check if user already a friend, if not add it in
+  var friendID = req.params.id;
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    var today = new Date();
+    var day = today.getDate();
+    var month = today.getMonth()+1;
+    var year = today.getFullYear();
+
+    var fullDate = day + "/" + month + "/" + year;
+
+    db.collection("friends").update({
+      userid: parseInt(userID)
+    }, {
+      $addToSet: {
+        friends: {
+          userid: parseInt(friendID),
+          datefriended: fullDate
+        }
+      }
+    }, function(err, doc){
+      if(!err){
+        res.redirect("/friends");
+      } else {
+        console.log(err);
+      }
+    })
+
+  });
+
+
+}
+
 //routes
 app.post('/login', login);
 app.post('/signup', signup);
@@ -317,6 +411,10 @@ app.get('/session', getProfile);
 app.get('/getfriends', getFriends);
 app.get('/getuser/:id', getUserByID);
 app.get('/removefriend/:id', removeFriendByID);
+app.get('/findfriends/name/:name', getFriendsByFname);
+app.get('/findfriends/fname/:first/:last', getFriendsByFullName);
+app.get('/findfriends/email/:email', getFriendsByEmail);
+app.get('/addfriend/:id', addFriendByID);
 
 //view routes
 app.get('/email', function(req, res){
