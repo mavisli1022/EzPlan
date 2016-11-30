@@ -128,7 +128,6 @@ function show_first(){
     weekdays = ["time","MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];    
     var table = document.getElementById("hiddenTable");
     var valueTable_1 = document.getElementById("myTable-1");
-    var valueTable_2 = document.getElementById("myTable-2");
 
     var array = [];
 
@@ -138,7 +137,8 @@ function show_first(){
     
     var term = array[4];
 
-    for (var i =0; i<array.length/5; i++){
+    for (var i =0; i<table.rows.length/5; i++){
+        //console.log(i)
         //weekday
         var dayofweek;
         for (var j = 1; j<6; j++){
@@ -146,17 +146,19 @@ function show_first(){
                 dayofweek = j;
             }
         }
+        console.log(dayofweek)
         //start time
-        var time = Number(array[5*i+2].substr(1,2)) - 9;
-        var stoptime = Number(array[5*i+3].substr(1,2)) - 9;
+        var time = Number(array[5*i+2].substr(1,2)) - 8;
+        var stoptime = Number(array[5*i+3].substr(1,2)) - 8;
+
         if (array[5*i+4] == term){
-            
-            valueTable_1.rows[time+1].cells[dayofweek].innerHTML = array[5*i];
-            for (var k = time; k < stoptime-1; k ++){
-                valueTable_1.rows[k + 2].deleteCell(dayofweek);
+            for (var k = time; k < stoptime; k++){
+                valueTable_1.rows[k].cells[dayofweek].innerHTML = array[5*i];
             }
-            valueTable_1.rows[time+1].cells[dayofweek].rowSpan = stoptime - time;
+            
+//            valueTable_1.rows[time+1].cells[dayofweek].rowSpan = stoptime - time;
         }
+        
 
     }
 }
@@ -165,7 +167,6 @@ function show_second(){
     load_second();
     weekdays = ["time","MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];    
     var table = document.getElementById("hiddenTable");
-    var valueTable_1 = document.getElementById("myTable-1");
     var valueTable_2 = document.getElementById("myTable-2");
 
     var array = [];
@@ -177,6 +178,7 @@ function show_second(){
     var term = array[4];
 
     for (var i =0; i<array.length/5; i++){
+        console.log(array[5*i])
         //weekday
         var dayofweek;
         for (var j = 1; j<6; j++){
@@ -185,17 +187,16 @@ function show_second(){
             }
         }
         //start time
-        var time = Number(array[5*i+2].substr(1,2)) - 9;
-        var stoptime = Number(array[5*i+3].substr(1,2)) - 9;
+        var time = Number(array[5*i+2].substr(1,2)) - 8;
+        var stoptime = Number(array[5*i+3].substr(1,2)) - 8;
+        
         if (array[5*i+4] != term){
-            
-            valueTable_2.rows[time+1].cells[dayofweek].innerHTML = array[5*i];
-            for (var k = time; k < stoptime-1; k ++){
-                valueTable_2.rows[k + 2].deleteCell(dayofweek);
+            for (var k = time; k < stoptime; k++){
+                valueTable_2.rows[k].cells[dayofweek].innerHTML = array[5*i];
             }
-            valueTable_2.rows[time+1].cells[dayofweek].rowSpan = stoptime - time;
+            
+//            valueTable_1.rows[time+1].cells[dayofweek].rowSpan = stoptime - time;
         }
-
     }
 
 }
