@@ -1,12 +1,8 @@
 var express = require('express');
 var util = require("util");
 var fs = require("fs");
+var MongoClient = require('mongodb').MongoClient;
 
-var ttObj;
-fs.readFile('jsonfile.json', 'utf-8', function(err, data) {
-    if(err) throw err;
-    ttObj = JSON.parse(data);
-});
 
 var temp = {name1: "", name2: ""};
 
@@ -99,53 +95,67 @@ exports.compare= function(req, res){
         name2 = name[1];
      }
      //console.log(name1 + name2)
-    var a = null;
-    var b = null;    
+  
     var returnOBJ={"commonCourse": [], "count":"" };
     var count=0;
     var exsist = false;
-    //console.log("into"+ JSON.stringify(ttObj));
-    for(var i=0; i<ttObj.length;i++){
-        if(ttObj[i].name == name1)
-            a = ttObj[i];
-        else if(ttObj[i].name == name2)
-            b= ttObj[i];
-    }
-    if(a == null){
-        res.send("You need to upload your timetable first before comparison.");
-    }
-    else if( b == null){
-        res.send("Your friend did not uploaded his/her timetable.");
-    }
 
-    else{
-    for(var j=0; j<a.courseSummary.length;j++){
-        for(var m=0; m<b.courseSummary.length;m++){
-            //console.log(b.courseSummary[m].summary);
-            //console.log(a.courseSummary[j].summary);
-            for(var n=0; n<count; n++) {
-                //console.log(returnOBJ['commonCourse'][n].summary);
-                if (returnOBJ['commonCourse'][n].summary == b.courseSummary[m].summary){
-                    exsist=true;
-                    break;
+    var ttObj=[];
+    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    db.collection("timetable").findOne({
+      userid: name1
+    }, function(err, doc){
+        if(doc == null){
+        res.send("You need to upload your timetable first before comparison.");
+         }
+       else {
+            ttObj.push(doc);
+            db.collection("timetable").findOne({
+             userid: name2
+            }, function(err, doc){
+                if( doc == null){
+                    res.send("Your friend did not uploaded his/her timetable.");
                 }
-            }
-            if(exsist == true){
-                exsist = false;
-            }
-            else if(a.courseSummary[j].summary == b.courseSummary[m].summary && 
-                a.courseSummary[j].term == b.courseSummary[m].term)
-                {
-                returnOBJ.commonCourse[count]=a.courseSummary[j];
-                count++;
-                }
+                else{
+                ttObj.push(doc);
+                console.log(JSON.stringify(ttObj));
+
+                for(var j=0; j<ttObj[0].courseSummary.length;j++){
+                 for(var m=0; m<ttObj[1].courseSummary.length;m++){
+
+                    for(var n=0; n<count; n++) {
+                    //console.log(returnOBJ['commonCourse'][n].summary);
+                    if (returnOBJ['commonCourse'][n].summary == ttObj[1].courseSummary[m].summary){
+                        exsist=true;
+                        break;
+                    }
+                }  
+                    if(exsist == true){
+                        exsist = false;
+                    }
+                    else if(ttObj[0].courseSummary[j].summary == ttObj[1].courseSummary[m].summary && 
+                    ttObj[0].courseSummary[j].term == ttObj[1].courseSummary[m].term)
+                    {
+                        returnOBJ.commonCourse[count]=ttObj[0].courseSummary[j];
+                        count++;
+                    }
 
             }
         }
-        returnOBJ.count = count;
-        console.log(JSON.stringify(returnOBJ));
-        res.send(returnOBJ);
-    }
+            returnOBJ.count = count;
+            console.log(JSON.stringify(returnOBJ));
+            res.send(returnOBJ);
+        }
+
+
+             });
+        }
+    });
+
+
+});
+   
+
 }
 
 exports.tempstore= function(req,res){
@@ -162,20 +172,24 @@ exports.tempget = function(req,res){
 
 exports.findOne = function(req,res){
     var user;
+    //var ttObj;
     if(req.query.user!=null){
         user  = req.query.user;
      }
-    var a = null;
-     for(var i=0; i<ttObj.length;i++){
-        if(ttObj[i].name == user)
-            a = ttObj[i];
-    }
-    if(a == null)
-        res.send("No such user: " + user);
-    else {
-        console.log(JSON.stringify(a));
-        res.send(a);
+    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    db.collection("timetable").findOne({
+      userid: user
+    }, function(err, doc){
+        if(doc == null) {
+            res.send("No such user: " + user);
+        }
+        else{
+            console.log(JSON.stringify(doc));
+           res.send(doc); 
+        }
+      
+    })
+  });
 
-    }
 
 }

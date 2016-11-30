@@ -119,6 +119,7 @@ function showTable(array){
     var valueTable_1 = document.getElementById("myTable-1");
     var valueTable_2 = document.getElementById("myTable-2");
     var term = array[0].courseSummary[0].term;
+    var userid = array[0].userid;
 
     for(var i=0; i< array.length;i++){
       for(var j=0; j<array[i].courseSummary.length; j++){
@@ -133,19 +134,34 @@ function showTable(array){
         
        if(array[i].courseSummary[j].term == term){
           for (time; time < stoptime; time ++){
+              if(valueTable_1.rows[time + 1].cells[dayofweek].innerHTML != "")
+                  valueTable_1.rows[time + 1].cells[dayofweek].bgColor = "#COCOCO";
+                else if(array[i].userid == userid)
+                    valueTable_1.rows[time + 1].cells[dayofweek].bgColor = "#90ee90";
+                  else
+                    valueTable_1.rows[time + 1].cells[dayofweek].bgColor = "ffcocb";
+
                 if(valueTable_1.rows[time + 1].cells[dayofweek].innerHTML == array[i].courseSummary[j].summary)
                 valueTable_1.rows[time + 1].cells[dayofweek].bgColor = "Red";
-                else if(!valueTable_1.rows[time + 1].cells[dayofweek].innerHTML.includes(array[i].courseSummary[j].summary))
+                else if(!valueTable_1.rows[time + 1].cells[dayofweek].innerHTML.includes(array[i].courseSummary[j].summary)){
                   valueTable_1.rows[time + 1].cells[dayofweek].innerHTML += array[i].courseSummary[j].summary;
-                
+                }
+                }
             }
-        }
+        
         else{
           for (time; time < stoptime; time ++){
+            if(valueTable_2.rows[time + 1].cells[dayofweek].innerHTML != "")
+                  valueTable_2.rows[time + 1].cells[dayofweek].bgColor = "#COCOCO";
+                else if(array[i].userid == userid)
+                    valueTable_2.rows[time + 1].cells[dayofweek].bgColor = "#90ee90";
+                  else
+                    valueTable_2.rows[time + 1].cells[dayofweek].bgColor = "ffcocb";
             if(valueTable_2.rows[time + 1].cells[dayofweek].innerHTML == array[i].courseSummary[j].summary)
                 valueTable_2.rows[time + 1].cells[dayofweek].bgColor = "Red";
-                else if(!valueTable_2.rows[time + 1].cells[dayofweek].innerHTML.includes(array[i].courseSummary[j].summary))
+                else if(!valueTable_2.rows[time + 1].cells[dayofweek].innerHTML.includes(array[i].courseSummary[j].summary)){
                   valueTable_2.rows[time + 1].cells[dayofweek].innerHTML += array[i].courseSummary[j].summary;
+                }
             }
           }
 
