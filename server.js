@@ -32,27 +32,48 @@ app.post('/comparePage', function(req, res) {
 
 
 app.post('/upload', upload.single('calendar_user'), function(req, res, next){
-  var a = routes.convertCal('./upload/coursesCalendar.ics');
-    var c =  routes.convertCal('./upload/courses_Calendar.ics');
+    var a = routes.convertCal('./upload/coursesCalendar.ics');
+    //var c =  routes.convertCal('./upload/courses_Calendar.ics');
 
-    var array = [];
+    //var array = [];
 
-
+    current_userid = '1';
     var b = routes.processCourse(a,'1');
-    var d = routes.processCourse(c,'2');
-    array.push(b);
-    array.push(d);
-    fs.writeFile('jsonfile.JSON', JSON.stringify(array), function (err) {
-    if (err) 
-        return console.log(err);
-    
+    //var d = routes.processCourse(c,'2');
+    //array.push(b);
+    //array.push(d);
+
+    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+        if (err){
+            console.log(error)
+        }
+        db.collection("timetable").findOne({userid: current_userid}, function(err,doc){
+            var ret = {errors: []};
+            if(doc == null){
+                
+                try {
+                    db.collection("timetable").insertOne({
+                        userid: current_userid,
+                        courseSummary: b
+                    }, function(err, doc){
+                        db.close();
+                    })
+                } catch(e){
+                    console.log(e);
+                }
+
+            } else {
+                ret.errors.push({
+                    field: "general",
+                    msg: "Already existed calendar for current user"
+                })
+                
+            }
+        })
     });
-
-    //TODO: SEND DATA TO DISPLAYCALENDAR
-   //res.send(array);
-	res.render('displayCalendar', {array: array}); 
+    
+	res.render('displayCalendar', {array: b}); 
 });
-
 
 app.get('/findUser', routes.findOne);
 
