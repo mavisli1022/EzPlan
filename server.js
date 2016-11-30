@@ -3,6 +3,9 @@ var bodyParser = require('body-parser');
 var md5 = require('js-md5');
 var MongoClient = require('mongodb').MongoClient;
 var session = require('client-sessions');
+var nodemailer = require('nodemailer');
+//create nodemailer transport system
+var transporter = nodemailer.createTransport('smtps://shrey.kumar.ca%40gmail.com:8809asAS@smtp.gmail.com');
 
 var app = express();
 
@@ -256,8 +259,46 @@ function verifyEmail(req, res){
   var userid = req.body.userid;
   var name = req.body.fname;
 
+  var code = md5(email);
   //send email to "email"
+  var mailOptions = {
+    from: '"EzPlan" <shrey.kumar.ca@gmail.com>',
+    to: email,
+    subject: name + ', confirm your email',
+    text: "What's up " + name + ", Welcome to Ezplan! We just need you to do 1 more thing...Click this link to confirm your email: http://localhost:3000/verify/" + code,
+    html: "<h1>What's up " + name + ",</h1><br><p>Welcome to <b>Ezplan</b>!</p> <p>We just need you to do 1 more thing...Click this <a href='http://localhost:3000/verify/" + code +"'>link</a> to confirm your email.</p>"
+  }
 
+  transporter.sendMail(mailOptions, function(error, info){
+    if(error){
+      return res.send(error);
+    }
+    res.send(info.response);
+  });
+
+}
+
+function confirmEmail(req, res){
+  var code = req.params.code;
+
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    db.collection("users").findOne({
+      userid: parseInt(userID)
+    }, function(err, doc){
+      if(md5(doc.email) == code){
+        //set emailverified to true
+        db.collection("users").update(
+          {userid: parseInt(userID)},
+          {$set: {emailverified: true}},
+          function(err, doc){
+            if(!err){
+              res.redirect("/");
+            }
+          }
+        )
+      }
+    })
+  });
 
 }
 
@@ -407,6 +448,7 @@ app.post('/login', login);
 app.post('/signup', signup);
 app.post('/signupfb', signupFB);
 app.post('/verify', verifyEmail);
+app.get('/verify/:code', confirmEmail);
 app.get('/session', getProfile);
 app.get('/getfriends', getFriends);
 app.get('/getuser/:id', getUserByID);
