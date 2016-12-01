@@ -77,6 +77,7 @@ function show(){
                     array.push(data);
                     //console.log(array);
                     showTable(array);
+                    setTimeout(mergeTimetable(),2000);
                 });  
 
             });  
@@ -169,4 +170,36 @@ function showTable(array){
     }
 
 }
+
+
+function mergeTimetable(){
+      var valueTable_1 = document.getElementById("myTable-1");
+    var valueTable_2 = document.getElementById("myTable-2");
+                  var check1="";
+                  var check2="";
+                    for(var d=1; d<6;d++){
+                        for(var t=0; t<14; t++){
+                          if(valueTable_1.rows[t].cells[d].innerHTML == "")
+                            check1 = "";
+                          else if(valueTable_1.rows[t].cells[d].innerHTML == check1){
+                            valueTable_1.rows[t-1].cells[d].style.borderBottom= 'none';
+                            valueTable_1.rows[t].cells[d].style.borderTop = 'none';
+                            valueTable_1.rows[t].cells[d].innerHTML ="";
+                            } else{
+                            check1 = valueTable_1.rows[t].cells[d].innerHTML;
+                          }
+                          
+                          if(valueTable_2.rows[t].cells[d].innerHTML == "")
+                            check2 = "";
+                          else if(valueTable_2.rows[t].cells[d].innerHTML == check2){
+                            valueTable_2.rows[t-1].cells[d].style.borderBottom= 'none';
+                            valueTable_2.rows[t].cells[d].style.borderTop = 'none';
+                            valueTable_2.rows[t].cells[d].innerHTML ="";
+                            } else{
+                            check2 = valueTable_2.rows[t].cells[d].innerHTML;
+                          }
+
+                        }
+                    }
+    }
 
