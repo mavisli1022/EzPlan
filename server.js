@@ -52,11 +52,7 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
                 try {
                     db.collection("timetable").insertOne({
                         userid: current_userid,
-<<<<<<< HEAD
                         courseSummary: b[courseSummary]
-=======
-                        courseSummary: b['courseSummary']
->>>>>>> 84740109cddb609c091deca513cc49deec3d42f6
                     }, function(err, doc){
                         db.close();
                     })
@@ -77,7 +73,6 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
     
 	res.render('displayCalendar', {array: b}); 
 });
-   
 
 app.get('/findUser', routes.findOne);
 
