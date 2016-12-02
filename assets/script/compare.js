@@ -53,8 +53,11 @@ function show(){
           else{
             console.log(JSON.stringify(data));
             common = data;
+            document.getElementById("fall").innerHTML = "Fall Term";
+            document.getElementById("winter").innerHTML = "Winter Term";
              myFunction("myTable-1");
               myFunction("myTable-2");
+              document.getElementById("colortable").style.display ="table";
             var string;
             var courses="";
             if(common.count == 0){
