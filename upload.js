@@ -3,7 +3,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var multer = require('multer');
 var routes = require('./routes.js');
-var FB = require('fb');
+//var FB = require('fb');
 
 var app = express();
 
@@ -20,17 +20,30 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 
 var upload = multer({dest: './upload/'});
 
+app.get('/', function(req, res) {
+    res.sendfile('./views/calander.html');
+});
 
 
 
 app.post('/upload', upload.single('calendar_user'), function(req, res, next){
-    //console.log("here");
-
-    //TODO: handle the user name
     var a = routes.convertCal('./upload/coursesCalendar.ics');
+    var c =  routes.convertCal('./upload/courses_Calendar.ics');
 
-    var b = routes.processCourse(a);
-    res.send(b);
+    var array = [];
+
+
+    var b = routes.processCourse(a,'1');
+    var d = routes.processCourse(c,'2');
+    array.push(b);
+    array.push(d);
+    fs.writeFile('jsonfile.json', array, function (err) {
+    if (err) 
+        return console.log(err);
+    
+    });
+
+	res.send(array); 
 });
 
 

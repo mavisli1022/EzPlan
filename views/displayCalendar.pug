@@ -1,0 +1,29 @@
+
+
+doctype html
+html(lang = "en")
+
+style.
+	#hiddenTable{
+		visibility: hidden;
+	}
+
+body
+	include display_Calendar.html
+	- var k = {array}
+
+	table#hiddenTable
+		for i in k
+			for m in i.courseSummary
+				tr 
+					td !{JSON.stringify(m.summary)}
+				tr 
+					td !{JSON.stringify(m.day)}
+				tr 	
+					td !{JSON.stringify(m.start)}
+				tr
+					td !{JSON.stringify(m.end)}
+				tr
+					td !{JSON.stringify(m.term)}
+
+
