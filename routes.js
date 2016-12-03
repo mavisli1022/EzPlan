@@ -185,18 +185,9 @@ exports.recommendedFriends = function(req, res){
 
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
 
-        userList = db.collection("timetable").find().toArray(function (err, result) {
-            if (err) {
-                console.log(err);
-            }
-        });
+        userList = db.collection("timetable").find().toArray();
 
-        users = db.collection("users").find().toArray(function (err, result) {
-            if (err) {
-                console.log(err);
-            }
-            db.close();
-        });
+        users = db.collection("users").find().toArray();
     });
 
     for(i = 0; i < userList.length; i++){
@@ -243,18 +234,9 @@ exports.searchClassmates = function(req, res){
 
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
 
-        userList = db.collection("timetable").find().toArray(function (err, result) {
-            if (err) {
-                console.log(err);
-            }
-        });
+        userList = db.collection("timetable").find().toArray();
 
-        users = db.collection("users").find().toArray(function (err, result) {
-            if (err) {
-                console.log(err);
-            }
-            db.close();
-        });
+        users = db.collection("users").find().toArray();
     });
 
 
@@ -378,6 +360,7 @@ function compare_users(user1, user2) {
     for (var i = 0; i < user1.courseSummary.length; i++){
 
         for (var j = 0; i < user2.courseSummary.length; i++){
+
             if (user1.courseSummary[i].summary == user2.courseSummary[j].summary
                 && courseList.indexOf(user1.courseSummary[i]) == -1){
                 counter += 1;
