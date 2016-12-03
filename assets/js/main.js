@@ -1,7 +1,7 @@
 $(function(){
   $('#fb-login-bt').click(function(){
     FB.init({
-      appId      : '1805734163039739',
+      appId      : '1805953083025948',
       cookie     : true,  // enable cookies to allow the server to access
                           // the session
       xfbml      : true,  // parse social plugins on this page
@@ -9,11 +9,35 @@ $(function(){
     });
     FB.login(function(response) {
       // handle the response
-      FB.api('/me', function(response) {
+      FB.api('/me?fields=email,name', function(response) {
+        var fbID = response.id;
+        var name = response.name;
+        var email = response.email;
+
         console.log(response);
+        var fullName = name.split(" ");
+        var firstname = fullName[0];
+        var lastname = fullName[1];
+
+        var user = {
+          firstname: firstname,
+          lastname: lastname,
+          email: email,
+          fbid: fbID
+        }
+
+        FB.api("/me/friends", function (response) {
+          if(response.error) { console.log(response.error)}
+          user.friends = response.data;
+
+          $.post("/signupfb", user, function(resp){
+            console.log(resp);
+          })
+
+        });
       });
 
-    }, {scope: 'public_profile,email'});
+    }, {scope: 'public_profile, email, user_friends'});
   })
 
   $("#login-link").click(function(e){
@@ -24,7 +48,7 @@ $(function(){
       //+150
       $("#login-nav .selected").animate({
         left: "-=150"
-      }, 1000, function(){
+      }, 700, function(){
         //if this is not active, hide this and show other one
         $(".sign-up-box").fadeOut("slow", function(){
           $(".login-box").fadeIn("slow");
@@ -41,7 +65,7 @@ $(function(){
 
       $("#login-nav .selected").animate({
         left: "+=150"
-      }, 1000, function(){
+      }, 700, function(){
         //if this is not active, hide this and show other one
         $(".login-box").fadeOut("slow", function(){
           $(".sign-up-box").fadeIn("slow");
