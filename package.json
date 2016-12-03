@@ -23,20 +23,14 @@
     "express": "^4.14.0",
     "fb": "^1.1.1",
     "fs": "0.0.1-security",
-<<<<<<< HEAD
     "multer": "^1.2.0",
-    "nodemailer": "^2.6.4"
-=======
-<<<<<<< HEAD
+    "nodemailer": "^2.6.4",
     "mongodb": "^2.2.11",
     "multer": "^1.2.0"
   },
   "devDependencies": {
     "js-md5": "^0.4.1"
-=======
     "multer": "^1.2.0",
     "pug":"^2.0.0-beta6"
->>>>>>> 2c0a5665895af6e33a492e34c6337a3f598f36e1
->>>>>>> master
   }
 }
