@@ -67,7 +67,7 @@ function show(){
               for(var i=0; i< common.commonCourse.length;i++){
                 courses= courses+common.commonCourse[i].summary + " , ";
               }
-              string= "You and " + name[1]+ " have " + common.count + " common course(s). They are: " + courses;
+              string= "You and " + name[1]+ " have " + common.count + " common course(s): " + courses;
             } 
             document.getElementById("demo").innerHTML = string;
 
@@ -93,7 +93,7 @@ function show(){
 }
 
 function myFunction(Id) {
-    weekdays = ["time","MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
+    weekdays = ["Time","MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
     var x = document.getElementById(Id);
     for (var i = 0; i<6; i++){
         var y = document.createElement("TD");
