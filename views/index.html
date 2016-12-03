@@ -11,7 +11,31 @@
       <span class="second">PLAN</span>
     </h1><br />
     <div class="login-box">
+      <label for="email" class="text-label">Email </label><input type="text" id="email" class="text-field"/>
+      <label for="password" class="text-label">Password </label><input type="password" id="password" class="text-field" />
+      <button id="login-bt" class="form-button">Login</button>
       <a href="#" id="fb-login-bt"><i class="fa fa-facebook"></i> Login with Facebook</a>
     </div>
+
+    <div class="sign-up-box">
+      <label for="firstname" class="text-label">Firstname </label><input type="text" id="firstname" class="text-field" />
+      <label for="lastname" class="text-label">Lastname </label><input type="text" id="lastname" class="text-field" />
+      <label for="email" class="text-label">Email </label><input type="text" id="signup-email" class="text-field" />
+      <label for="password" class="text-label">Password </label><input type="password" id="pwd" class="text-field"  />
+      <label for="confirmpwd" class="text-label">Confirm Password </label><input type="password" id="confirmpwd" class="text-field" />
+
+      <button id="signup-bt" class="form-button">Sign up</button>
+    </div>
+
+    <ul id="login-nav">
+      <li><a href="#" id="login-link" class="active">Login</a></li>
+      <li><a href="#" id="signup-link" class="">Sign up</a></li>
+      <div class="selected"></div>
+    </ul>
+    <!-- scripts -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="//code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+    <script type="text/javascript" src="//connect.facebook.net/en_US/sdk.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
   </body>
 </html>
