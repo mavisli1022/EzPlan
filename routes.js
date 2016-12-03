@@ -2,7 +2,7 @@ var express = require('express');
 var util = require("util");
 var fs = require("fs");
 var MongoClient = require('mongodb').MongoClient;
-
+// @import url('https://fonts.googleapis.com/css?family=NTR');
 
 // Placeholder that contains all of the user objects to be searched through.
 
@@ -168,6 +168,14 @@ exports.compare= function(req, res){
 exports.recommendedFriends = function(req, res){
 
     var uid = req.query.uid;
+
+
+    // MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    //
+    //     uid = db.collection("session").find().toArray()["userid"];
+    //
+    // });
+
     var results = [];
     var results_temp = [];
 
@@ -177,11 +185,6 @@ exports.recommendedFriends = function(req, res){
     var temp_user1;
     var temp_user2;
 
-    for (var i = 0; i < userList.length; i++){
-        if (userList[i].userid == uid) {
-            temp_user1 = userList[i];
-        }
-    }
 
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
 
@@ -189,6 +192,12 @@ exports.recommendedFriends = function(req, res){
 
         users = db.collection("users").find().toArray();
     });
+
+    for (var i = 0; i < userList.length; i++){
+        if (userList[i].userid == uid) {
+            temp_user1 = userList[i];
+        }
+    }
 
     for(i = 0; i < userList.length; i++){
         if (userList[i].userid != uid){
@@ -199,13 +208,8 @@ exports.recommendedFriends = function(req, res){
 
     results_temp.sort(comparison);
 
-    for(i = 0; i < results_temp.length; i++) {
-        results[i] = results_temp[i]["user"];
-    }
-
     // Given the user id from our search, find that user in the users collection, and push the user object to results.
-    for (i = 0; i < results_temp.length; i++){
-
+    for(i = 0; i < results_temp.length; i++) {
         for (var j = 0; j < users.length; j++){
             if (results_temp[i]["user"] == users[j]["userid"]){
                 results.push(users[j]);
@@ -218,75 +222,77 @@ exports.recommendedFriends = function(req, res){
 };
 
 
-/* A function to search the database for classmates based on search queries.
-*  The function returns a list of users who were 'hits', ranked by how closely the matched the search terms.
-*  TODO: Current implementation only searches for classmates in the same COURSE, not the same SECTION
-* */
-exports.searchClassmates = function(req, res){
-
-    // The request contains a search query. Each word in the query is compared to all users. The format of the query is
-    // as follows:
-    // Example: /search?q=Seb+Balda+CSC365
-    // req.query.q: the body of the search, the terms to be searched for.
-
-    var userList = [];
-    var users = [];
-
-    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-
-        userList = db.collection("timetable").find().toArray();
-
-        users = db.collection("users").find().toArray();
-    });
-
-
-    if (userList == []){
-        res.send("Failed to connect to the database");
-    }
-
-    // Split the search terms into array elements to be iterated through.
-    var search_terms = req.query.q.split(" ");
-
-    // The array containing the "hits" from the search. Contains a pair of userid and count (number of hits to sort by)
-    var results_obj = [];
-    var results = [];
-
-    // For every search term.
-    for (var i = 0; i < search_terms.length; i++){
-
-        // Compare the term with the user's attributes
-        for(var j = 0; j < userList.length; j++){
-
-            // If the search term matches on of their names.
-            if (search_terms[i] == userList[j].firstname || search_terms[i] == userList[j].lastname){
-                add_or_inc(userList[j].userid, results_obj);
-            }
-
-            // If the search term matches a course that the user is taking.
-            else if (is_taking(userList[j].userid, search_terms[i])){
-                add_or_inc(userList[j].userid, results_obj);
-            }
-        }
-    }
-
-    // Now we have an array of objects with a uid/count pairing.
-    // Next lets construct a new array that only contains ids, sorted by search relevance
-
-    results_obj.sort(comparison);
-
-    // Given the user id from our search, find that user in the users collection, and push the user object to results.
-    for (i = 0; i < results_obj.length; i++){
-
-        for (j = 0; j < users.length; j++){
-
-            if (results_obj[i]["id"] == users[j]["userid"]){
-                results.push(users[j]);
-            }
-        }
-    }
-
-    res.send(results)
-};
+// /* A function to search the database for classmates based on search queries.
+// *  The function returns a list of users who were 'hits', ranked by how closely the matched the search terms.
+// *  TODO: Current implementation only searches for classmates in the same COURSE, not the same SECTION
+// * */
+// exports.searchClassmates = function(req, res){
+//
+//     // The request contains a search query. Each word in the query is compared to all users. The format of the query is
+//     // as follows:
+//     // Example: /search?q=Seb+Balda+CSC365
+//     // req.query.q: the body of the search, the terms to be searched for.
+//
+//     var userList = [];
+//     var users = [];
+//
+//     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+//
+//         userList = db.collection("timetable").find().toArray();
+//
+//         users = db.collection("users").find().toArray();
+//     });
+//
+//
+//     if (userList == []){
+//         res.send("Failed to connect to the database");
+//     }
+//
+//     // Split the search terms into array elements to be iterated through.
+//     var search_terms = req.query.q.split(" ");
+//
+//     // The array containing the "hits" from the search. Contains a pair of userid and count (number of hits to sort by)
+//     var results_obj = [];
+//     var results = [];
+//
+//     // For every search term.
+//     for (var i = 0; i < search_terms.length; i++){
+//
+//         // Compare the term with the user's attributes
+//         for(var j = 0; j < userList.length; j++){
+//
+//             // If the search term matches on of their names.
+//             if (search_terms[i] == userList[j].firstname || search_terms[i] == userList[j].lastname){
+//                 add_or_inc(userList[j].userid, results_obj);
+//             }
+//             else if (i < search_terms.length - 1 && is_taking(userList[j].userid, [search_terms[i], search_terms[i+1]])){
+//                 add_or_inc(userList[j].userid, results_obj);
+//             }
+//             // If the search term matches a course that the user is taking.
+//             else if (is_taking(userList[j].userid, search_terms[i])){
+//                 add_or_inc(userList[j].userid, results_obj);
+//             }
+//         }
+//     }
+//
+//     // Now we have an array of objects with a uid/count pairing.
+//     // Next lets construct a new array that only contains ids, sorted by search relevance
+//
+//     results_obj.sort(comparison);
+//
+//     // Given the user id from our search, find that user in the users collection, and push the user object to results.
+//     for (i = 0; i < results_obj.length; i++){
+//
+//         for (j = 0; j < users.length; j++){
+//
+//             if (results_obj[i]["id"] == users[j]["userid"]){
+//                 results.push(users[j]);
+//             }
+//         }
+//     }
+//
+//     res.send(results)
+// };
 
 // HELPER FUNCTION
 // Searches the results list. If the user is already there, increment the counter,
@@ -317,27 +323,54 @@ function is_taking(uid, course){
 
     var temp = 0;
 
-    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    if (course.length == 1){
+        MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
 
-        db.collection("timetable").findOne({
-            userid: uid
-        }, function(err, doc){
+            db.collection("timetable").findOne({
+                userid: uid
+            }, function(err, doc){
 
-            if (doc == null){
-                temp = 0;
-            }
+                if (doc == null){
+                    temp = 0;
+                }
 
-            else {
-                for (var i = 0; i < doc.courseSummary.length; i++){
-                    // If the course code matches the course passed in to is_taking (does not consider section)
-                    // TODO: Does not currently consider section
-                    if (doc.courseSummary[i].summary.split(" ")[0] == course){
-                        temp = 1;
+                else {
+                    for (var i = 0; i < doc.courseSummary.length; i++){
+                        // If the course code matches the course passed in to is_taking (does not consider section)
+                        // TODO: Does not currently consider section
+                        if (doc.courseSummary[i].summary.split(" ")[0] == course[0]){
+                            temp = 1;
+                        }
                     }
                 }
-            }
+            });
         });
-    });
+    }
+
+    else if (course.length == 2){
+        MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+
+            db.collection("timetable").findOne({
+                userid: uid
+            }, function(err, doc){
+
+                if (doc == null){
+                    temp = 0;
+                }
+
+                else {
+                    for (var i = 0; i < doc.courseSummary.length; i++){
+                        // If the course code matches the course passed in to is_taking (does not consider section)
+                        // TODO: Does not currently consider section
+                        if (doc.courseSummary[i].summary.split(" ")[0] == course[0]){
+                            temp = 1;
+                        }
+                    }
+                }
+            });
+        });
+    }
+
 
     return temp;
 }
