@@ -14,7 +14,7 @@ function displayRecommended(uid) {
                 var friendInfo = resultsArray[i];
                 $("ul#recommended-friends-list").append("<li>" + friendInfo.firstname + " " + friendInfo.lastname + " <a class='add' href='/addfriend/" + friendInfo.userid + "'>Add friend</a></li>");
 
-                if (i == 9){
+                if (i == 4){
                     break;
                 }
             }
