@@ -131,6 +131,7 @@ function signup(req, res){
                 lastname: lastname,
                 email: email,
                 password: md5(password),
+                level: "user",
                 emailverified: false,
                 fbconnected: false
               }, function(err, doc){
@@ -184,6 +185,7 @@ function signupFB(req, res){
               lastname: lastname,
               email: email,
               password: null,
+              level: "user",
               emailverified: false,
               fbconnected: true,
               fbID: fbID
@@ -458,12 +460,21 @@ app.get('/findfriends/fname/:first/:last', getFriendsByFullName);
 app.get('/findfriends/email/:email', getFriendsByEmail);
 app.get('/addfriend/:id', addFriendByID);
 
+//Admin functions
+
+
 //view routes
 app.get('/email', function(req, res){
   res.sendfile("views/email.html");
 });
 app.get('/friends', function(req, res){
   res.sendfile("views/friends.html");
+});
+app.get('/dashboard', function(req, res){
+  res.sendfile("views/dashboard.html");
+});
+app.get('/dashboard/admin', function(req, res){
+  res.sendfile("views/dashboardadmin.html");
 })
 
 app.listen(process.env.PORT || 3000);
