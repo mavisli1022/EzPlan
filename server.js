@@ -56,34 +56,6 @@ function login(req, res){
     })
 
   });
-
-
-function login(req, res){
-  var email = req.body.email;
-  var password = req.body.password;
-  var ret = {errors: []};
-
-  var validEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  var validPwd = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{5,}$/;
-
-  if(!validEmail.test(email)){
-    ret.errors.push({
-      field: "email",
-      msg: "Invalid Email."
-    });
-  }
-  if(!validPwd.test(password)){
-    ret.errors.push({
-      field: "password",
-      msg: "Please enter a valid password. Passwords must include 1 uppercase, 1 lowercase, 1 special character and must have a minimum length of 5"
-    });
-  }
-
-  if(ret.errors.length == 0){
-    //search db
-  }
-
-  res.send(ret);
 }
 
 function signup(req, res){
