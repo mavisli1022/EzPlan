@@ -1,42 +1,25 @@
-function allApplicants(uid) {
+function displayRecommended(uid) {
 
-    $.get('recommended', {uid: 0}, function (data) {
+    $.get('session', function(data){
+        uid = data["userid"];
 
-        var resultsArray = data;
-        var parent = document.getElementById("recommendedDiv");
+        console.log(uid)
 
-        for (var i = 0; i < resultsArray.length; i++){
-            name = "result" + i.toString();
-            tempNode = document.createElement(name);
+        $.get('/recommendedFriendsGet', {uid: uid}, function (data) {
 
-            text = resultsArray[i]["firstname"] + " " + resultsArray[i]["lastname"] + "\n";
+            var resultsArray = data;
+            console.log(resultsArray);
 
-            textContents = document.createTextNode(text);
-            tempNode.appendChild(textContents);
-
-            parent.appendChild(tempNode)
-        }
-
+            for (var i = 0; i < resultsArray.length; i++){
+                var friendInfo = resultsArray[i];
+                $("ul#recommended-friends-list").append("<li>" + friendInfo.firstname + " " + friendInfo.lastname + " <a class='add' href='/addfriend/" + friendInfo.userid + "'>Add friend</a></li>");
+            }
+        });
     });
 }
 
-
-
 $(document).ready(function() {
-
-    var uid;
-    var user = [];
-
-    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-
-        user = db.collection("session").find().toArray(function (err, result) {
-            if (err) {
-                console.log(err);
-            }
-            db.close();
-        });
-    });
-    uid = user[0]["userid"];
-    allApplicants(uid);
+    displayRecommended();
 
 });
+

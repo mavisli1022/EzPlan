@@ -553,6 +553,12 @@ app.get('/findUser', routes.findOne);
 app.post('/tempstore', routes.tempstore);
 app.get('/tempget', routes.tempget);
 
+app.get('/recommendedFriends', function(req, res) {
+    res.sendfile('views/recommendedFriends.html');
+});
+
+app.get('/recommendedFriendsGet', routes.recommendedFriends);
+
 app.get('/compare', routes.compare);
 
 app.listen(process.env.PORT || 3000);
