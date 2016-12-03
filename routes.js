@@ -3,11 +3,6 @@ var util = require("util");
 var fs = require("fs");
 var MongoClient = require('mongodb').MongoClient;
 
-var ttObj;
-fs.readFile('jsonfile.json', 'utf-8', function(err, data) {
-    if(err) throw err;
-    ttObj = JSON.parse(data);
-});
 
 // Placeholder that contains all of the user objects to be searched through.
 
@@ -55,6 +50,12 @@ exports.convertCal= function(filename){
             string.push(date.slice(9,11));
         }
 
+        else if (lines[line].includes("UNTIL")){
+            var untilDate = lines[line].replace('RRULE:FREQ=WEEKLY;WKST=MO;UNTIL=','');
+            var untilDate = untilDate.slice(0,4);
+            string.push(untilDate);
+        }
+
     };
 
     return string
@@ -65,21 +66,22 @@ exports.convertCal= function(filename){
 
 //process data as json
 exports.processCourse= function(courseSummary, name){
-    console.log(courseSummary)
+    //console.log(courseSummary)
     var resultCourseSummary = JSON.parse('[]');
     var index = 0;
-    
-    for (var i = 0; i<courseSummary.length/4; i++){
+    //var term = courseSummary[4];
+
+    for (var i = 0; i<courseSummary.length/5; i++){
         var resultCourse = JSON.parse('{}');
-        resultCourse['summary'] = courseSummary[4*i];
-        resultCourse['day'] = courseSummary[4*i+1];
-        resultCourse['start'] = courseSummary[4*i+2];
-        resultCourse['end'] = courseSummary[4*i+3];
+        resultCourse['summary'] = courseSummary[5*i];
+        resultCourse['day'] = courseSummary[5*i+1];
+        resultCourse['start'] = courseSummary[5*i+2];
+        resultCourse['end'] = courseSummary[5*i+3];
+        resultCourse['term'] = courseSummary[5*i+4];
         resultCourseSummary[index] = resultCourse;
         index ++;
     }
     
-    console.log(resultCourseSummary);
     var personCal = JSON.parse('{}');
     personCal['name'] = name;
     personCal['courseSummary'] = resultCourseSummary;
@@ -87,64 +89,77 @@ exports.processCourse= function(courseSummary, name){
 }
 
 exports.compare= function(req, res){
-    // var name1 = '1';   //current user
-    // var name2 = '2';    // friend
-
+    var name1;
+    var name2;
 
     if(req.query.name!=null){
         var name = req.query.name;
         name1 = name[0];
         name2 = name[1];
      }
-    console.log(name1 + name2)
-    var a = null;
-    var b = null;    
+
+     //console.log(name1 + name2)
+  
     var returnOBJ={"commonCourse": [], "count":"" };
     var count=0;
     var exsist = false;
-    //console.log("into"+ JSON.stringify(ttObj));
-    for(var i=0; i<ttObj.length;i++){
-        if(ttObj[i].name == name1)
-            a = ttObj[i];
-        else if(ttObj[i].name == name2)
-            b= ttObj[i];
-    }
-    if(a == null){
+
+    var ttObj=[];
+    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    db.collection("timetable").findOne({
+      userid: name1
+    }, function(err, doc){
+        if(doc == null){
         res.send("You need to upload your timetable first before comparison.");
-    }
-    else if( b == null){
-        res.send("Your friend did not uploaded his/her timetable.");
-    }
-
-    
-
-    else{
-    for(var j=0; j<a.courseSummary.length;j++){
-        for(var m=0; m<b.courseSummary.length;m++){
-            //console.log(b.courseSummary[m].summary);
-            //console.log(a.courseSummary[j].summary);
-            for(var n=0; n<count; n++) {
-                //console.log(returnOBJ['commonCourse'][n].summary);
-                if (returnOBJ['commonCourse'][n].summary == b.courseSummary[m].summary){
-                    exsist=true;
-                    break;
+         }
+       else {
+            ttObj.push(doc);
+            db.collection("timetable").findOne({
+             userid: name2
+            }, function(err, doc){
+                if( doc == null){
+                    res.send("Your friend did not uploaded his/her timetable.");
                 }
-            }
-            if(exsist == true){
-                exsist = false;
-            }
-            else if(a.courseSummary[j].summary == b.courseSummary[m].summary)
-                {
-                returnOBJ.commonCourse[count]=a.courseSummary[j];
-                count++;
-                }
+                else{
+                ttObj.push(doc);
+                console.log(JSON.stringify(ttObj));
+
+                for(var j=0; j<ttObj[0].courseSummary.length;j++){
+                 for(var m=0; m<ttObj[1].courseSummary.length;m++){
+
+                    for(var n=0; n<count; n++) {
+                    //console.log(returnOBJ['commonCourse'][n].summary);
+                    if (returnOBJ['commonCourse'][n].summary == ttObj[1].courseSummary[m].summary){
+                        exsist=true;
+                        break;
+                    }
+                }  
+                    if(exsist == true){
+                        exsist = false;
+                    }
+                    else if(ttObj[0].courseSummary[j].summary == ttObj[1].courseSummary[m].summary && 
+                    ttObj[0].courseSummary[j].term == ttObj[1].courseSummary[m].term)
+                    {
+                        returnOBJ.commonCourse[count]=ttObj[0].courseSummary[j];
+                        count++;
+                    }
 
             }
         }
-        returnOBJ.count = count;
-        console.log(JSON.stringify(returnOBJ));
-        res.send(returnOBJ);
-    }
+            returnOBJ.count = count;
+            console.log(JSON.stringify(returnOBJ));
+            res.send(returnOBJ);
+        }
+
+
+             });
+        }
+    });
+
+
+});
+   
+
 }
 
 /*  A function to search the database for recommended friends based on schedule similarity.
@@ -390,3 +405,26 @@ exports.tempget = function(req,res){
     res.send(temp);
 }
 
+exports.findOne = function(req,res){
+    var user;
+    //var ttObj;
+    if(req.query.user!=null){
+        user  = req.query.user;
+     }
+    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    db.collection("timetable").findOne({
+      userid: user
+    }, function(err, doc){
+        if(doc == null) {
+            res.send("No such user: " + user);
+        }
+        else{
+            console.log(JSON.stringify(doc));
+           res.send(doc); 
+        }
+      
+    })
+  });
+
+
+}

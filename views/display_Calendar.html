@@ -2,72 +2,202 @@
 <html>
 <head>
 <style>
+body {
+  font-family: 'NTR', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #fcce2a;
+}
+
+
+
+
 table, td {
+    border-collapse:collapse;
     border: 1px solid black;
+}
+
+div {
+    left: 2%;
+    margin-top: 5%;
+    width: 50%;
+    table-layout: auto;
+    position: relative;
+    float: left;
+    margin-bottom: 2%;
+}
+
+th, td {
+    text-align: left;
+    padding: 4px;
+}
+
+tr:nth-child(even){
+    background-color: #c4d0fc;
+}
+
+tr:nth-child(odd){
+    background-color: #fcf0c4;
+
+}
+
+
+button {
+  width: 301px;
+  height: 46px;
+  margin-top: 47px;
+  font-size: 16px;
+  background-color: #3498db;
+  color: #f5f505;
+  border: none;
+  font-weight: 100;
+  outline: none;
+}
+
+button:hover {
+  background: #3cb0fd;
+  text-decoration: none;
+}
+
+#btn1 {
+    margin-top: 5%;
+    margin-left: 35%;
+    float: left;
+}
+
+#btn2{
+    margin-top: 5%;
+    margin-left: 35%;
+    float: left;    
 }
 </style>
 </head>
-<body onload="myFunction()">
-<table id="myTable"></table>
-<button onclick="show()">show</button>
+
+<body>
+<div id = "table1">
+    <table id="myTable-1"></table>
+</div>
+
+<div id = "table2">
+    <table id="myTable-2"></table>
+</div>
+
+<button id = "btn1" onclick="show_first()"> SHOW TIMETBALE FOR FIRST TERM</button>
+<button id = "btn2" onclick="show_second()">SHOW TIMETBALE FOR SECOND TERM</button>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
 <script>
 
-function myFunction() {
-    weekdays = ["time","MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
-    var x = document.getElementById("myTable");
 
+function load_first(){
+    myFunction("myTable-1");
+}
+
+function load_second(){
+    myFunction("myTable-2");
+}
+
+
+
+function myFunction(Id) {
+    weekdays = ["TIME","MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
+    var x = document.getElementById(Id);
     for (var i = 0; i<6; i++){
         var y = document.createElement("TD");
-        y.setAttribute("id", i);
-        document.getElementById("myTable").appendChild(y);
+        y.setAttribute("id", i+Id);
+        x.appendChild(y);
 
         var z = document.createElement("TH");
         var t = document.createTextNode(weekdays[i]);
         z.appendChild(t);
-        document.getElementById(i).appendChild(z);
+        document.getElementById(i+Id).appendChild(z);
     }
 
     var table = document.getElementById("myTable");
     for (var i = 0; i<14; i++){
-        var row = table.insertRow(-1);
+        var row = x.insertRow(-1);
         for (var j = 0; j<6; j++){
             row.insertCell(0);
         }
-        var cell1 = table.rows[i].cells[0];
+        var cell1 = x.rows[i].cells[0];
         cell1.innerHTML = i+8 + ":00";
     }
 }
 
-function show(){
+function show_first(){
+    load_first();
     weekdays = ["time","MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];    
     var table = document.getElementById("hiddenTable");
-    var valueTable = document.getElementById("myTable");
+    var valueTable_1 = document.getElementById("myTable-1");
+
     var array = [];
 
     for (var i = 0; i<table.rows.length; i++){
         array.push(table.rows[i].cells[0].innerHTML);
     }
     
-    //all info
-    
-    for (var i =0; i<array.length/4; i++){
+    var term = array[4];
+
+    for (var i =0; i<table.rows.length/5; i++){
+        //console.log(i)
         //weekday
         var dayofweek;
         for (var j = 1; j<6; j++){
-            if (('"'+weekdays[j]+'"') == array[4*i+1]){
+            if (('"'+weekdays[j]+'"') == array[5*i+1]){
+                dayofweek = j;
+            }
+        }
+        console.log(dayofweek)
+        //start time
+        var time = Number(array[5*i+2].substr(1,2)) - 8;
+        var stoptime = Number(array[5*i+3].substr(1,2)) - 8;
+
+        if (array[5*i+4] == term){
+            for (var k = time; k < stoptime; k++){
+                valueTable_1.rows[k].cells[dayofweek].innerHTML = array[5*i];
+            }
+            
+//            valueTable_1.rows[time+1].cells[dayofweek].rowSpan = stoptime - time;
+        }
+        
+
+    }
+}
+
+function show_second(){
+    load_second();
+    weekdays = ["time","MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];    
+    var table = document.getElementById("hiddenTable");
+    var valueTable_2 = document.getElementById("myTable-2");
+
+    var array = [];
+
+    for (var i = 0; i<table.rows.length; i++){
+        array.push(table.rows[i].cells[0].innerHTML);
+    }
+    
+    var term = array[4];
+
+    for (var i =0; i<array.length/5; i++){
+        console.log(array[5*i])
+        //weekday
+        var dayofweek;
+        for (var j = 1; j<6; j++){
+            if (('"'+weekdays[j]+'"') == array[5*i+1]){
                 dayofweek = j;
             }
         }
         //start time
-        var time = Number(array[4*i+2].substr(1,2)) - 9;
-        var stoptime = Number(array[4*i+3].substr(1,2)) - 9;
+        var time = Number(array[5*i+2].substr(1,2)) - 8;
+        var stoptime = Number(array[5*i+3].substr(1,2)) - 8;
         
-        for (time; time < stoptime; time ++){
-
-            valueTable.rows[time + 1].cells[dayofweek].innerHTML = array[4*i];
+        if (array[5*i+4] != term){
+            for (var k = time; k < stoptime; k++){
+                valueTable_2.rows[k].cells[dayofweek].innerHTML = array[5*i];
+            }
+            
+//            valueTable_1.rows[time+1].cells[dayofweek].rowSpan = stoptime - time;
         }
-
     }
 
 }
@@ -75,3 +205,5 @@ function show(){
 
 </body>
 </html>
+
+

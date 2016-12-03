@@ -51,3 +51,10 @@ finish showing overlapping timetables;
 
 SEBASTIAN:
 (same task as last time)
+
+NOV 28TH
+NEXT MEETING: WEDNESDAY 1PM
+task: 
+CONNECT TO DATABASE
+CSS
+GET USERNAME FROM LOGIN/SIGNUP PART
