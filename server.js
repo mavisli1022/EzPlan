@@ -1,9 +1,13 @@
+<<<<<<< HEAD
 var express = require('express');
 var bodyParser = require('body-parser');
 var md5 = require('js-md5');
 var MongoClient = require('mongodb').MongoClient;
 var session = require('client-sessions');
 var nodemailer = require('nodemailer');
+var fs = require('fs');
+var multer = require('multer');
+var routes = require('./routes.js');
 //create nodemailer transport system
 var transporter = nodemailer.createTransport('smtps://shrey.kumar.ca%40gmail.com:8809asAS@smtp.gmail.com');
 
@@ -55,6 +59,34 @@ function login(req, res){
   });
 
 
+function login(req, res){
+  var email = req.body.email;
+  var password = req.body.password;
+  var ret = {errors: []};
+
+  var validEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  var validPwd = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{5,}$/;
+
+  if(!validEmail.test(email)){
+    ret.errors.push({
+      field: "email",
+      msg: "Invalid Email."
+    });
+  }
+  if(!validPwd.test(password)){
+    ret.errors.push({
+      field: "password",
+      msg: "Please enter a valid password. Passwords must include 1 uppercase, 1 lowercase, 1 special character and must have a minimum length of 5"
+    });
+  }
+
+  if(ret.errors.length == 0){
+    //search db
+  }
+
+  res.send(ret);
+>>>>>>> master
+
 }
 
 function signup(req, res){
@@ -63,6 +95,7 @@ function signup(req, res){
   var email = req.body.email;
   var password = req.body.password;
   var confirmpwd = req.body.confirmpwd;
+  var ret = {errors: []};
 
   var validEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   var validPwd = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{5,}$/;
@@ -476,6 +509,82 @@ app.get('/dashboard', function(req, res){
 app.get('/dashboard/admin', function(req, res){
   res.sendfile("views/dashboardadmin.html");
 })
+
+//routes
+app.post('/login', login);
+app.post('/signup', signup);
+app.set('view engine', 'pug');
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+    extended: true
+}));
+
+app.use(express.static(__dirname + '/assets'));
+app.use(express.static(__dirname + '/'));
+
+
+var upload = multer({dest: './upload/'});
+
+app.get('/', function(req, res) {
+    //res.sendfile('./views/calander.html');
+    res.sendfile('./views/test.html');
+});
+
+app.post('/comparePage', function(req, res) {
+    //res.sendfile('./views/calander.html');
+    res.sendfile('./views/comparison.html');
+});
+
+
+app.post('/upload', upload.single('calendar_user'), function(req, res, next){
+    //var a = routes.convertCal('./upload/coursesCalendar.ics');
+    var c =  routes.convertCal('./upload/courses_Calendar.ics');
+
+    //var array = [];
+
+    current_userid = '2';
+    var b = routes.processCourse(c,'2');
+
+
+    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+        if (err){
+            console.log(error)
+        }
+        db.collection("timetable").find({userid: current_userid}, function(err,doc){
+            console.log('++++++')
+            console.log(doc)
+            console.log('+++++++')
+
+            if(doc == null){
+                try {
+                    db.collection("timetable").insertOne({
+                        userid: current_userid,
+                        courseSummary: b['courseSummary']
+                    }, function(err, doc){
+                        db.close();
+                    })
+                } catch(e){
+                    console.log(e);
+                }
+            }
+            else{
+                db.collection("timetable").findOneAndUpdate({userid: current_userid}, {courseSummary: b['courseSummary']}, function(err, timetable){
+                    if (err) throw err;
+                    console.log("Update!")
+                })
+            }
+        })
+        db.close();
+    });
+    res.render('displayCalendar', {array: b});
+});
+
+app.get('/findUser', routes.findOne);
+
+app.post('/tempstore', routes.tempstore);
+app.get('/tempget', routes.tempget);
+
+app.get('/compare', routes.compare);
 
 app.listen(process.env.PORT || 3000);
 console.log('Listening on port 3000');

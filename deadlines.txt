@@ -30,3 +30,31 @@ Sebastian:
 try to finish by 23rd november
 
 meet again on 28th november
+
+
+
+NOV 26TH
+
+SHREY:
+Log in and sign in page;
+Importing friend list;
+adding and removing friends;
+pass username and 'compare' button;
+
+MAVIS:
+GET THE USERNAME;
+PUT DATA IN DATABASE;
+TRYING TO FIGURE OUT HOW TO CONVERT ICAL TO JSON;
+
+STEPHANIE:
+finish showing overlapping timetables;
+
+SEBASTIAN:
+(same task as last time)
+
+NOV 28TH
+NEXT MEETING: WEDNESDAY 1PM
+task: 
+CONNECT TO DATABASE
+CSS
+GET USERNAME FROM LOGIN/SIGNUP PART
