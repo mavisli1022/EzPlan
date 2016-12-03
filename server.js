@@ -59,6 +59,10 @@ app.get('/tempget', routes.tempget);
 app.get('/compare', routes.compare);
 
 
+app.get('/search', routes.searchClassmates);
+
+app.get('/recommended', routes.recommendedFriends);
+
 
 app.listen(3000);
 console.log('Listening on port 3000');
