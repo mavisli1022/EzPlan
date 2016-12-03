@@ -85,7 +85,6 @@ function login(req, res){
   }
 
   res.send(ret);
->>>>>>> master
 
 }
 
