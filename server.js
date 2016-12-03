@@ -45,33 +45,33 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
         if (err){
             console.log(error)
         }
-        db.collection("timetable").findOne({userid: current_userid}, function(err,doc){
-            var ret = {errors: []};
+        db.collection("timetable").find({userid: current_userid}, function(err,doc){
+            console.log('++++++')
+            console.log(doc)
+            console.log('+++++++')
+            
             if(doc == null){
-                
                 try {
                     db.collection("timetable").insertOne({
                         userid: current_userid,
-                        courseSummary: b[courseSummary]
+                        courseSummary: b['courseSummary']
                     }, function(err, doc){
                         db.close();
                     })
                 } catch(e){
                     console.log(e);
                 }
-
-            } else {
-                ret.errors.push({
-                    field: "general",
-                    msg: "Already existed calendar for current user"
-                })
-                
             }
-        });
+            else{
+                db.collection("timetable").findOneAndUpdate({userid: current_userid}, {courseSummary: b['courseSummary']}, function(err, timetable){
+                    if (err) throw err;
+                    console.log("Update!")
+                })
+            }
+        })
         db.close();
     });
-    
-	res.render('displayCalendar', {array: b}); 
+    res.render('displayCalendar', {array: b}); 
 });
 
 app.get('/findUser', routes.findOne);
