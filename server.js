@@ -509,8 +509,6 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
     //var a = routes.convertCal('./upload/coursesCalendar.ics');
     var c =  routes.convertCal('./upload/courses_Calendar.ics');
 
-    //var array = [];
-
     current_userid = '2';
     var b = routes.processCourse(c,'2');
 
