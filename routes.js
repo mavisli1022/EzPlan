@@ -291,10 +291,10 @@ exports.delUser = function(req, res){
     // Delete a user, specified by userid
 
     var tempUser = req.body;
-
+    console.log(req.body.removeuid);
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
         db.collection("users").removeOne({
-            "userid" : tempUser.removeuid
+            "userid" : parseInt(tempUser.removeuid)
         });
     });
 
@@ -326,12 +326,13 @@ exports.updateUser = function(req, res){
                 },
                 { $set:
                 {
-                    "userid" : tempUser.updateUseridInput,
+                    "userid" : parseInt(tempUser.updateUseridInput),
                     "firstname" : tempUser.updateFirstnameInput,
                     "lastname" : tempUser.updateLastnameInput,
                     "email" : tempUser.updateEmailInput,
                     "password" : md5(tempUser.updatePasswordInput),
-                    "level" : tempUser.dropDownLevelUpdate
+                    "level" : tempUser.dropDownLevelUpdate,
+                    "discoverable": tempUser.updateDiscoverable
                 }
                 })
         });
@@ -378,13 +379,14 @@ exports.addUser = function(req, res){
 
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
         db.collection("users").insertOne({
-            "userid" : tempUser.addUseridInput,
+            "userid" : parseInt(tempUser.addUseridInput),
             "firstname" : tempUser.addFirstnameInput,
             "lastname" : tempUser.addLastnameInput,
             "email" : tempUser.addEmailInput,
             "password" : md5(tempUser.addPasswordInput),
             "level" : tempUser.dropDownLevel,
             "emailverified" : true,
+            "discoverable" : true,
             "fbconnected" : false,
             "fbID" : null
         })
