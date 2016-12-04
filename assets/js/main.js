@@ -124,15 +124,16 @@ $(function(){
       $(".login-box .text-field").removeClass("error");
       $(".error.msg").remove();
       if(data.errors != "done"){
-        $(".login-box #password, .login-box #email").addClass("error");
-        $(".login-box #password").effect("shake");
-        $(".login-box #email").effect("shake");
-        $(".login-box #password").after("<div class='error msg'>" + data.errors + "</div>");
+        $(".login-box .text-field").addClass("error");
+        $(".login-box .text-field").effect("shake");
+        $(".login-box").append("<div class='error msg'>" + data.errors + "</div>");
       } else {
         //check if current user is verified if not send to verified
         $.get("/session", function(data){
-          if(data.emailverified){
+          if(!data.emailverified){
             //send to dashboard
+            window.location.href = "/email";
+          } else {
             $.get("/getuser/" + data.userid, function(resp){
               if(resp.level == "user") {
                   var form = document.createElement("form");
@@ -142,7 +143,7 @@ $(function(){
 
                   document.body.appendChild(form);
                   form.submit();
-                } else if(resp.level == "admin") {
+                } else {
                     var form = document.createElement("form");
 
                   form.method = "POST";
@@ -151,28 +152,13 @@ $(function(){
                   document.body.appendChild(form);
                   form.submit();
                 }
-              });
-            } else {
-              window.location.href = "/email";
-            }
+          });
 
-            if(typeof data.errors.field != "object"){
-              for(var i = 0; i < data.errors.length; i++){
-                $(".login-box #" + data.errors[i].field).addClass("error");
-                $(".login-box #" + data.errors[i].field).effect("shake");
-              }
-            } else {
-              for(var i = 0; i < data.errors.length; i++){
-                for(var j = 0; j < data.errors[i].field.length; j++){
-                  $(".login-box #" + data.errors[i].field[j]).addClass("error");
-                  $(".login-box #" + data.errors[i].field[j]).effect("shake");
-                }
-              }
-            }
+          }
+
           })
 
-      }
-    }
+        } //parent else
     });
 
   })

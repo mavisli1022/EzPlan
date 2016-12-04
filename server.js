@@ -44,10 +44,7 @@ function login(req, res){
     }, function(err, doc){
       var ret = {"errors": [], "userID": ""};
       if(doc == null){
-        ret.errors.push({
-          field: "general",
-          msg: "Username and Password not found."
-        })
+        ret.errors = "Username and Password not found."; 
         res.send(ret);
       } else {
         //login here
@@ -558,7 +555,18 @@ function confirmEmail(req, res){
             console.log("hello there");
             if(!err){
               //redirect to dashboard here
-              res.send("verified");
+              console.log(userID);
+              db.collection("users").findOne({
+                userid: parseInt(userID)
+              }, function(err, doc){
+                console.log(err);
+                console.log(doc);
+                if(doc.level == "user"){
+                  res.sendfile("views/mainPage.html");
+                } else {
+                  res.sendfile("views/dashboardadmin.html");
+                }
+              })
             } else {
               res.send(err);
             }
