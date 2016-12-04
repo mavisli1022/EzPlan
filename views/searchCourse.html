@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="../assets/css/email.css" rel="stylesheet" media="screen" />
+    </head>
+    <body>
+
+        <h4>Find Classmates</h4>
+        <form id="searchCourse" method="get">
+
+            <label id="courseCode">
+                <span class="label">Course Code: </span>
+                <input type="text" id="courseCodeInput" name="courseCodeInput">
+            </label>
+
+            <br>
+
+            <label id="sectionCode">
+                <span class="label">Section Code: </span>
+                <input type="text" id="sectionCodeInput" name="sectionCodeInput">
+            </label>
+
+            <br>
+
+            <input id="searchCourseSubmit" type="submit" value="Submit">
+
+        </form>
+
+        <ul id="course-search-results">
+        </ul>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="../assets/js/searchCourse.js"></script>
+    </body>
+</html>

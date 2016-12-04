@@ -505,6 +505,9 @@ app.get('/dashboard', function(req, res){
 app.get('/dashboard/admin', function(req, res){
   res.sendfile("views/dashboardadmin.html");
 })
+app.get('/searchCourse', function(req, res){
+    res.sendfile("views/searchCourse.html");
+})
 
 //routes
 app.post('/login', login);
@@ -634,6 +637,9 @@ app.post('/updateUser', routes.updateUser);
 
 
 app.get('/recommendedFriendsGet', routes.recommendedFriends);
+
+app.get('/searchCourse', routes.searchClassmates);
+
 
 app.get('/compare', routes.compare);
 
