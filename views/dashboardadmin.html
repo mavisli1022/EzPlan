@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="../assets/script/displayRecommended.js"></script>
+    <link href="../assets/css/style.css" rel="stylesheet" media="screen" />
+
+</head>
+<body>
+<h2>Add Applicant</h2>
+<form id="addApp" method="post">
+
+    <label id="userid">
+        <span class="label">User ID: </span>
+        <input type="text" id="stunum" name="stunum">
+    </label>
+
+    <br>
+
+    <label id="firstname">
+        <span class="label">First Name: </span>
+        <input type="text" id="givenname" name="givenname">
+    </label>
+
+    <br>
+
+    <label id="lastname">
+        <span class="label">Last Name: </span>
+        <input type="text" id="fname" name="fname">
+    </label>
+
+    <br>
+
+    <label id="email">
+        <span class="label">Email: </span>
+        <input type="text" id="gname" name="gname">
+    </label>
+
+    <br>
+
+    <label id="password">
+        <span class="label">Password: </span>
+        <input type="text" id="year" name="year">
+    </label>
+
+    <br>
+
+    <label id="level">
+        <span class="label">Level</span>
+        <form id="dropDownLevel">
+            <select id="dropDownLevel" name="statuses">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+        </form>
+    </label>
+
+    <label id="emailverified">
+        <span class="label">Email Verified:</span>
+        <form id="dropDownEmail">
+            <select id="dropDownEmail" name="statuses">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+        </form>
+    </label>
+
+    <label id="fbconnected">
+        <span class="label">Connected to Facebook:</span>
+        <form id="dropDownFB">
+            <select id="dropDownFB" name="statuses">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+        </form>
+    </label>
+
+    <label id="fbid">
+        <span class="label">Facebook ID:</span>
+        <input type="text" id="fbid" name="fbid"></input>
+    </label>
+
+    <div id="insertedCourses"></div>
+    <br>
+    <input id="anotherCourse" type="submit" value="Submit">
+    <input id="addButton" type="submit" value="Submit">
+
+</form>
+</body>
+</html>
+
+

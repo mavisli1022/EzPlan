@@ -555,6 +555,9 @@ app.get('/recommendedFriends', function(req, res) {
     res.sendfile('views/recommendedFriends.html');
 });
 
+app.post('/addUser', routes.addUser);
+
+
 app.get('/recommendedFriendsGet', routes.recommendedFriends);
 
 app.get('/compare', routes.compare);

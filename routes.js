@@ -294,6 +294,26 @@ exports.recommendedFriends = function(req, res){
 //     res.send(results)
 // };
 
+
+exports.delUser = function(req, res){
+    // Delete a user, specified by userid
+}
+
+exports.updateUser = function(req, res){
+    // Update a user given a specified field, and new value.
+}
+
+exports.addUser = function(req, res){
+    // Add a user with info delivered in the request body
+    var newUser = req.body;
+
+    // TODO: MongoDB stuff that adds user with info specified in the request body.
+
+    res.send("Success");
+
+
+}
+
 // HELPER FUNCTION
 // Searches the results list. If the user is already there, increment the counter,
 // if the user is not there, add the object
