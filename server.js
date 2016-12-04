@@ -492,7 +492,18 @@ app.use(express.static(__dirname + '/assets'));
 app.use(express.static(__dirname + '/'));
 
 
-var upload = multer({dest: './upload/'});
+var upload = multer({ storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      now = Date.now().toString();
+      require('fs').mkdir('upload/', err => {
+        cb(null, 'upload/');
+      });
+    },
+    filename: (req, file, cb) => {
+      cb(null, file.originalname.split('/').pop().trim());
+    }
+  })
+});
 
 app.get('/', function(req, res) {
     //res.sendfile('./views/calander.html');
@@ -504,25 +515,25 @@ app.post('/comparePage', function(req, res) {
     res.sendfile('./views/comparison.html');
 });
 
-
 app.post('/upload', upload.single('calendar_user'), function(req, res, next){
     //var a = routes.convertCal('./upload/coursesCalendar.ics');
-    var c =  routes.convertCal('./upload/courses_Calendar.ics');
+    var c =  routes.convertCal('./upload/calendar.ics');
+    console.log(c)
+    //var array = [];
 
-    current_userid = '2';
-    var b = routes.processCourse(c,'2');
-
+    current_userid = "1";
+    var b = routes.processCourse(c, current_userid);
+    console.log(b)
+  
 
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
         if (err){
             console.log(error)
         }
-        db.collection("timetable").find({userid: current_userid}, function(err,doc){
-            console.log('++++++')
-            console.log(doc)
-            console.log('+++++++')
-
+        db.collection("timetable").findOne({userid: current_userid}, function(err,doc){
+            var ret = {errors: []};
             if(doc == null){
+                
                 try {
                     db.collection("timetable").insertOne({
                         userid: current_userid,
@@ -533,17 +544,20 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
                 } catch(e){
                     console.log(e);
                 }
-            }
-            else{
-                db.collection("timetable").findOneAndUpdate({userid: current_userid}, {courseSummary: b['courseSummary']}, function(err, timetable){
-                    if (err) throw err;
-                    console.log("Update!")
+
+            } else {
+                ret.errors.push({
+                    field: "general",
+                    msg: "Already existed calendar for current user"
                 })
+                
             }
-        })
+        });
         db.close();
     });
-    res.render('displayCalendar', {array: b});
+    console.log(b['courseSummary']);
+    fs.unlinkSync('./upload/calendar.ics');
+    res.render('displayCalendar', {array: b['courseSummary']}); 
 });
 
 app.get('/findUser', routes.findOne);
