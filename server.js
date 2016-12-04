@@ -505,9 +505,9 @@ var upload = multer({ storage: multer.diskStorage({
   })
 });
 
-app.get('/', function(req, res) {
-    //res.sendfile('./views/calander.html');
-    res.sendfile('./views/test.html');
+app.get('/test', function(req, res) {
+    res.sendfile('./views/calander.html');
+    //res.sendfile('./views/test.html');
 });
 
 app.get('/uploadCalendar', function(req, res) {
@@ -517,6 +517,11 @@ app.get('/uploadCalendar', function(req, res) {
 app.post('/comparePage', function(req, res) {
     //res.sendfile('./views/calander.html');
     res.sendfile('./views/comparison.html');
+});
+
+app.post('/main', function(req, res) {
+    //res.sendfile('./views/calander.html');
+    res.sendfile('./views/mainPage.html');
 });
 
 app.post('/upload', upload.single('calendar_user'), function(req, res, next){

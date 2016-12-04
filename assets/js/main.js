@@ -10,6 +10,10 @@ $(function(){
     FB.login(function(response) {
       // handle the response
       FB.api('/me?fields=email,name', function(response) {
+        if(response.error != null){
+          alert("You need to authorize first!");
+        }
+        else{
         var fbID = response.id;
         var name = response.name;
         var email = response.email;
@@ -31,10 +35,22 @@ $(function(){
           user.friends = response.data;
 
           $.post("/signupfb", user, function(resp){
-            console.log(resp);
+            if(resp.error == null || resp.error.length== 0){
+              var form = document.createElement("form");
+
+              form.method = "POST";
+              form.action = "/main";
+     
+              document.body.appendChild(form);
+              form.submit();
+
+            }
+            else
+              alert("Error occurred!");
           })
 
         });
+      }
       });
 
     }, {scope: 'public_profile, email, user_friends'});
