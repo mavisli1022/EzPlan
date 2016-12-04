@@ -35,15 +35,30 @@ $(function(){
           user.friends = response.data;
 
           $.post("/signupfb", user, function(resp){
+            console.log(JSON.stringify(resp));
             if(resp.error == null || resp.error.length== 0){
-              var form = document.createElement("form");
+                        $.get("/getuser/" + resp.userID, function(resp){
+                          if(resp.level == "user")
+                            {
+                              var form = document.createElement("form");
 
-              form.method = "POST";
-              form.action = "/main";
+                              form.method = "POST";
+                              form.action = "/main";
      
-              document.body.appendChild(form);
-              form.submit();
+                              document.body.appendChild(form);
+                              form.submit();
+                            }
+                            else
+                                {
+                                var form = document.createElement("form");
 
+                              form.method = "POST";
+                              form.action = "/admin";
+     
+                              document.body.appendChild(form);
+                              form.submit();
+                                }
+                      });
             }
             else
               alert("Error occurred!");
@@ -103,10 +118,38 @@ $(function(){
       email: email,
       password: password
     }, function(data){
-      for(var i = 0; i < data.errors.length; i++){
-        $(".login-box #" + data.errors[i].field).addClass("error");
-        $(".login-box #" + data.errors[i].field).effect("shake");
+             console.log(JSON.stringify(data));
+            if(data.error == null || data.error.length== 0){
+                        $.get("/getuser/" + data.userID, function(resp){
+                          if(resp.level == "user")
+                            {
+                              var form = document.createElement("form");
+
+                              form.method = "POST";
+                              form.action = "/main";
+     
+                              document.body.appendChild(form);
+                              form.submit();
+                            }
+                            else
+                                {
+                                var form = document.createElement("form");
+
+                              form.method = "POST";
+                              form.action = "/admin";
+     
+                              document.body.appendChild(form);
+                              form.submit();
+                                }
+                      });
+            }
+
+            else{
+              for(var i = 0; i < data.errors.length; i++){
+              $(".login-box #" + data.errors[i].field).addClass("error");
+              $(".login-box #" + data.errors[i].field).effect("shake");
       }
+    }
     });
 
   })

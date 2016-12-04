@@ -11,8 +11,7 @@ function displayAllUsers() {
         }
         var parent = document.getElementById("list-of-users");
         allRowsCount = 1;
-        let taArray = data;
-        let row = parent.insertRow();
+        var row = parent.insertRow();
         row.insertCell(0).innerHTML = "userid";
         row.insertCell(1).innerHTML = "firstname";
         row.insertCell(2).innerHTML = "lastname";
@@ -24,7 +23,7 @@ function displayAllUsers() {
         row.insertCell(8).innerHTML = "fbconnected";
         row.insertCell(9).innerHTML = "fbid";
 
-        for (let i = 0; i < data.length; i++) {
+        for (var i = 0; i < data.length; i++) {
             row = parent.insertRow();
             allRowsCount++;
             row.insertCell(0).innerHTML = data[i].userid;

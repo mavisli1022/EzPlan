@@ -42,17 +42,20 @@ function login(req, res){
       email: email,
       password: md5(password)
     }, function(err, doc){
-      var ret = {errors: []};
+      var ret = {"errors": [], "userID": ""};
       if(doc == null){
         ret.errors.push({
           field: "general",
           msg: "Username and Password not found."
         })
+              res.send(ret);
       } else {
         //login here
+        ret.userID = doc.userid;
         userID = doc.userid;
+              res.send(ret);
       }
-      res.send(ret);
+
     })
 
   });
@@ -186,7 +189,7 @@ function signupFB(req, res){
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
     if(err){res.send(err)}
     db.collection("users").count({email: email}, function(error, num){
-      var ret = {"errors": []};
+      var ret = {"errors": [], "userID":""};
       if(error){ ret.errors.push(error); }
       if(num > 0){
         //email already registered
@@ -194,8 +197,12 @@ function signupFB(req, res){
         db.collection("users").findOne({
           email: email
         }, function(err, doc){
-          if(err){ res.send(err)}
+          if(err){ 
+            ret.errors.push(err);
+            res.send(ret);}
+          ret.userID = doc.userid;
           userID = doc.userid;
+          res.send(ret);
         })
 
 
@@ -203,6 +210,7 @@ function signupFB(req, res){
         db.collection("users").find().sort({"userid":-1}).limit(1).forEach(function(doc){
           try {
             var newID = doc.userid + 1;
+            ret.userID = newID;
             console.log(fbID);
             db.collection("users").insertOne({
               userid: newID,
@@ -244,7 +252,6 @@ function signupFB(req, res){
                 })
               }
 
-
               //wait for friends to finish populating
               setTimeout(function(){
                 //now insert this shit into friends
@@ -261,7 +268,7 @@ function signupFB(req, res){
                   db.close();
                 })
               }, 500);
-
+              res.send(ret);
 
             })
           } catch(e){
@@ -269,7 +276,6 @@ function signupFB(req, res){
           }
         });
       }
-      res.send(ret);
     });
   });
 }
@@ -505,6 +511,18 @@ app.get('/dashboard', function(req, res){
 app.get('/dashboard/admin', function(req, res){
   res.sendfile("views/dashboardadmin.html");
 })
+app.get('/dashboard/admin-adduser', function(req, res){
+  res.sendfile("views/addUser.html");
+})
+
+app.get('/dashboard/admin-delete', function(req, res){
+  res.sendfile("views/deleteuser.html");
+})
+
+app.get('/dashboard/admin-update', function(req, res){
+  res.sendfile("views/updateuser.html");
+})
+
 app.get('/searchCourse', function(req, res){
     res.sendfile("views/searchCourse.html");
 })
@@ -548,6 +566,10 @@ app.post('/comparePage', function(req, res) {
 app.post('/main', function(req, res) {
     //res.sendfile('./views/calander.html');
     res.sendfile('./views/mainPage.html');
+});
+
+app.post('/admin', function(req, res) {
+    res.sendfile('./views/dashboardadmin.html');
 });
 
 app.get('/timetable', showtt);

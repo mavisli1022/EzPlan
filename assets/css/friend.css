@@ -16,7 +16,7 @@ div{
 }
 
 
-button, select, option, .remove {
+#searchCourseSubmit, button, select, option, .remove {
 	background-color: #00334d;
     color: white;
     border: 3px solid #ffffff;
@@ -38,6 +38,7 @@ input{
     display: inline-block;
     font-size: 16px;
     margin-left: 3%;
+    margin-top: 1%;
 }
 
 li{
@@ -51,7 +52,12 @@ color: white;
 }
 
 button:hover{
-	  background-color: #004466;
+background-color: #004466;
+color: white;
+}
+
+#searchCourseSubmit:hover{
+background-color: #004466;
 color: white;
 }
 
