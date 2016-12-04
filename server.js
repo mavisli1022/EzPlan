@@ -37,11 +37,12 @@ function login(req, res){
   var password = req.body.password;
 
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    if(err){ console.log(err)}
+    if(err){ res.send(err)}
     db.collection("users").findOne({
       email: email,
       password: md5(password)
     }, function(err, doc){
+      if(err){ res.send(err)}
       var ret = {errors: []};
       if(doc == null){
         ret.errors.push({
@@ -75,9 +76,9 @@ function signup(req, res){
   //console.log(lastname);
 
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    if(err){ console.log(error) }
+    if(err){ res.send(err) }
     db.collection("users").count({email: email}, function(error, num){
-      if(error){ console.log(error) }
+      if(error){ res.send(error) }
       var ret = {"errors": []};
       //console.log(validFname.test(firstname));
       /* FORM VALIDATION */
@@ -134,10 +135,13 @@ function signup(req, res){
                 email: email,
                 password: md5(password),
                 level: "user",
+                discoverable: true,
                 emailverified: false,
                 fbconnected: false
               }, function(err, doc){
                 //finish everything
+
+                if(err){ res.send(err)}
                 userID = newid;
                 db.close();
               })
@@ -163,24 +167,37 @@ function signupFB(req, res){
   var friends = [];
 
   var totalKeys = Object.keys(req.body);
+  var totallength = -1;
   for(var i = 0; i < totalKeys.length; i++){
     if(totalKeys[i].includes("friends")){
-      var thisKey = parseInt(totalKeys[i].substring(8, 9));
-      console.log(thisKey);
+      var thisIndex = totalKeys[i].substring(8, 9);
+      var thisAttr = totalKeys[i].substring(10);
+      var thisValue = req.body[totalKeys[i]];
+
+
+      if(friends[thisIndex] == null){
+        //create object
+        friends[thisIndex] = {};
+        friends[thisIndex].name = thisValue;
+      } else {
+        //add to prev object
+        friends[thisIndex].id = thisValue;
+      }
     }
   }
 
-  console.log(friends);
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    if(err){console.log(err)}
+    if(err){res.send(err)}
     db.collection("users").count({email: email}, function(error, num){
       var ret = {"errors": []};
+      if(error){ ret.errors.push(error); }
       if(num > 0){
         //email already registered
         //just log them in
         db.collection("users").findOne({
           email: email
         }, function(err, doc){
+          if(err){ res.send(err)}
           userID = doc.userid;
         })
 
@@ -198,16 +215,19 @@ function signupFB(req, res){
               password: null,
               level: "user",
               emailverified: false,
+              discoverable: true,
               fbconnected: true,
               fbID: fbID
             }, function(err, doc){
               //populate friends list
+              ret.errors.push(err);
               console.log("init total friends");
               var totalFriends = [];
               for(var i = 0; i < friends.length; i++){
                 db.collection("users").findOne({
                   fbID: friends[i].id
                 }, function(err, doc){
+                  ret.errors.push(err);
                   //if nothing is found, dont do anything
                   if(doc != null){
                     //you are now friends with this person today
@@ -237,7 +257,7 @@ function signupFB(req, res){
 
                 db.collection("friends").insertOne(newUser, function(err, doc){
                   //finally set session
-                  if(err){console.log(err)}
+                  if(err){console.log(err); ret.errors.push(err)}
 
                   userID = newID;
                   db.close();
@@ -260,13 +280,237 @@ function getProfile(req, res){
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
     var userid = userID;
     db.collection("users").findOne({userid: userid}, function(error, doc){
-      if(error){ console.log(error) }
+      if(error){ console.log(error); ret.errors.push(error); }
       res.send(doc);
       db.close();
     });
   });
 }
 
+function verifyEmail(req, res){
+  var email = req.body.email;
+  var userid = req.body.userid;
+  var name = req.body.fname;
+
+  var code = md5(email);
+  //send email to "email"
+  var mailOptions = {
+    from: '"EzPlan" <shrey.kumar.ca@gmail.com>',
+    to: email,
+    subject: name + ', confirm your email',
+    text: "What's up " + name + ", Welcome to Ezplan! We just need you to do 1 more thing...Click this link to confirm your email: http://localhost:3000/verify/" + code,
+    html: "<h1>What's up " + name + ",</h1><br><p>Welcome to <b>Ezplan</b>!</p> <p>We just need you to do 1 more thing...Click this <a href='http://localhost:3000/verify/" + code +"'>link</a> to confirm your email.</p>"
+  }
+
+  transporter.sendMail(mailOptions, function(error, info){
+    if(error){
+      return res.send(error);
+    }
+    res.send(info.response);
+  });
+
+}
+
+function confirmEmail(req, res){
+  var code = req.params.code;
+
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    db.collection("users").findOne({
+      userid: parseInt(userID)
+    }, function(err, doc){
+      if(err){ res.send(err); }
+      if(md5(doc.email) == code){
+        //set emailverified to true
+        db.collection("users").update(
+          {userid: parseInt(userID)},
+          {$set: {emailverified: true}},
+          function(err, doc){
+            if(!err){
+              res.redirect("/dashboard");
+            } else {
+              res.send(err);
+            }
+          }
+        )
+      }
+    })
+  });
+
+}
+
+function getFriends(req, res){
+  var sessionUser = userID;
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    if(err){ res.send(err); }
+    db.collection("friends").findOne({
+      userid: sessionUser
+    }, function(err, doc){
+      if(err){ res.send(err); }
+      res.send(doc);
+    })
+  });
+
+}
+
+function getUserByID(req, res){
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    var currentID = req.params.id;
+    var query = {
+      userid: parseInt(currentID)
+    }
+    db.collection("users").findOne(query, function(err, doc){
+      if(err){ res.send(err)};
+      res.send(doc);
+      db.close();
+    })
+  });
+}
+
+function removeFriendByID(req, res){
+  var sessionID = userID;
+  var currentID = parseInt(req.params.id);
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    if(err){ res.send(err);}
+    db.collection("friends").update(
+      {
+        userid: sessionID
+      },
+      {
+        $pull: {
+          "friends": {
+            userid: currentID
+          }
+        }
+      }, function(err, doc){
+        if(err){ res.send(err)}
+        res.redirect('/friends');
+        db.close();
+      });
+  });
+}
+
+function getFriendsByFname(req, res){
+  var name = req.params.name;
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    if(err){ res.send(err)}
+    var ret = [];
+    db.collection("users").find({
+      firstname: name
+    }).forEach(function(doc){
+      if(doc.userid != userID){
+        ret.push(doc);
+      }
+    })
+
+    setTimeout(function(){
+      res.send(ret);
+    }, 500);
+
+  });
+}
+
+function getFriendsByEmail(req, res){
+  var email = req.params.email;
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    if(err){ res.send(err)}
+    var ret = [];
+    db.collection("users").find({
+      email: email
+    }).forEach(function(doc){
+      if(doc.userid != userID){
+        ret.push(doc);
+      }
+    })
+
+    setTimeout(function(){
+      res.send(ret);
+    }, 500);
+
+  });
+}
+
+function getFriendsByFullName(req, res){
+  var firstname = req.params.first;
+  var lastname = req.params.last;
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    if(err){ res.send(err)}
+    var ret = [];
+    db.collection("users").find({
+      firstname: firstname,
+      lastname: lastname
+    }).forEach(function(doc){
+      if(doc.userid != userID){
+        ret.push(doc);
+      }
+    });
+
+    setTimeout(function(){
+      res.send(ret);
+      db.close();
+    }, 500);
+
+  });
+
+}
+
+function addFriendByID(req, res){
+  //check if user already a friend, if not add it in
+  var friendID = req.params.id;
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    if(err){ res.send(err)}
+    var today = new Date();
+    var day = today.getDate();
+    var month = today.getMonth()+1;
+    var year = today.getFullYear();
+
+    var fullDate = day + "/" + month + "/" + year;
+
+    db.collection("friends").update({
+      userid: parseInt(userID)
+    }, {
+      $addToSet: {
+        friends: {
+          userid: parseInt(friendID),
+          datefriended: fullDate
+        }
+      }
+    }, function(err, doc){
+      if(!err){
+        res.redirect("/friends");
+      } else {
+        res.send(err);
+      }
+    })
+
+  });
+
+
+}
+
+function getAllUsers(req, res){
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    var ret = [];
+    db.collection("users").find().forEach(function(doc, err){
+      if(err){ res.send(err)}
+      ret.push(doc);
+    })
+    setTimeout(function(){
+      res.send(ret);
+    }, 500);
+  });
+}
+
+function getFriends(req, res){
+  var sessionUser = userID;
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    db.collection("friends").findOne({
+      userid: sessionUser
+    }, function(err, doc){
+      res.send(doc);
+    })
+  });
+
+}
 function verifyEmail(req, res){
   var email = req.body.email;
   var userid = req.body.userid;
@@ -312,162 +556,143 @@ function confirmEmail(req, res){
       }
     })
   });
-
 }
 
-function getFriends(req, res){
-  var sessionUser = userID;
+function toggleDiscoverability(req, res){
+  var changed;
+  if(req.params.changed == "true"){
+    changed = true;
+  } else {
+    changed = false;
+  }
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    db.collection("friends").findOne({
-      userid: sessionUser
-    }, function(err, doc){
-      res.send(doc);
-    })
-  });
-
-}
-
-function getUserByID(req, res){
-  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    var currentID = req.params.id;
-    var query = {
-      userid: parseInt(currentID)
-    }
-    db.collection("users").findOne(query, function(err, doc){
-      res.send(doc);
-      db.close();
-    })
+    db.collection("users").update(
+      {userid: parseInt(userID)},
+      {$set: {discoverable: changed}},
+      function(err, doc){
+        if(err){
+          res.send(err);
+        } else {
+          res.send("done");
+        }
+      }
+    );
   });
 }
 
-function removeFriendByID(req, res){
-  var sessionID = userID;
-  var currentID = parseInt(req.params.id);
-  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    //res.send("Sent:" + sessionID);
-    db.collection("friends").update(
-      {
-        userid: sessionID
-      },
-      {
-        $pull: {
-          "friends": {
-            userid: currentID
+function changePwd(req, res){
+  var pwd = req.body.current;
+  var newpwd = req.body.newPass;
+  var confpwd = req.body.confPass;
+  var ret = {errors: []};
+
+  var validPwd = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{5,}$/;
+
+  if(!validPwd.test(newpwd)){
+    ret.errors.push({
+      field: "newpass",
+      msg: "Invalid Password! Passwords must include at least 1 special character, 1 number, 1 uppercase, 1 lowercase letter and must be at least 5 characters in length"
+    })
+  } else if(newpwd != confpwd){
+    ret.errors.push({
+      field: ["newpass", "newpassconf"],
+      msg: "Passwords dont match."
+    })
+  }
+
+  if(ret.errors.length == 0){
+    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+      db.collection("users").update(
+        {userid: parseInt(userID)},
+        {$set: {password: md5(newpwd)}},
+        function(err, doc){
+          if(!err){
+            res.redirect("/profile");
+          } else {
+            ret.errors.push({
+              field: "err",
+              msg: err
+            })
           }
         }
-      }, function(err, doc){
-        res.redirect('/friends');
-        db.close();
-      });
-  });
-}
-
-function getFriendsByFname(req, res){
-  var name = req.params.name;
-  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    var ret = [];
-    db.collection("users").find({
-      firstname: name
-    }).forEach(function(doc){
-      if(doc.userid != userID){
-        ret.push(doc);
-      }
-    })
-
-    setTimeout(function(){
-      res.send(ret);
-    }, 500);
-
-  });
-}
-
-function getFriendsByEmail(req, res){
-  var email = req.params.email;
-  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    var ret = [];
-    db.collection("users").find({
-      email: email
-    }).forEach(function(doc){
-      if(doc.userid != userID){
-        ret.push(doc);
-      }
-    })
-
-    setTimeout(function(){
-      res.send(ret);
-    }, 500);
-
-  });
-}
-
-function getFriendsByFullName(req, res){
-  var firstname = req.params.first;
-  var lastname = req.params.last;
-  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    var ret = [];
-    db.collection("users").find({
-      firstname: firstname,
-      lastname: lastname
-    }).forEach(function(doc){
-      if(doc.userid != userID){
-        ret.push(doc);
-      }
+      )
     });
+  }
 
-    setTimeout(function(){
-      res.send(ret);
-      db.close();
-    }, 500);
-
-  });
+  setTimeout(function(){
+    res.send(ret);
+  }, 500);
 
 }
 
-function addFriendByID(req, res){
-  //check if user already a friend, if not add it in
-  var friendID = req.params.id;
+function editProfile(req, res){
+  var first = req.body.firstname;
+  var last = req.body.lastname;
+  var email = req.body.email;
+  var ret = {errors: []};
+
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    var today = new Date();
-    var day = today.getDate();
-    var month = today.getMonth()+1;
-    var year = today.getFullYear();
+    //change the name regardless
+    db.collection("users").update(
+      {userid: parseInt(userID)},
+      {$set: {firstname: first, lastname: last}},
+      function(err, doc){
+        if(err){
+          ret.errors.push(err);
+        } else {
+          db.collection("users").count({
+            email: email
+          }, function(err, count){
+            if(err){
+              ret.errors.push(err);
+            } else {
+              if(count == 0){
+                //check email format first
+                var validEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                if(!validEmail.test(email)){
+                  ret.errors.push({
+                    field: email,
+                    msg: "Invalid Email"
+                  })
 
-    var fullDate = day + "/" + month + "/" + year;
+                } else {
+                  //no other email exists, take this email
+                  db.collection("users").update(
+                    {userid: parseInt(userID)},
+                    {$set: {emailverified: false, email: email}},
+                    function(err, doc){
+                      if(err){
+                        ret.errors.push(err)
+                      } else {
+                        ret = "done";
+                      }
+                    }
+                  );
+                }
 
-    db.collection("friends").update({
-      userid: parseInt(userID)
-    }, {
-      $addToSet: {
-        friends: {
-          userid: parseInt(friendID),
-          datefriended: fullDate
+              } else {
+                //email taken
+                ret.errors.push({
+                  field: "email",
+                  msg: "Email taken."
+                })
+              }
+            }
+          })
         }
-      }
-    }, function(err, doc){
-      if(!err){
-        res.redirect("/friends");
-      } else {
-        console.log(err);
-      }
-    })
+      });
 
-  });
+      setTimeout(function(){
+        res.send(ret);
+      }, 500);
 
-
+    });
 }
 
-function getAllUsers(req, res){
-  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    var ret = [];
-    db.collection("users").find().forEach(function(doc, err){
-      ret.push(doc);
-    })
-    setTimeout(function(){
-      res.send(ret);
-    }, 500);
-  });
+function logout(req, res){
+  userID = "";
+  res.redirect("/");
 }
-
 //routes
 app.post('/login', login);
 app.post('/signup', signup);
@@ -482,6 +707,10 @@ app.get('/findfriends/name/:name', getFriendsByFname);
 app.get('/findfriends/fname/:first/:last', getFriendsByFullName);
 app.get('/findfriends/email/:email', getFriendsByEmail);
 app.get('/addfriend/:id', addFriendByID);
+app.post('/toggledisc/:changed', toggleDiscoverability);
+app.post('/changepwd', changePwd);
+app.post('/edit', editProfile);
+app.get('/logout', logout);
 
 //Admin functions
 app.get('/users', getAllUsers);
@@ -499,6 +728,9 @@ app.get('/dashboard', function(req, res){
 });
 app.get('/dashboard/admin', function(req, res){
   res.sendfile("views/dashboardadmin.html");
+})
+app.get('/profile', function(req, res){
+  res.sendfile("views/profile.html");
 })
 
 //routes
@@ -535,9 +767,11 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
 
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
         if (err){
-            console.log(error)
+          res.send(err);
         }
         db.collection("timetable").find({userid: current_userid}, function(err,doc){
+
+            if(err){ res.send(err)}
             console.log('++++++')
             console.log(doc)
             console.log('+++++++')
@@ -548,6 +782,7 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
                         userid: current_userid,
                         courseSummary: b['courseSummary']
                     }, function(err, doc){
+                        if(err){ res.send(err)}
                         db.close();
                     })
                 } catch(e){

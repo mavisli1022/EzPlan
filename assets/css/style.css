@@ -11,7 +11,7 @@ body {
   padding: 0;
   background-color: #2a58fc;
 }
-h1 {
+h1, h3, h2, h4, h5, h6, p {
   color: #FFF;
 }
 .login-box,

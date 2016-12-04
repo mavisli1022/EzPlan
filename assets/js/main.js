@@ -10,32 +10,36 @@ $(function(){
     FB.login(function(response) {
       // handle the response
       FB.api('/me?fields=email,name', function(response) {
-        var fbID = response.id;
-        var name = response.name;
-        var email = response.email;
+        if(response.error != null){
+          alert("You need to authorize first!");
+        } else {
 
-        console.log(response);
-        var fullName = name.split(" ");
-        var firstname = fullName[0];
-        var lastname = fullName[1];
+          var fbID = response.id;
+          var name = response.name;
+          var email = response.email;
 
-        var user = {
-          firstname: firstname,
-          lastname: lastname,
-          email: email,
-          fbid: fbID,
-          friends: []
-        }
+          console.log(response);
+          var fullName = name.split(" ");
+          var firstname = fullName[0];
+          var lastname = fullName[1];
 
-        FB.api("/me/friends", function (response) {
-          if(response.error) { console.log(response.error)}
-          user.friends = response.data;
+          var user = {
+            firstname: firstname,
+            lastname: lastname,
+            email: email,
+            fbid: fbID,
+            friends: []
+          }
 
-          $.post("/signupfb", user, function(resp){
-            console.log(resp);
-          })
+          FB.api("/me/friends", function (response) {
+            if(response.error) { console.log(response.error)}
+            user.friends = response.data;
 
-        });
+            $.post("/signupfb", user, function(resp){
+              console.log(resp);
+            })
+          });
+      }
       });
 
     }, {scope: 'public_profile, email, user_friends'});
