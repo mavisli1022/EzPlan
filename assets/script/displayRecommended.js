@@ -1,28 +1,30 @@
 function displayRecommended(uid) {
 
+console.log("HELLO")
+    $("ul").empty();
     $.get('session', function(data){
         uid = data["userid"];
-
-        console.log(uid)
-
-        $.get('/recommendedFriendsGet', {uid: uid}, function (data) {
-
+        console.log(uid);
+        $.get('/recommendedFriendsGet', {userid: uid}, function (data) {
             var resultsArray = data;
-            console.log(resultsArray);
 
             for (var i = 0; i < resultsArray.length; i++){
                 var friendInfo = resultsArray[i];
-                $("ul#recommended-friends-list").append("<li>" + friendInfo.firstname + " " + friendInfo.lastname + " <a class='add' href='/addfriend/" + friendInfo.userid + "'>Add friend</a></li>");
+                var first, last, id;
+                first = friendInfo["firstname"];
+                last = friendInfo["lastname"];
+                id = friendInfo["userid"];
 
-                if (i == 9){
-                    break;
-                }
+
+                $("ul#recommended-friends-results").append("<li>" + first + " " + last + " <a class='add' href='/addfriend/" + id + "'>Add friend</a></li>");
             }
         });
     });
+
 }
 
 $(document).ready(function() {
+
     displayRecommended();
 
 });

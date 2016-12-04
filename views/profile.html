@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="imports/font-awesome/css/font-awesome.css" rel="stylesheet"
+                                                              media="screen" />
+    <link href="css/profile.css" rel="stylesheet" media="screen"/>
+  </head>
+  <body>
+    <h1 id="profile-header">Your profile</h1>
+    <div id="profile-body">
+      <div class="profile-row">
+        <h2 class="name"></h2>
+      </div>
+
+      <div class="profile-row">
+        <p class="user-id label">User ID:</p>
+        <p class="user-id field"></p>
+      </div>
+
+      <div class="profile-row">
+        <p class="password label">Password:</p>
+        <p class="password field">
+          <div class="change-pwd form-button">
+            <p>Change Password</p>
+            <i class="fa fa-caret-down"></i>
+          </div>
+          <div class="change-pwd-dropdown hidden">
+            <label for="prevPass" class="text-label">Current Password</label>
+            <input type="password" id="prevpass" class="text-field" />
+
+            <label for="newPass" class="text-label">New Password</label>
+            <input type="password" id="newpass" class="text-field" />
+
+            <label for="newPassConfirm" class="text-label">Confirm New Password</label>
+            <input type="password" id="newpassconf" class="text-field" />
+            <div class="confirmpwd-bt form-button">
+              <a href="#">Change Password</a>
+            </div>
+          </div>
+        </p>
+      </div>
+
+      <div class="profile-row">
+        <p class="email label">Email: </p>
+        <p class="email field"></p>
+      </div>
+
+      <div class="profile-row">
+        <div class="form-button edit-toggle">Edit</div>
+      </div>
+
+      <h2 class="privacy-header">Privacy Settings</h2>
+
+      <div class="profile-row">
+        <p class="discoverable label">Discoverable</p>
+        <p class="discoverable field"><input type="checkbox" class="disc-toggle" /></p>
+      </div>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="//code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+    <script type="text/javascript" src="js/profile.js"></script>
+  </body>
+</html>
