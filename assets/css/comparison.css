@@ -38,9 +38,9 @@ tr:nth-child(odd){
 
 
 button {
-  width: 301px;
-  height: 46px;
-  margin-top: 47px;
+  width: 200px;
+  height: 20px;
+  margin-left: 80%;
   font-size: 16px;
   background-color: #3498db;
   color: #f5f505;

@@ -159,19 +159,42 @@ function signupFB(req, res){
   var firstname = req.body.firstname;
   var lastname = req.body.lastname;
   var email = req.body.email;
-  var friends = req.body.friends;
   var fbID = req.body.fbid;
+  var friends = [];
+
+  var totalKeys = Object.keys(req.body);
+  var totallength = -1;
+  for(var i = 0; i < totalKeys.length; i++){
+    if(totalKeys[i].includes("friends")){
+      var thisIndex = totalKeys[i].substring(8, 9);
+      var thisAttr = totalKeys[i].substring(10);
+      var thisValue = req.body[totalKeys[i]];
+
+
+      if(friends[thisIndex] == null){
+        //create object
+        friends[thisIndex] = {};
+        friends[thisIndex].name = thisValue;
+      } else {
+        //add to prev object
+        friends[thisIndex].id = thisValue;
+      }
+    }
+  }
+  //console.log(friends);
 
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    if(err){console.log(err)}
+    if(err){res.send(err)}
     db.collection("users").count({email: email}, function(error, num){
       var ret = {"errors": []};
+      if(error){ ret.errors.push(error); }
       if(num > 0){
         //email already registered
         //just log them in
         db.collection("users").findOne({
           email: email
         }, function(err, doc){
+          if(err){ res.send(err)}
           userID = doc.userid;
         })
 
@@ -189,16 +212,19 @@ function signupFB(req, res){
               password: null,
               level: "user",
               emailverified: false,
+              discoverable: true,
               fbconnected: true,
               fbID: fbID
             }, function(err, doc){
               //populate friends list
+              ret.errors.push(err);
               console.log("init total friends");
               var totalFriends = [];
               for(var i = 0; i < friends.length; i++){
                 db.collection("users").findOne({
                   fbID: friends[i].id
                 }, function(err, doc){
+                  ret.errors.push(err);
                   //if nothing is found, dont do anything
                   if(doc != null){
                     //you are now friends with this person today
@@ -218,6 +244,7 @@ function signupFB(req, res){
                 })
               }
 
+
               //wait for friends to finish populating
               setTimeout(function(){
                 //now insert this shit into friends
@@ -228,7 +255,7 @@ function signupFB(req, res){
 
                 db.collection("friends").insertOne(newUser, function(err, doc){
                   //finally set session
-                  if(err){console.log(err)}
+                  if(err){console.log(err); ret.errors.push(err)}
 
                   userID = newID;
                   db.close();
@@ -492,11 +519,22 @@ app.use(express.static(__dirname + '/assets'));
 app.use(express.static(__dirname + '/'));
 
 
-var upload = multer({dest: './upload/'});
+var upload = multer({ storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      now = Date.now().toString();
+      require('fs').mkdir('upload/', err => {
+        cb(null, 'upload/');
+      });
+    },
+    filename: (req, file, cb) => {
+      cb(null, userID + '.ics');
+    }
+  })
+});
 
-app.get('/', function(req, res) {
-    //res.sendfile('./views/calander.html');
-    res.sendfile('./views/test.html');
+
+app.get('/uploadCalendar', function(req, res) {
+    res.sendfile('./views/calander.html');
 });
 
 app.post('/comparePage', function(req, res) {
@@ -504,47 +542,82 @@ app.post('/comparePage', function(req, res) {
     res.sendfile('./views/comparison.html');
 });
 
+app.post('/main', function(req, res) {
+    //res.sendfile('./views/calander.html');
+    res.sendfile('./views/mainPage.html');
+});
 
-app.post('/upload', upload.single('calendar_user'), function(req, res, next){
-    //var a = routes.convertCal('./upload/coursesCalendar.ics');
-    var c =  routes.convertCal('./upload/courses_Calendar.ics');
+app.get('/timetable', showtt);
 
-    current_userid = '2';
-    var b = routes.processCourse(c,'2');
-
-
+function showtt(req, res){
+  var b;
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
         if (err){
             console.log(error)
         }
-        db.collection("timetable").find({userid: current_userid}, function(err,doc){
-            console.log('++++++')
-            console.log(doc)
-            console.log('+++++++')
+        db.collection("timetable").findOne({userid:userID}, function(err,doc){
+          b = doc.courseSummary
+          res.render('displayCalendar', {array: b}); 
+          //return doc.courseSummary;
+        })
+        db.close()
+  });
+  //res.render('displayCalendar', {array: b['courseSummary']}); 
+}
 
+
+app.post('/upload', upload.single('calendar_user'), function(req, res, next){
+    //var a = routes.convertCal('./upload/coursesCalendar.ics');
+    var c =  routes.convertCal('./upload/' + userID +'.ics');
+    //var array = [];current_userid = userID;
+    //console.log(userID)
+    var b = routes.processCourse(c, userID);
+    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+        if (err){
+            console.log(error)
+        }
+        db.collection("timetable").findOne({userid:userID}, function(err,doc){
             if(doc == null){
                 try {
+                    
                     db.collection("timetable").insertOne({
-                        userid: current_userid,
+                        userid: userID,
                         courseSummary: b['courseSummary']
                     }, function(err, doc){
-                        db.close();
+                        console.log(err)
                     })
+                    
+                    db.close();
                 } catch(e){
                     console.log(e);
                 }
+                
             }
+
             else{
-                db.collection("timetable").findOneAndUpdate({userid: current_userid}, {courseSummary: b['courseSummary']}, function(err, timetable){
+                db.collection("timetable").remove({userid: userID}, function(err, doc){
+                  console.log(err);
+                })
+                db.collection("timetable").insertOne({
+                  userid: userID,
+                  courseSummary: b['courseSummary']
+                }, function(err, doc){
+                   console.log(err)
+
+                db.collection("timetable").findOneAndUpdate({userid: userID}, {userid: userID, courseSummary: b['courseSummary']}, function(err, timetable){
                     if (err) throw err;
                     console.log("Update!")
+                    db.close();
+
                 })
-            }
-        })
-        db.close();
+
+            });
+        }
+      });
     });
-    res.render('displayCalendar', {array: b});
-});
+    fs.unlinkSync('./upload/' + userID +'.ics');
+    res.render('displayCalendar', {array: b['courseSummary']}); 
+});  
 
 app.get('/findUser', routes.findOne);
 
@@ -563,6 +636,12 @@ app.post('/updateUser', routes.updateUser);
 app.get('/recommendedFriendsGet', routes.recommendedFriends);
 
 app.get('/compare', routes.compare);
+
+app.get('/getUserID', function(req, res){
+  console.log(userID);
+  var data= userID.toString();
+res.send(data);
+});
 
 app.listen(process.env.PORT || 3000);
 

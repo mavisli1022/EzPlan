@@ -22,8 +22,6 @@ var form = document.createElement("form");
 
 form.method = "POST";
 form.action = "/comparePage";
-var element1 = document.createElement("input");
-form.appendChild(element1);
 document.body.appendChild(form);
 form.submit();
 
@@ -67,7 +65,7 @@ function show(){
               for(var i=0; i< common.commonCourse.length;i++){
                 courses= courses+common.commonCourse[i].summary + " , ";
               }
-              string= "You and " + name[1]+ " have " + common.count + " common course(s): " + courses;
+              string= "You have " + common.count + " common course(s): " + courses;
             } 
             document.getElementById("demo").innerHTML = string;
 
@@ -205,4 +203,15 @@ function mergeTimetable(){
                         }
                     }
     }
+
+
+function back(){
+var form = document.createElement("form");
+
+form.method = "POST";
+form.action = "/main";
+document.body.appendChild(form);
+form.submit();
+
+}
 

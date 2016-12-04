@@ -17,11 +17,6 @@ var weekDay = ["MONDAY","TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"]
 exports.convertCal= function(filename){
     var fs = require('fs'),
         file = fs.readFileSync(filename, "utf8");
-    
-    //get data from file save it to json
-    //display calendar 
-    //DTSTART;TZID=America/Toronto:20160913T130000
-
 
     var lines = file.split('\r\n');
     var string = [];
@@ -96,12 +91,11 @@ exports.compare= function(req, res){
 
     if(req.query.name!=null){
         var name = req.query.name;
-        name1 = name[0];
-        name2 = name[1];
+        name1 = Number(name[0]);
+        name2 = Number(name[1]);
      }
+     console.log(name1 + name2);
 
-     //console.log(name1 + name2)
-  
     var returnOBJ={"commonCourse": [], "count":"" };
     var count=0;
     var exsist = false;
@@ -124,14 +118,14 @@ exports.compare= function(req, res){
                 }
                 else{
                 ttObj.push(doc);
-                console.log(JSON.stringify(ttObj));
+                //console.log(JSON.stringify(ttObj));
 
                 for(var j=0; j<ttObj[0].courseSummary.length;j++){
                  for(var m=0; m<ttObj[1].courseSummary.length;m++){
 
                     for(var n=0; n<count; n++) {
                     //console.log(returnOBJ['commonCourse'][n].summary);
-                    if (returnOBJ['commonCourse'][n].summary == ttObj[1].courseSummary[m].summary){
+                    if (returnOBJ.commonCourse[n].summary == ttObj[1].courseSummary[m].summary){
                         exsist=true;
                         break;
                     }
@@ -149,7 +143,7 @@ exports.compare= function(req, res){
             }
         }
             returnOBJ.count = count;
-            console.log(JSON.stringify(returnOBJ));
+            //console.log(JSON.stringify(returnOBJ));
             res.send(returnOBJ);
         }
 
@@ -157,11 +151,7 @@ exports.compare= function(req, res){
              });
         }
     });
-
-
 });
-   
-
 }
 
 /*  A function to search the database for recommended friends based on schedule similarity.
@@ -519,7 +509,6 @@ function compare_users(user1, user2) {
 
 }
 
-
 exports.tempstore= function(req,res){
 temp.name1 = req.body.a;
 temp.name2 = req.body.b;
@@ -540,7 +529,7 @@ exports.findOne = function(req,res){
      }
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
     db.collection("timetable").findOne({
-      userid: user
+      userid: Number(user)
     }, function(err, doc){
         if(doc == null) {
             res.send("No such user: " + user);
