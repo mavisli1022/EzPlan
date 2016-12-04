@@ -182,17 +182,18 @@ function signupFB(req, res){
     }
   }
 
-
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    if(err){console.log(err)}
+    if(err){res.send(err)}
     db.collection("users").count({email: email}, function(error, num){
       var ret = {"errors": []};
+      if(error){ ret.errors.push(error); }
       if(num > 0){
         //email already registered
         //just log them in
         db.collection("users").findOne({
           email: email
         }, function(err, doc){
+          if(err){ res.send(err)}
           userID = doc.userid;
         })
 
@@ -210,16 +211,19 @@ function signupFB(req, res){
               password: null,
               level: "user",
               emailverified: false,
+              discoverable: true,
               fbconnected: true,
               fbID: fbID
             }, function(err, doc){
               //populate friends list
+              ret.errors.push(err);
               console.log("init total friends");
               var totalFriends = [];
               for(var i = 0; i < friends.length; i++){
                 db.collection("users").findOne({
                   fbID: friends[i].id
                 }, function(err, doc){
+                  ret.errors.push(err);
                   //if nothing is found, dont do anything
                   if(doc != null){
                     //you are now friends with this person today
@@ -249,7 +253,7 @@ function signupFB(req, res){
 
                 db.collection("friends").insertOne(newUser, function(err, doc){
                   //finally set session
-                  if(err){console.log(err)}
+                  if(err){console.log(err); ret.errors.push(err)}
 
                   userID = newID;
                   db.close();
