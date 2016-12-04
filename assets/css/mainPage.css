@@ -2,12 +2,16 @@ li {
 	margin-top: 5%;
 	width: 16%;
     padding: 4px 4px;
-    background-color: #2a58fc;
+    background-color: rgba(42, 88, 252, 0.5);
     color: white;
     font-size: 13px;
     border: none;
     cursor: pointer;
     float: left;
+}
+
+li:hover{
+	background-color: rgba(42, 88, 252, 0.2);
 }
 
 div {
