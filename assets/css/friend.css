@@ -1,0 +1,64 @@
+
+body{
+	color: white;
+}
+
+
+#Back{
+
+  margin-left: 80%;
+
+}
+
+
+div{
+	text-align: center;
+}
+
+
+button, select, option, .remove {
+	background-color: #00334d;
+    color: white;
+    border: 3px solid #ffffff;
+    padding: 8px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-left: 3%;
+}
+
+input{
+	background-color: white;
+    color: #00334d;
+    border: 3px solid #00334d;
+    padding: 8px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-left: 3%;
+}
+
+li{
+list-style: none;
+margin-top: 1%;
+}
+
+.remove:hover {
+  background-color: #004466;
+color: white;
+}
+
+button:hover{
+	  background-color: #004466;
+color: white;
+}
+
+
+h1, h4{
+	margin-top: 5%;
+	font-size: 200%;
+	text-align: center;
+	 text-shadow: 2px 2px #b30059;
+}
