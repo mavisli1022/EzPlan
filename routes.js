@@ -18,7 +18,7 @@ exports.convertCal= function(filename){
     //DTSTART;TZID=America/Toronto:20160913T130000
 
 
-    var lines = file.split('\n');
+    var lines = file.split('\r\n');
     var string = [];
     for(var line = 0; line < lines.length; line++){
         if (lines[line].includes("SUMMARY")){
@@ -91,10 +91,10 @@ exports.compare= function(req, res){
 
     if(req.query.name!=null){
         var name = req.query.name;
-        name1 = name[0];
-        name2 = name[1];
+        name1 = Number(name[0]);
+        name2 = Number(name[1]);
      }
-     //console.log(name1 + name2)
+     console.log(name1 + name2)
   
     var returnOBJ={"commonCourse": [], "count":"" };
     var count=0;
@@ -151,12 +151,10 @@ exports.compare= function(req, res){
              });
         }
     });
-
-
 });
-   
-
 }
+
+
 
 exports.tempstore= function(req,res){
 temp.name1 = req.body.a;
@@ -178,7 +176,7 @@ exports.findOne = function(req,res){
      }
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
     db.collection("timetable").findOne({
-      userid: user
+      userid: Number(user)
     }, function(err, doc){
         if(doc == null) {
             res.send("No such user: " + user);
