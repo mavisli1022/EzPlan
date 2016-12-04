@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="../assets/script/updateuser.js"></script>
+    <link href="../assets/css/dashboardadmin.css" rel="stylesheet" media="screen" />
+
+</head>
+
+
+<body background="http://eskipaper.com/images/dark-universe-hd-1.jpg">
+
+<div id="updateFormDiv">
+    <form id="updateUser" method="post">
+
+
+        <label id="updateUserid">
+            <span class="label">User ID: </span>
+            <input type="text" id="updateUseridInput" name="updateUseridInput">
+        </label>
+
+        <br>
+
+        <label id="updateFirstname">
+            <span class="label">First Name: </span>
+            <input type="text" id="updateFirstnameInput" name="updateFirstnameInput">
+        </label>
+
+        <br>
+
+        <label id="updateLastname">
+            <span class="label">Last Name: </span>
+            <input type="text" id="updateLastnameInput" name="updateLastnameInput">
+        </label>
+
+        <br>
+
+        <label id="updateEmail">
+            <span class="label">Email: </span>
+            <input type="text" id="updateEmailInput" name="updateEmailInput">
+        </label>
+
+        <br>
+
+        <label id="updatePassword">
+            <span class="label">Password: </span>
+            <input type="text" id="updatePasswordInput" name="updatePasswordInput">
+        </label>
+
+        <br>
+
+        <label id="updateLevel">
+            <span class="label">Level</span>
+            <select id="dropDownLevelUpdate" name="dropDownLeveUpdate">
+                <option value="null"></option>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+        </label>
+
+        <br>
+
+        <label id="updateDiscoverable">
+            <span class="label">Discoverable:</span>
+            <select id="dropDownLevelDiscoverable" name="dropDownDiscoverableUpdate">
+                <option value="null"></option>
+                <option value=true>Discoverable</option>
+                <option value=false>Not Discoverable</option>
+            </select>
+        </label>
+        <br>
+        <input id="updateUserSubmit" type="submit" value="Submit">
+    </form>
+</div>
+
+<button id = "btn3" onclick="back()">Go Back</button>
+</body>
+
+</html>
