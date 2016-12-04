@@ -518,48 +518,43 @@ app.post('/comparePage', function(req, res) {
 app.post('/upload', upload.single('calendar_user'), function(req, res, next){
     //var a = routes.convertCal('./upload/coursesCalendar.ics');
     var c =  routes.convertCal('./upload/calendar.ics');
-    console.log(c)
-    //var array = [];
-
-    current_userid = "1";
-    var b = routes.processCourse(c, current_userid);
-    console.log(b)
-  
-
+    //var array = [];current_userid = userID;
+    console.log(userID)
+    var b = routes.processCourse(c, userID);
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
         if (err){
             console.log(error)
         }
-        db.collection("timetable").findOne({userid: current_userid}, function(err,doc){
-            var ret = {errors: []};
+        db.collection("timetable").findOne({userid:userID}, function(err,doc){
+          console.log("2123")
+          console.log(doc)
             if(doc == null){
-                
                 try {
+                    console.log("S-IN-INSERT")
                     db.collection("timetable").insertOne({
-                        userid: current_userid,
+                        userid: userID,
                         courseSummary: b['courseSummary']
                     }, function(err, doc){
+                        console.log(err);
                         db.close();
                     })
+                    console.log("after insert")
                 } catch(e){
                     console.log(e);
                 }
-
-            } else {
-                ret.errors.push({
-                    field: "general",
-                    msg: "Already existed calendar for current user"
-                })
-                
             }
-        });
+            else{
+                db.collection("timetable").findOneAndUpdate({userid: userID}, {courseSummary: b['courseSummary']}, function(err, timetable){
+                    if (err) throw err;
+                    console.log("Update!")
+                })
+            }
+        })
         db.close();
     });
-    console.log(b['courseSummary']);
     fs.unlinkSync('./upload/calendar.ics');
     res.render('displayCalendar', {array: b['courseSummary']}); 
-});
-
+});  
 app.get('/findUser', routes.findOne);
 
 app.post('/tempstore', routes.tempstore);
