@@ -12,13 +12,8 @@ var weekDay = ["MONDAY","TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"]
 exports.convertCal= function(filename){
     var fs = require('fs'),
         file = fs.readFileSync(filename, "utf8");
-    
-    //get data from file save it to json
-    //display calendar 
-    //DTSTART;TZID=America/Toronto:20160913T130000
 
-
-    var lines = file.split('\n');
+    var lines = file.split('\r\n');
     var string = [];
     for(var line = 0; line < lines.length; line++){
         if (lines[line].includes("SUMMARY")){
