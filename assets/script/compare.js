@@ -67,7 +67,7 @@ function show(){
               for(var i=0; i< common.commonCourse.length;i++){
                 courses= courses+common.commonCourse[i].summary + " , ";
               }
-              string= "You and " + name[1]+ " have " + common.count + " common course(s): " + courses;
+              string= "You have " + common.count + " common course(s): " + courses;
             } 
             document.getElementById("demo").innerHTML = string;
 
