@@ -113,7 +113,7 @@ exports.compare= function(req, res){
                 }
                 else{
                 ttObj.push(doc);
-                console.log(JSON.stringify(ttObj));
+                //console.log(JSON.stringify(ttObj));
 
                 for(var j=0; j<ttObj[0].courseSummary.length;j++){
                  for(var m=0; m<ttObj[1].courseSummary.length;m++){
@@ -138,7 +138,7 @@ exports.compare= function(req, res){
             }
         }
             returnOBJ.count = count;
-            console.log(JSON.stringify(returnOBJ));
+            //console.log(JSON.stringify(returnOBJ));
             res.send(returnOBJ);
         }
 

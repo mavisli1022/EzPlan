@@ -524,11 +524,30 @@ app.post('/main', function(req, res) {
     res.sendfile('./views/mainPage.html');
 });
 
+app.get('/timetable', showtt);
+
+function showtt(req, res){
+  var b;
+    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+        if (err){
+            console.log(error)
+        }
+        db.collection("timetable").findOne({userid:userID}, function(err,doc){
+          b = doc.courseSummary
+          res.render('displayCalendar', {array: b}); 
+          //return doc.courseSummary;
+        })
+        db.close()
+  });
+  //res.render('displayCalendar', {array: b['courseSummary']}); 
+}
+
+
 app.post('/upload', upload.single('calendar_user'), function(req, res, next){
     //var a = routes.convertCal('./upload/coursesCalendar.ics');
     var c =  routes.convertCal('./upload/' + userID +'.ics');
     //var array = [];current_userid = userID;
-    console.log(userID)
+    //console.log(userID)
     var b = routes.processCourse(c, userID);
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
         if (err){
@@ -553,6 +572,7 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
             }
 
             else{
+                console.log(doc)
                 db.collection("timetable").remove({userid: userID}, function(err, doc){
                   console.log(err);
                 })
