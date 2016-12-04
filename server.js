@@ -639,6 +639,7 @@ app.post('/updateUser', routes.updateUser);
 app.get('/recommendedFriendsGet', routes.recommendedFriends);
 
 app.get('/searchCourseGet', routes.searchClassmates);
+app.get('/allUsers', routes.allUsers);
 
 
 app.get('/compare', routes.compare);
@@ -647,6 +648,7 @@ app.get('/getUserID', function(req, res){
   console.log(userID);
   var data= userID.toString();
 res.send(data);
+
 });
 
 app.listen(process.env.PORT || 3000);

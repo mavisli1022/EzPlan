@@ -5,6 +5,11 @@
   box-sizing: border-box;
 }
 
+table, th, td {
+
+  border: thin solid black;
+}
+
 body {
   font-family: 'NTR', sans-serif;
   margin: 0;

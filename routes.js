@@ -159,58 +159,63 @@ exports.compare= function(req, res){
  * */
 exports.recommendedFriends = function(req, res){
 
-    var uid = req.query.uid;
-
-
-    // MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    //
-    //     uid = db.collection("session").find().toArray()["userid"];
-    //
-    // });
+    var uid = req.query.userid;
 
     var results = [];
     var results_temp = [];
 
-    var userList = [];
-    var users = [];
+    var userList;
+    var users;
 
     var temp_user1;
     var temp_user2;
-
+    var count;
+    var ind;
 
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
 
-        userList = db.collection("timetable").find().toArray();
+        db.collection("timetable").find().toArray(function(err, doc) {
+            userList = doc;
 
-        users = db.collection("users").find().toArray();
+            db.collection("users").find().toArray(function(err, doc) {
+                users = doc;
+
+
+                for (var i = 0; i < userList.length; i++){
+                    if (userList[i]["userid"] == uid) {
+                        ind = i;
+                    }
+                }
+
+                for(i = 0; i < userList.length; i++){
+                    if (userList[i]["userid"] != uid){
+                        temp_user2 = userList[i];
+
+                        count = compare_users(userList[ind], userList[i]);
+                        console.log("Count for " + userList[ind].userid + " and " + userList[i].userid + "is" + count);
+                        results_temp.push({"user" : userList[i].userid, "count" : count});
+                    }
+                }
+
+                results_temp.sort(comparison);
+
+                // Given the user id from our search, find that user in the users collection, and push the user object to results.
+                for(i = 0; i < results_temp.length; i++) {
+                    for (var j = 0; j < users.length; j++){
+                        if (results_temp[i]["user"] == users[j]["userid"]){
+                            results.push(users[j]);
+                        }
+                    }
+                }
+
+                // Send back a sorted list of user objects to be displayed in recommended friends.
+                res.send(results);
+            });
+        });
     });
 
-    for (var i = 0; i < userList.length; i++){
-        if (userList[i].userid == uid) {
-            temp_user1 = userList[i];
-        }
-    }
 
-    for(i = 0; i < userList.length; i++){
-        if (userList[i].userid != uid){
-            temp_user2 = userList[i];
-            results_temp.push([{"user" : userList[i], "count" : compare_users(temp_user1, temp_user2)}]);
-        }
-    }
 
-    results_temp.sort(comparison);
-
-    // Given the user id from our search, find that user in the users collection, and push the user object to results.
-    for(i = 0; i < results_temp.length; i++) {
-        for (var j = 0; j < users.length; j++){
-            if (results_temp[i]["user"] == users[j]["userid"]){
-                results.push(users[j]);
-            }
-        }
-    }
-
-    // Send back a sorted list of user objects to be displayed in recommended friends.
-    res.send(results);
 };
 
 
@@ -342,6 +347,18 @@ exports.updateUser = function(req, res){
     res.send("Success");
 }
 
+exports.allUsers = function(req,res){
+
+    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db) {
+        var users;
+
+        db.collection("users").find().toArray(function (err, doc) {
+            users = doc;
+            res.send(users);
+        });
+    });
+}
+
 exports.addUser = function(req, res){
     // Add a user with info delivered in the request body
     var tempUser = req.body;
@@ -428,23 +445,24 @@ function comparison(a,b) {
 
 // HELPER FUNCTION
 // Returns the number of courses and sections two users have in common.
-function compare_users(user1, user2) {
+function compare_users(usera, userb) {
     var counter = 0;
     var courseList = [];
-    for (var i = 0; i < user1.courseSummary.length; i++){
+    // console.log(usera["courseSummary"]);
+    // console.log(userb["courseSummary"]);
+    for (var i = 0; i < usera["courseSummary"].length; i++){
 
-        for (var j = 0; i < user2.courseSummary.length; i++){
+        for (var j = 0; j < userb["courseSummary"].length; j++){
 
-            if (user1.courseSummary[i].summary == user2.courseSummary[j].summary
-                && courseList.indexOf(user1.courseSummary[i]) == -1){
+            if (usera["courseSummary"][i]["summary"] == userb["courseSummary"][j]["summary"] && courseList.indexOf(usera["courseSummary"][i]) == -1){
                 counter += 1;
                 break;
             }
         }
 
-        courseList.push(user1.courseSummary[i])
+        courseList.push(usera["courseSummary"][i])
     }
-
+    console.log(counter);
     return counter;
 
 }
