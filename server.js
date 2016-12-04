@@ -532,10 +532,6 @@ var upload = multer({ storage: multer.diskStorage({
   })
 });
 
-app.get('/test', function(req, res) {
-    //res.sendfile('./views/calander.html');
-    res.sendfile('./views/test.html');
-});
 
 app.get('/uploadCalendar', function(req, res) {
     res.sendfile('./views/calander.html');
