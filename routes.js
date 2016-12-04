@@ -192,7 +192,6 @@ exports.recommendedFriends = function(req, res){
                         temp_user2 = userList[i];
 
                         count = compare_users(userList[ind], userList[i]);
-                        console.log("Count for " + userList[ind].userid + " and " + userList[i].userid + "is" + count);
                         results_temp.push({"user" : userList[i].userid, "count" : count});
                     }
                 }
