@@ -219,48 +219,90 @@ exports.recommendedFriends = function(req, res){
 * */
 exports.searchClassmates = function(req, res){
 
-    var userList = [];
-    var users = [];
+
     console.log(6);
 
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+        console.log(7);
+        var userList;
+        var users;
 
-        userList = db.collection("timetable").find().toArray();
-        users = db.collection("users").find().toArray();
 
-        if (userList == []){
-            res.send("Failed to connect to the database");
-        }
+        db.collection("timetable").find().toArray(function(err, doc) {
+            userList = doc;
 
-        var course = req.query.courseCodeInput;
-        var section = req.query.sectionCodeInput;
+            db.collection("users").find().toArray(function(err, doc) {
+                users = doc;
 
-        var results_obj = [];
-        var results = [];
-
-        // For every user with a timetable.
-        for(var j = 0; j < userList.length; j++){
-
-            // If the search term matches a course that the user is taking, add them to the results array.
-            if (is_taking(userList[j].userid, course, section)){
-                add_or_inc(userList[j].userid, results_obj);
-            }
-        }
-
-        // Given the user id from our search, find that user in the users collection, and push the user object to results.
-        for (var i = 0; i < results_obj.length; i++){
-
-            for (j = 0; j < users.length; j++){
-
-                if (results_obj[i]["id"] == users[j]["userid"]){
-                    results.push(users[j]);
+                if (userList == []){
+                    res.send("Failed to connect to the database");
                 }
-            }
-        }
 
-        res.send(results);
+                var course = req.query.courseCodeInput;
+                var section = req.query.sectionCodeInput;
 
-        db.close();
+                var results_obj = [];
+                var results = [];
+
+                // For every user with a timetable.
+                for(var j = 0; j < userList.length; j++){
+
+                    // If the search term matches a course that the user is taking, add them to the results array.
+                    // if (is_taking(userList[j].userid, course, section)){
+                    //     add_or_inc(userList[j].userid, results_obj);
+                    // }
+
+
+                    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+
+                        db.collection("timetable").findOne({
+                            userid: userList[j].userid
+                        }, function(err, doc){
+
+                            if (doc != null){
+                                for (var i = 0; i < doc.courseSummary.length; i++){
+                                    // If the course code matches the course passed in to is_taking
+                                    //console.log("Comparing " + doc.courseSummary[i].summary.split(" ")[0] + "With" + course);
+                                    if (doc.courseSummary[i].summary.split(" ")[0] == course && doc.courseSummary[i].summary.split(" ")[1] == section){
+                                        results_obj.push(userList[j].userid);
+                                    }
+                                }
+                            }
+
+                        });
+                    });
+
+
+
+
+                }
+
+                // Given the user id from our search, find that user in the users collection, and push the user object to results.
+                for (var i = 0; i < results_obj.length; i++){
+
+                    for (j = 0; j < users.length; j++){
+
+                        if (results_obj[i]["id"] == users[j]["userid"]){
+                            results.push(users[j]);
+                        }
+                    }
+                }
+                console.log(results.length);
+                res.send(results);
+
+                db.close();
+
+            });
+
+        });
+
+        // userList = db.collection("timetable").find({}).toArray();
+        // users = db.collection("users").find({}).toArray();
+        //
+        // console.log(userList.length);
+
+
+
 
     });
 
@@ -401,7 +443,8 @@ function add_or_inc(uid, results){
 // If they are taking the specified course, return 1, else return 0.
 function is_taking(uid, course, section){
 
-    var temp = 0;
+    console.log("Checking if User" + uid + "is taking course" + course)
+
 
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
 
@@ -410,20 +453,22 @@ function is_taking(uid, course, section){
         }, function(err, doc){
 
             if (doc == null){
-                temp = 0;
+                return 0;
             }
             else {
                 for (var i = 0; i < doc.courseSummary.length; i++){
                     // If the course code matches the course passed in to is_taking
+                    //console.log("Comparing " + doc.courseSummary[i].summary.split(" ")[0] + "With" + course);
                     if (doc.courseSummary[i].summary.split(" ")[0] == course && doc.courseSummary[i].summary.split(" ")[1] == section){
-                        temp = 1;
+                        console.log("Made it");
+                        return 1;
                     }
                 }
             }
+            return 0;
         });
     });
 
-    return temp;
 }
 
 // HELPER FUNCTION

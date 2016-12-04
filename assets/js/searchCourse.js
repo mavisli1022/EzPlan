@@ -10,8 +10,9 @@ $(document).ready(function() {
 });
 
 function displaySearchedFriends(courseCode, sectionCode){
+    console.log(courseCode, sectionCode)
 
-    $.get('/searchCourse', {courseCodeInput: courseCode, sectionCodeInput:sectionCode}, function (data) {
+    $.get('/searchCourseGet', {courseCodeInput: courseCode, sectionCodeInput:sectionCode}, function (data) {
         console.log(3);
         var resultsArray = data;
         console.log(resultsArray);
@@ -21,6 +22,7 @@ function displaySearchedFriends(courseCode, sectionCode){
             var friendInfo = resultsArray[i];
             $("ul#course-search-results").append("<li>" + friendInfo.firstname + " " + friendInfo.lastname + " <a class='add' href='/addfriend/" + friendInfo.userid + "'>Add friend</a></li>");
         }
+        location.reload(true);
+
     });
-    location.reload(true);
 }

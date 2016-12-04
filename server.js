@@ -638,7 +638,7 @@ app.post('/updateUser', routes.updateUser);
 
 app.get('/recommendedFriendsGet', routes.recommendedFriends);
 
-app.get('/searchCourse', routes.searchClassmates);
+app.get('/searchCourseGet', routes.searchClassmates);
 
 
 app.get('/compare', routes.compare);
