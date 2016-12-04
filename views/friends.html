@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link href="css/email.css" rel="stylesheet" media="screen" />
+    <link href="css/friend.css" rel="stylesheet" media="screen" />
   </head>
-  <body>
+  <body background="http://cdn.pcwallart.com/images/universe-stars-background-wallpaper-3.jpg">
     <h1>Your Friends</h1>
 
+    <div>
     <ul id="friends-list">
     </ul>
-
+    </div>
+    
     <h4>Find Friends</h4>
+    <div>
     <input type="text" id="search-friend" />
     <button id="search-trigger">Search</button>
     <select id="search-field">
@@ -19,8 +22,11 @@
     
     <ul id="search-results">
     </ul>
+    </div>
+    <button id="Back" onclick="back()">Go Back</button>
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="js/friends.js"></script>
+    <script type="text/javascript" src="script/compare.js"></script>
   </body>
 </html>

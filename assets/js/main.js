@@ -12,33 +12,58 @@ $(function(){
       FB.api('/me?fields=email,name', function(response) {
         if(response.error != null){
           alert("You need to authorize first!");
-        } else {
+        } else{
+        var fbID = response.id;
+        var name = response.name;
+        var email = response.email;
 
-          var fbID = response.id;
-          var name = response.name;
-          var email = response.email;
+        console.log(response);
+        var fullName = name.split(" ");
+        var firstname = fullName[0];
+        var lastname = fullName[1];
 
-          console.log(response);
-          var fullName = name.split(" ");
-          var firstname = fullName[0];
-          var lastname = fullName[1];
+        var user = {
+          firstname: firstname,
+          lastname: lastname,
+          email: email,
+          fbid: fbID
+        }
 
-          var user = {
-            firstname: firstname,
-            lastname: lastname,
-            email: email,
-            fbid: fbID,
-            friends: []
-          }
+        FB.api("/me/friends", function (response) {
+          if(response.error) { console.log(response.error)}
+          user.friends = response.data;
 
-          FB.api("/me/friends", function (response) {
-            if(response.error) { console.log(response.error)}
-            user.friends = response.data;
+          $.post("/signupfb", user, function(resp){
+            console.log(JSON.stringify(resp));
+            if(resp.error == null || resp.error.length== 0){
+                        $.get("/getuser/" + resp.userID, function(resp){
+                          if(resp.level == "user")
+                            {
+                              var form = document.createElement("form");
 
-            $.post("/signupfb", user, function(resp){
-              console.log(resp);
-            })
-          });
+                              form.method = "POST";
+                              form.action = "/main";
+
+                              document.body.appendChild(form);
+                              form.submit();
+                            }
+                            else
+                                {
+                                var form = document.createElement("form");
+
+                              form.method = "POST";
+                              form.action = "/admin";
+
+                              document.body.appendChild(form);
+                              form.submit();
+                                }
+                      });
+            }
+            else
+              alert("Error occurred!");
+          })
+
+        });
       }
       });
 
@@ -108,12 +133,46 @@ $(function(){
         $.get("/session", function(data){
           if(data.emailverified){
             //send to dashboard
-          } else {
-            //send to verify email
-            window.location.href = "/email";
-          }
-        })
+            $.get("/getuser/" + data.userid, function(resp){
+              if(resp.level == "user") {
+                  var form = document.createElement("form");
+
+                  form.method = "POST";
+                  form.action = "/main";
+
+                  document.body.appendChild(form);
+                  form.submit();
+                } else if(resp.level == "admin") {
+                    var form = document.createElement("form");
+
+                  form.method = "POST";
+                  form.action = "/admin";
+
+                  document.body.appendChild(form);
+                  form.submit();
+                }
+              });
+            } else {
+              window.location.href = "/email";
+            }
+
+            if(typeof data.errors.field != "object"){
+              for(var i = 0; i < data.errors.length; i++){
+                $(".login-box #" + data.errors[i].field).addClass("error");
+                $(".login-box #" + data.errors[i].field).effect("shake");
+              }
+            } else {
+              for(var i = 0; i < data.errors.length; i++){
+                for(var j = 0; j < data.errors[i].field.length; j++){
+                  $(".login-box #" + data.errors[i].field[j]).addClass("error");
+                  $(".login-box #" + data.errors[i].field[j]).effect("shake");
+                }
+              }
+            }
+          })
+
       }
+    }
     });
 
   })

@@ -42,16 +42,21 @@ function login(req, res){
       email: email,
       password: md5(password)
     }, function(err, doc){
-      if(err){ res.send(err)}
-      var ret = {errors: ""};
+      var ret = {"errors": [], "userID": ""};
       if(doc == null){
-        ret.errors = "Username or Password not found.";
+        ret.errors.push({
+          field: "general",
+          msg: "Username and Password not found."
+        })
+        res.send(ret);
       } else {
         //login here
+        ret.userID = doc.userid;
         userID = doc.userid;
         ret.errors = "done";
+        res.send(ret);
       }
-      res.send(ret);
+
     })
 
   });
@@ -187,7 +192,7 @@ function signupFB(req, res){
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
     if(err){res.send(err)}
     db.collection("users").count({email: email}, function(error, num){
-      var ret = {"errors": []};
+      var ret = {"errors": [], "userID":""};
       if(error){ ret.errors.push(error); }
       if(num > 0){
         //email already registered
@@ -195,8 +200,13 @@ function signupFB(req, res){
         db.collection("users").findOne({
           email: email
         }, function(err, doc){
-          if(err){ res.send(err)}
+          if(err){
+            ret.errors.push(err);
+            res.send(ret);
+          }
+          ret.userID = doc.userid;
           userID = doc.userid;
+          res.send(ret);
         })
 
 
@@ -204,6 +214,7 @@ function signupFB(req, res){
         db.collection("users").find().sort({"userid":-1}).limit(1).forEach(function(doc){
           try {
             var newID = doc.userid + 1;
+            ret.userID = newID;
             console.log(fbID);
             db.collection("users").insertOne({
               userid: newID,
@@ -261,7 +272,7 @@ function signupFB(req, res){
                   db.close();
                 })
               }, 500);
-
+              res.send(ret);
 
             })
           } catch(e){
@@ -269,9 +280,8 @@ function signupFB(req, res){
           }
         });
       }
-      res.send(ret);
-    });
-  });
+    }); //end users search
+  }); //end mongo connet
 }
 
 function getProfile(req, res){
@@ -754,6 +764,23 @@ app.get('/dashboard/admin', function(req, res){
 })
 app.get('/profile', function(req, res){
   res.sendfile("views/profile.html");
+
+});
+
+app.get('/dashboard/admin-adduser', function(req, res){
+  res.sendfile("views/addUser.html");
+})
+
+app.get('/dashboard/admin-delete', function(req, res){
+  res.sendfile("views/deleteuser.html");
+})
+
+app.get('/dashboard/admin-update', function(req, res){
+  res.sendfile("views/updateuser.html");
+})
+
+app.get('/searchCourse', function(req, res){
+    res.sendfile("views/searchCourse.html");
 })
 
 //routes
@@ -767,11 +794,22 @@ app.use(express.static(__dirname + '/assets'));
 app.use(express.static(__dirname + '/'));
 
 
-var upload = multer({dest: './upload/'});
+var upload = multer({ storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      now = Date.now().toString();
+      require('fs').mkdir('upload/', err => {
+        cb(null, 'upload/');
+      });
+    },
+    filename: (req, file, cb) => {
+      cb(null, userID + '.ics');
+    }
+  })
+});
 
-app.get('/', function(req, res) {
-    //res.sendfile('./views/calander.html');
-    res.sendfile('./views/test.html');
+
+app.get('/uploadCalendar', function(req, res) {
+    res.sendfile('./views/calander.html');
 });
 
 app.post('/comparePage', function(req, res) {
@@ -779,49 +817,85 @@ app.post('/comparePage', function(req, res) {
     res.sendfile('./views/comparison.html');
 });
 
+app.post('/main', function(req, res) {
+    //res.sendfile('./views/calander.html');
+    res.sendfile('./views/mainPage.html');
+});
+
+app.post('/admin', function(req, res) {
+    res.sendfile('./views/dashboardadmin.html');
+});
+
+app.get('/timetable', showtt);
+
+function showtt(req, res){
+  var b;
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+      if (err){
+        res.send(err);
+      }
+      db.collection("timetable").findOne({userid:userID}, function(err,doc){
+        b = doc.courseSummary
+        res.render('displayCalendar', {array: b});
+        //return doc.courseSummary;
+      })
+      db.close();
+  });
+  //res.render('displayCalendar', {array: b['courseSummary']});
+}
+
 
 app.post('/upload', upload.single('calendar_user'), function(req, res, next){
     //var a = routes.convertCal('./upload/coursesCalendar.ics');
-    var c =  routes.convertCal('./upload/courses_Calendar.ics');
-
-    current_userid = '2';
-    var b = routes.processCourse(c,'2');
-
-
+    var c =  routes.convertCal('./upload/' + userID +'.ics');
+    //var array = [];current_userid = userID;
+    //console.log(userID)
+    var b = routes.processCourse(c, userID);
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
         if (err){
-          res.send(err);
+            console.log(error)
         }
-        db.collection("timetable").find({userid: current_userid}, function(err,doc){
-
-            if(err){ res.send(err)}
-            console.log('++++++')
-            console.log(doc)
-            console.log('+++++++')
-
+        db.collection("timetable").findOne({userid:userID}, function(err,doc){
             if(doc == null){
                 try {
+
                     db.collection("timetable").insertOne({
-                        userid: current_userid,
+                        userid: userID,
                         courseSummary: b['courseSummary']
                     }, function(err, doc){
-                        if(err){ res.send(err)}
-                        db.close();
+                        console.log(err)
                     })
+
+                    db.close();
                 } catch(e){
                     console.log(e);
                 }
+
             }
+
             else{
-                db.collection("timetable").findOneAndUpdate({userid: current_userid}, {courseSummary: b['courseSummary']}, function(err, timetable){
+                db.collection("timetable").remove({userid: userID}, function(err, doc){
+                  console.log(err);
+                })
+                db.collection("timetable").insertOne({
+                  userid: userID,
+                  courseSummary: b['courseSummary']
+                }, function(err, doc){
+                   console.log(err)
+
+                db.collection("timetable").findOneAndUpdate({userid: userID}, {userid: userID, courseSummary: b['courseSummary']}, function(err, timetable){
                     if (err) throw err;
                     console.log("Update!")
+                    db.close();
+
                 })
-            }
-        })
-        db.close();
+
+            });
+          }
+      });
     });
-    res.render('displayCalendar', {array: b});
+    fs.unlinkSync('./upload/' + userID +'.ics');
+    res.render('displayCalendar', {array: b['courseSummary']});
 });
 
 app.get('/findUser', routes.findOne);
@@ -829,7 +903,28 @@ app.get('/findUser', routes.findOne);
 app.post('/tempstore', routes.tempstore);
 app.get('/tempget', routes.tempget);
 
+app.get('/recommendedFriends', function(req, res) {
+    res.sendfile('views/recommendedFriends.html');
+});
+
+app.post('/addUser', routes.addUser);
+app.post('/delUser', routes.delUser);
+app.post('/updateUser', routes.updateUser);
+
+
+app.get('/recommendedFriendsGet', routes.recommendedFriends);
+
+app.get('/searchCourse', routes.searchClassmates);
+
+
 app.get('/compare', routes.compare);
 
+app.get('/getUserID', function(req, res){
+  console.log(userID);
+  var data= userID.toString();
+  res.send(data);
+});
+
 app.listen(process.env.PORT || 3000);
+
 console.log('Listening on port 3000');

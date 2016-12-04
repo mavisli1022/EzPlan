@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="css/friend.css" rel="stylesheet" media="screen" />
+    </head>
+    <body background="http://cdn.pcwallart.com/images/universe-stars-background-wallpaper-3.jpg">
+
+        <h4>Find Classmates</h4>
+        <div>
+        <form id="searchCourse" method="get">
+
+            <label id="courseCode">
+                <span class="label">Course Code: </span>
+                <input type="text" id="courseCodeInput" name="courseCodeInput">
+            </label>
+
+            <br>
+
+            <label id="sectionCode">
+                <span class="label">Section Code: </span>
+                <input type="text" id="sectionCodeInput" name="sectionCodeInput">
+            </label>
+
+            <br>
+
+            <input id="searchCourseSubmit" type="submit" value="Submit">
+
+        </form>
+
+        <ul id="course-search-results">
+        </ul>
+        </div>
+
+        <button id="Back" onclick="back()">Go Back</button>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="/js/searchCourse.js"></script>
+    </body>
+</html>

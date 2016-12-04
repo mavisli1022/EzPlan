@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="../assets/script/adduser.js"></script>
+    <link href="../assets/css/dashboardadmin.css" rel="stylesheet" media="screen" />
+    <link href="../assets/css/modifyUser.css" rel = "stylesheet" media="screen" />
+
+</head>
+<body background="http://eskipaper.com/images/dark-universe-hd-1.jpg">
+<div id="addFormDiv" align="center">
+    <form id="addUser" method="post" class = "form-style-4">
+        <label id="addFirstname">
+            <span class="label">First Name: </span>
+            <input type="text" id="addFirstnameInput" name="addFirstnameInput">
+        </label>
+        <br>
+        <label id="addLastname">
+            <span class="label">Last Name: </span>
+            <input type="text" id="addLastnameInput" name="addLastnameInput">
+        </label>
+        <br>
+        <label id="addEmail">
+            <span class="label">Email: </span>
+            <input type="text" id="addEmailInput" name="addEmailInput">
+        </label>
+
+        <br>
+
+        <label id="addPassword">
+            <span class="label">Password: </span>
+            <input type="text" id="addPasswordInput" name="addPasswordInput">
+        </label>
+
+        <br>
+
+        <label id="addLevel">
+            <span class="label">Level</span>
+            <select id="dropDownLevel" name="dropDownLevel">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+        </label>
+        <br>
+        <input id="addUserSubmit" type="submit" value="Submit">
+    </form>
+</div>
+
+<button id = "btn3" onclick="back()">Go Back</button>
+
+</body>
+</html>
+
+

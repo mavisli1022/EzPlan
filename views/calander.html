@@ -7,7 +7,7 @@
     <link href="../assets/css/import_calendar.css" rel="stylesheet"/>
 </head>
 
-<body onload="chooseFile()">
+<body background="http://eskipaper.com/images/dark-universe-hd-1.jpg" onload="chooseFile()">
 
 <form action="/upload" enctype="multipart/form-data" method="post">
     <input type="file" id="myFile" name = "calendar_user" onchange="chooseFile()">
@@ -17,6 +17,7 @@
 
 <p id = "show_file_info"></p>
 
+<button id = "btn3" onclick="back()">Go Back</button>
 </body>
 
 </html>
