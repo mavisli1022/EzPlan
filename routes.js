@@ -202,7 +202,7 @@ exports.recommendedFriends = function(req, res){
                 for(i = 0; i < results_temp.length; i++) {
                     for (var j = 0; j < users.length; j++){
                         if (results_temp[i]["user"] == users[j]["userid"]){
-                            results.push(users[j]);
+                            results.push({user: users[j], common: results_temp[i]["count"]});
                         }
                     }
                 }
