@@ -43,15 +43,13 @@ function login(req, res){
       password: md5(password)
     }, function(err, doc){
       if(err){ res.send(err)}
-      var ret = {errors: []};
+      var ret = {errors: ""};
       if(doc == null){
-        ret.errors.push({
-          field: "general",
-          msg: "Username and Password not found."
-        })
+        ret.errors = "Username or Password not found.";
       } else {
         //login here
         userID = doc.userid;
+        ret.errors = "done";
       }
       res.send(ret);
     })
@@ -98,20 +96,20 @@ function signup(req, res){
 
       if(!validEmail.test(email)){
         ret.errors.push({
-          field: "email",
+          field: "signup-email",
           msg: "Invalid Email."
         });
       }
 
       if(password != confirmpwd){
         ret.errors.push({
-          field: ["password", "confirmpwd"],
+          field: ["pwd", "confirmpwd"],
           msg: "Passwords do not match."
         })
       } else if(!validPwd.test(password)){
         ret.errors.push({
-          field: "password",
-          msg: "Please enter a valid password. Passwords must include 1 uppercase, 1 lowercase, 1 special character and must have a minimum length of 5"
+          field: "pwd",
+          msg: "Please enter a valid password.<br /> Passwords must include 1 uppercase, 1 lowercase, 1 special character and must have a minimum length of 5"
         })
       }
 
@@ -539,17 +537,20 @@ function confirmEmail(req, res){
   var code = req.params.code;
 
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    db.collection("users").findOne({
-      userid: parseInt(userID)
-    }, function(err, doc){
+    db.collection("users").find().forEach(function(doc, err){
       if(md5(doc.email) == code){
-        //set emailverified to true
+        //register session and set verify to true
+        userID = doc.userid;
         db.collection("users").update(
-          {userid: parseInt(userID)},
+          {userid: userID},
           {$set: {emailverified: true}},
           function(err, doc){
+            console.log("hello there");
             if(!err){
-              res.redirect("/");
+              //redirect to dashboard here
+              res.send("verified");
+            } else {
+              res.send(err);
             }
           }
         )
@@ -588,6 +589,13 @@ function changePwd(req, res){
 
   var validPwd = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{5,}$/;
 
+  if(pwd == newpwd){
+    ret.errors.push({
+      field: ["prevpass", "newpass"],
+      msg: "Your new password cannot be the same as your old one!"
+    })
+  }
+
   if(!validPwd.test(newpwd)){
     ret.errors.push({
       field: "newpass",
@@ -600,6 +608,20 @@ function changePwd(req, res){
     })
   }
 
+  //find if password is same
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    db.collection("users").findOne({
+      userid: userID
+    }, function(err, doc){
+      if(doc.password != md5(pwd)){
+        ret.errors.push({
+          field: "prevpass",
+          msg: "Your current password does not match! Please try again."
+        })
+      }
+    })
+  });
+
   if(ret.errors.length == 0){
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
       db.collection("users").update(
@@ -607,7 +629,7 @@ function changePwd(req, res){
         {$set: {password: md5(newpwd)}},
         function(err, doc){
           if(!err){
-            res.redirect("/profile");
+            ret.errors = "done";
           } else {
             ret.errors.push({
               field: "err",
@@ -618,6 +640,7 @@ function changePwd(req, res){
       )
     });
   }
+
 
   setTimeout(function(){
     res.send(ret);

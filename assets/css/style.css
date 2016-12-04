@@ -82,10 +82,22 @@ h1, h3, h2, h4, h5, h6, p {
   border: none;
   font-weight: 100;
   outline: none;
+  cursor: pointer;
 }
 .error.text-field:focus,
 .error.text-field {
   border-color: red;
+}
+.error.msg {
+  color: red;
+  width: 299px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+  line-height: 20px;
+}
+.login-box .error.msg {
+  padding-top: 15px;
 }
 #login-nav {
   list-style-type: none;

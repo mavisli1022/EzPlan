@@ -108,3 +108,11 @@
   text-decoration: none;
   color: #fff;
 }
+#profile-body .error.msg {
+  width: 100%;
+  margin-top: 10px;
+}
+#profile-body .success.msg {
+  color: green;
+  font-weight: bold;
+}

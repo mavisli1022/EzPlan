@@ -87,14 +87,32 @@ $(function(){
     var email = $(".login-box #email").val();
     var password = $(".login-box #password").val();
 
+    console.log(email);
+    console.log(password);
+
     //post request to login
     $.post("/login", {
       email: email,
       password: password
     }, function(data){
-      for(var i = 0; i < data.errors.length; i++){
-        $(".login-box #" + data.errors[i].field).addClass("error");
-        $(".login-box #" + data.errors[i].field).effect("shake");
+      console.log(data);
+      $(".login-box .text-field").removeClass("error");
+      $(".error.msg").remove();
+      if(data.errors != "done"){
+        $(".login-box #password, .login-box #email").addClass("error");
+        $(".login-box #password").effect("shake");
+        $(".login-box #email").effect("shake");
+        $(".login-box #password").after("<div class='error msg'>" + data.errors + "</div>");
+      } else {
+        //check if current user is verified if not send to verified
+        $.get("/session", function(data){
+          if(data.emailverified){
+            //send to dashboard
+          } else {
+            //send to verify email
+            window.location.href = "/email";
+          }
+        })
       }
     });
 
@@ -118,6 +136,26 @@ $(function(){
       confirmpwd: confirmpwd
     }, function(data){
       console.log(data);
+      //remove errors from all text fields
+      $(".sign-up-box .text-field").removeClass("error");
+      $(".sign-up-box .error.msg").remove();
+
+      for(var i = 0; i < data.errors.length; i++){
+        if(typeof data.errors[i].field == "object"){
+          for(var j = 0; j < data.errors[i].field.length; j++){
+            $(".sign-up-box #" + data.errors[i].field[j]).addClass("error");
+            $(".sign-up-box #" + data.errors[i].field[j]).effect("shake");
+            $(".sign-up-box #" + data.errors[i].field[j]).after("<div class='error msg'>" + data.errors[i].msg + "</div>");
+          }
+
+        } else {
+          $(".sign-up-box #" + data.errors[i].field).addClass("error");
+          $(".sign-up-box #" + data.errors[i].field).effect("shake");
+
+          $(".sign-up-box #" + data.errors[i].field).after("<div class='error msg'>" + data.errors[i].msg + "</div>");
+        }
+
+      }
     })
 
   })

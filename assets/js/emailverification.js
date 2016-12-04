@@ -2,6 +2,7 @@ $(function(){
   var sessionID;
   var sessionEmail;
   $.get("/session", function(data){
+    $(".emailed").text(data.email);
     var obj = {
       email: data.email,
       userid: data.userid,

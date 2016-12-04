@@ -96,6 +96,7 @@ $(function(){
 
   //change password
   $("#profile-body .change-pwd-dropdown .confirmpwd-bt a").click(function(e){
+    e.preventDefault();
     var currentPwd = $(".change-pwd-dropdown #prevpass").val();
     var newPwd = $(".change-pwd-dropdown #newpass").val();
     var confnewPwd = $(".change-pwd-dropdown #newpassconf").val();
@@ -108,6 +109,30 @@ $(function(){
 
     $.post('/changepwd', pwds, function(data){
       console.log(data);
+      $(".change-pwd-dropdown .text-field").removeClass("error");
+      $(".change-pwd-dropdown .error.msg").remove();
+      if(data.errors != "done"){
+        for(var i = 0; i < data.errors.length; i++){
+          if(typeof data.errors[i].field == "object"){
+            for(var j = 0; j < data.errors[i].field.length; j++){
+              $(".change-pwd-dropdown #" + data.errors[i].field[j]).addClass("error");
+              $(".change-pwd-dropdown #" + data.errors[i].field[j]).effect("shake");
+              $(".change-pwd-dropdown #" + data.errors[i].field[j]).after("<div class='error msg'>" + data.errors[i].msg + "</div>");
+            }
+          } else {
+            $(".change-pwd-dropdown #" + data.errors[i].field).addClass("error");
+            $(".change-pwd-dropdown #" + data.errors[i].field).effect("shake");
+            $(".change-pwd-dropdown #" + data.errors[i].field).after("<div class='error msg'>" + data.errors[i].msg + "</div>");
+          }
+        }
+      } else {
+        $(".change-pwd-dropdown .text-field").removeClass("error");
+        $(".change-pwd-dropdown .error.msg").remove();
+        $(".change-pwd-dropdown").hide();
+        $(".change-pwd .fa").removeClass("fa-caret-up");
+        $(".change-pwd .fa").addClass("fa-caret-down");
+        $(".change-pwd").parent().append("<div class='success msg'>Password successfully changed</div>");
+      }
     })
 
   })
