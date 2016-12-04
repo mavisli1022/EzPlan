@@ -510,6 +510,10 @@ app.get('/', function(req, res) {
     res.sendfile('./views/test.html');
 });
 
+app.get('/uploadCalendar', function(req, res) {
+    res.sendfile('./views/calander.html');
+});
+
 app.post('/comparePage', function(req, res) {
     //res.sendfile('./views/calander.html');
     res.sendfile('./views/comparison.html');
@@ -535,26 +539,30 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
                         userid: userID,
                         courseSummary: b['courseSummary']
                     }, function(err, doc){
-                        console.log(err);
-                        db.close();
+                        console.log(err)
                     })
                     console.log("after insert")
+                    db.close();
                 } catch(e){
                     console.log(e);
                 }
+                
             }
+
             else{
                 db.collection("timetable").findOneAndUpdate({userid: userID}, {courseSummary: b['courseSummary']}, function(err, timetable){
                     if (err) throw err;
                     console.log("Update!")
+                    db.close();
                 })
+
             }
         })
-        db.close();
     });
     fs.unlinkSync('./upload/calendar.ics');
     res.render('displayCalendar', {array: b['courseSummary']}); 
 });  
+
 app.get('/findUser', routes.findOne);
 
 app.post('/tempstore', routes.tempstore);

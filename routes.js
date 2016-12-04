@@ -18,7 +18,7 @@ exports.convertCal= function(filename){
     //DTSTART;TZID=America/Toronto:20160913T130000
 
 
-    var lines = file.split('\r\n');
+    var lines = file.split('\n');
     var string = [];
     for(var line = 0; line < lines.length; line++){
         if (lines[line].includes("SUMMARY")){
