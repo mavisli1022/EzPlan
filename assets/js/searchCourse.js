@@ -1,14 +1,3 @@
-$(document).ready(function() {
-
-    $("#searchCourse").submit(function (e) {
-        e.preventDefault();
-        var temp = $('#searchCourse').serializeArray();
-        displaySearchedFriends(temp[0].value, temp[1].value);
-
-    });
-
-});
-
 function displaySearchedFriends(courseCode, sectionCode){
     $("ul").empty();
     $.get('/searchCourseGet', {courseCodeInput: courseCode, sectionCodeInput:sectionCode}, function (data) {
@@ -21,10 +10,21 @@ function displaySearchedFriends(courseCode, sectionCode){
             last = friendInfo["lastname"];
             id = friendInfo["userid"];
 
-
+            console.log(first + last + id);
             $("ul#course-search-results").append("<li>" + first + " " + last + " <a class='add' href='/addfriend/" + id + "'>Add friend</a></li>");
         }
 
     });
 
 }
+
+$(document).ready(function() {
+
+    $("#searchCourse").submit(function (e) {
+        e.preventDefault();
+        var temp = $('#searchCourse').serializeArray();
+        displaySearchedFriends(temp[0].value, temp[1].value);
+
+    });
+
+});
