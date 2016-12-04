@@ -1,0 +1,23 @@
+li {
+	margin-top: 5%;
+	width: 16%;
+    padding: 4px 4px;
+    background-color: #2a58fc;
+    color: white;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
+    float: left;
+}
+
+div {
+	color: white;
+	margin-top: 15%;
+	margin-left: 35%;
+	font-size: 50px;
+	width: 20%;
+	padding: 60px 60px;
+	position: absolute;
+	text-align:center;
+	background-color: rgba(245,222,179,0.5);
+}

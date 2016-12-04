@@ -159,19 +159,42 @@ function signupFB(req, res){
   var firstname = req.body.firstname;
   var lastname = req.body.lastname;
   var email = req.body.email;
-  var friends = req.body.friends;
   var fbID = req.body.fbid;
+  var friends = [];
+
+  var totalKeys = Object.keys(req.body);
+  var totallength = -1;
+  for(var i = 0; i < totalKeys.length; i++){
+    if(totalKeys[i].includes("friends")){
+      var thisIndex = totalKeys[i].substring(8, 9);
+      var thisAttr = totalKeys[i].substring(10);
+      var thisValue = req.body[totalKeys[i]];
+
+
+      if(friends[thisIndex] == null){
+        //create object
+        friends[thisIndex] = {};
+        friends[thisIndex].name = thisValue;
+      } else {
+        //add to prev object
+        friends[thisIndex].id = thisValue;
+      }
+    }
+  }
+  //console.log(friends);
 
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    if(err){console.log(err)}
+    if(err){res.send(err)}
     db.collection("users").count({email: email}, function(error, num){
       var ret = {"errors": []};
+      if(error){ ret.errors.push(error); }
       if(num > 0){
         //email already registered
         //just log them in
         db.collection("users").findOne({
           email: email
         }, function(err, doc){
+          if(err){ res.send(err)}
           userID = doc.userid;
         })
 
@@ -189,16 +212,19 @@ function signupFB(req, res){
               password: null,
               level: "user",
               emailverified: false,
+              discoverable: true,
               fbconnected: true,
               fbID: fbID
             }, function(err, doc){
               //populate friends list
+              ret.errors.push(err);
               console.log("init total friends");
               var totalFriends = [];
               for(var i = 0; i < friends.length; i++){
                 db.collection("users").findOne({
                   fbID: friends[i].id
                 }, function(err, doc){
+                  ret.errors.push(err);
                   //if nothing is found, dont do anything
                   if(doc != null){
                     //you are now friends with this person today
@@ -218,6 +244,7 @@ function signupFB(req, res){
                 })
               }
 
+
               //wait for friends to finish populating
               setTimeout(function(){
                 //now insert this shit into friends
@@ -228,7 +255,7 @@ function signupFB(req, res){
 
                 db.collection("friends").insertOne(newUser, function(err, doc){
                   //finally set session
-                  if(err){console.log(err)}
+                  if(err){console.log(err); ret.errors.push(err)}
 
                   userID = newID;
                   db.close();
@@ -505,10 +532,6 @@ var upload = multer({ storage: multer.diskStorage({
   })
 });
 
-app.get('/test', function(req, res) {
-    res.sendfile('./views/calander.html');
-    //res.sendfile('./views/test.html');
-});
 
 app.get('/uploadCalendar', function(req, res) {
     res.sendfile('./views/calander.html');
@@ -572,7 +595,6 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
             }
 
             else{
-                console.log(doc)
                 db.collection("timetable").remove({userid: userID}, function(err, doc){
                   console.log(err);
                 })
@@ -581,10 +603,17 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
                   courseSummary: b['courseSummary']
                 }, function(err, doc){
                    console.log(err)
+
+                db.collection("timetable").findOneAndUpdate({userid: userID}, {userid: userID, courseSummary: b['courseSummary']}, function(err, timetable){
+                    if (err) throw err;
+                    console.log("Update!")
+                    db.close();
+
                 })
 
-            }
-        })
+            });
+        }
+      });
     });
     fs.unlinkSync('./upload/' + userID +'.ics');
     res.render('displayCalendar', {array: b['courseSummary']}); 
@@ -596,6 +625,12 @@ app.post('/tempstore', routes.tempstore);
 app.get('/tempget', routes.tempget);
 
 app.get('/compare', routes.compare);
+
+app.get('/getUserID', function(req, res){
+  console.log(userID);
+  var data= userID.toString();
+res.send(data);
+});
 
 app.listen(process.env.PORT || 3000);
 console.log('Listening on port 3000');
