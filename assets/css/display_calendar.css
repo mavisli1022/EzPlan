@@ -51,18 +51,6 @@ tr:nth-child(odd){
     font-size: 14px;
 }
 
-#btn1 {
-    margin-top: 5%;
-    margin-left: 35%;
-    float: left;
-}
-
-#btn2{
-    margin-top: 5%;
-    margin-left: 35%;
-    float: left;    
-}
-
 
 div {
     left: 2%;
@@ -74,8 +62,13 @@ div {
     margin-bottom: 2%;
 }
 
+#btn1{
+  margin-top: 10%;
+}
 
 button {
+  margin-left: 35%;
+  float: left;
   width: 301px;
   height: 46px;
   margin-top: 47px;

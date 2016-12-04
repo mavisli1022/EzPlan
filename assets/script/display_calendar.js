@@ -106,3 +106,10 @@ function show(Id){
     mergeTimetable(Id);
 }
 
+function back(){
+    var form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/main";
+    document.body.appendChild(form);
+    form.submit();
+}
