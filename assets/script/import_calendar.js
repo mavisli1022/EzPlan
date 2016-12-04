@@ -3,7 +3,7 @@ function chooseFile(){
     var txt = "";
     if ('files' in x) {
         if (x.files.length == 0) {
-            txt = "Please import your calendar";
+            txt = "Please import your calendar and rename it as calendar.ics";
         } else {
             var file = x.files[0];
             txt += "Please click button to submit: "
