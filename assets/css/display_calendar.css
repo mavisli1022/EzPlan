@@ -73,15 +73,16 @@ button {
   height: 46px;
   margin-top: 47px;
   font-size: 16px;
-  background-color: #3498db;
+  background-color: rgba(52,152,219,0.5);
   color: #f5f505;
   border: none;
   font-weight: 100;
   outline: none;
+  cursor: pointer;
 }
 
 button:hover {
-  background: #3cb0fd;
+  background: rgba(52,152,219,0.2);
   text-decoration: none;
 }
 

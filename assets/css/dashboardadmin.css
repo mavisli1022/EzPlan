@@ -18,4 +18,10 @@ button {
   border: none;
   font-weight: 100;
   outline: none;
+  cursor: pointer;
 }
+button:hover {
+    background-color: rgba(52,152,219,0.2);
+    color: white;
+}
+

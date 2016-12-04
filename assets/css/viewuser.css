@@ -1,0 +1,11 @@
+table, td {
+	margin-left: 5%;
+	margin-top: 15%;
+    border-collapse:collapse;
+    border: 1px solid white;
+    font-size: 18px;
+}
+
+th{
+  color: white;
+}
