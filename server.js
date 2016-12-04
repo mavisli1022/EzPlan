@@ -159,8 +159,29 @@ function signupFB(req, res){
   var firstname = req.body.firstname;
   var lastname = req.body.lastname;
   var email = req.body.email;
-  var friends = req.body.friends;
   var fbID = req.body.fbid;
+  var friends = [];
+
+  var totalKeys = Object.keys(req.body);
+  var totallength = -1;
+  for(var i = 0; i < totalKeys.length; i++){
+    if(totalKeys[i].includes("friends")){
+      var thisIndex = totalKeys[i].substring(8, 9);
+      var thisAttr = totalKeys[i].substring(10);
+      var thisValue = req.body[totalKeys[i]];
+
+
+      if(friends[thisIndex] == null){
+        //create object
+        friends[thisIndex] = {};
+        friends[thisIndex].name = thisValue;
+      } else {
+        //add to prev object
+        friends[thisIndex].id = thisValue;
+      }
+    }
+  }
+
 
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
     if(err){console.log(err)}
