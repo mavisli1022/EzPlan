@@ -2,90 +2,125 @@
 <html>
 <head>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="../assets/script/displayRecommended.js"></script>
+    <script type="text/javascript" src="../assets/script/dashboardAdmin.js"></script>
     <link href="../assets/css/style.css" rel="stylesheet" media="screen" />
 
 </head>
 <body>
-<h2>Add Applicant</h2>
-<form id="addApp" method="post">
+<h1>Admin Dashboard</h1>
+<h2>Add User</h2>
+<div id="addFormDiv">
+    <form id="addUser" method="post">
+        <label id="addUserid">
+            <span class="label">User ID: </span>
+            <input type="text" id="addUseridInput" name="addUseridInput">
+        </label>
 
-    <label id="userid">
-        <span class="label">User ID: </span>
-        <input type="text" id="stunum" name="stunum">
-    </label>
+        <br>
 
-    <br>
+        <label id="addFirstname">
+            <span class="label">First Name: </span>
+            <input type="text" id="addFirstnameInput" name="addFirstnameInput">
+        </label>
 
-    <label id="firstname">
-        <span class="label">First Name: </span>
-        <input type="text" id="givenname" name="givenname">
-    </label>
+        <br>
 
-    <br>
+        <label id="addLastname">
+            <span class="label">Last Name: </span>
+            <input type="text" id="addLastnameInput" name="addLastnameInput">
+        </label>
 
-    <label id="lastname">
-        <span class="label">Last Name: </span>
-        <input type="text" id="fname" name="fname">
-    </label>
+        <br>
 
-    <br>
+        <label id="addEmail">
+            <span class="label">Email: </span>
+            <input type="text" id="addEmailInput" name="addEmailInput">
+        </label>
 
-    <label id="email">
-        <span class="label">Email: </span>
-        <input type="text" id="gname" name="gname">
-    </label>
+        <br>
 
-    <br>
+        <label id="addPassword">
+            <span class="label">Password: </span>
+            <input type="text" id="addPasswordInput" name="addPasswordInput">
+        </label>
 
-    <label id="password">
-        <span class="label">Password: </span>
-        <input type="text" id="year" name="year">
-    </label>
+        <br>
 
-    <br>
-
-    <label id="level">
-        <span class="label">Level</span>
-        <form id="dropDownLevel">
-            <select id="dropDownLevel" name="statuses">
+        <label id="addLevel">
+            <span class="label">Level</span>
+            <select id="dropDownLevel" name="dropDownLevel">
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
             </select>
-        </form>
-    </label>
+        </label>
+        <br>
+        <input id="addUserSubmit" type="submit" value="Submit">
+    </form>
+</div>
 
-    <label id="emailverified">
-        <span class="label">Email Verified:</span>
-        <form id="dropDownEmail">
-            <select id="dropDownEmail" name="statuses">
-                <option value="true">Yes</option>
-                <option value="false">No</option>
+<h2>Remove User</h2>
+<div id="removeFormDiv">
+    <form id="removeUserid" method="get">
+        <label>
+            <span class="label">Enter the User ID:</span>
+            <input type="text" id="removeuid" name="removeuid">
+            <input id="remove" type="submit" value="Remove">
+        </label>
+    </form>
+</div>
+<h2>Update User</h2>
+
+<div id="updateFormDiv">
+    <form id="updateUser" method="post">
+
+
+        <label id="updateUserid">
+            <span class="label">User ID: </span>
+            <input type="text" id="updateUseridInput" name="updateUseridInput">
+        </label>
+
+        <br>
+
+        <label id="updateFirstname">
+            <span class="label">First Name: </span>
+            <input type="text" id="updateFirstnameInput" name="updateFirstnameInput">
+        </label>
+
+        <br>
+
+        <label id="updateLastname">
+            <span class="label">Last Name: </span>
+            <input type="text" id="updateLastnameInput" name="updateLastnameInput">
+        </label>
+
+        <br>
+
+        <label id="updateEmail">
+            <span class="label">Email: </span>
+            <input type="text" id="updateEmailInput" name="updateEmailInput">
+        </label>
+
+        <br>
+
+        <label id="updatePassword">
+            <span class="label">Password: </span>
+            <input type="text" id="updatePasswordInput" name="updatePasswordInput">
+        </label>
+
+        <br>
+
+        <label id="updateLevel">
+            <span class="label">Level</span>
+            <select id="dropDownLevelUpdate" name="dropDownLeveUpdate">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
             </select>
-        </form>
-    </label>
+        </label>
+        <br>
+        <input id="updateUserSubmit" type="submit" value="Submit">
+    </form>
+</div>
 
-    <label id="fbconnected">
-        <span class="label">Connected to Facebook:</span>
-        <form id="dropDownFB">
-            <select id="dropDownFB" name="statuses">
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-            </select>
-        </form>
-    </label>
-
-    <label id="fbid">
-        <span class="label">Facebook ID:</span>
-        <input type="text" id="fbid" name="fbid"></input>
-    </label>
-
-    <div id="insertedCourses"></div>
-    <br>
-    <input id="anotherCourse" type="submit" value="Submit">
-    <input id="addButton" type="submit" value="Submit">
-
-</form>
 </body>
 </html>
 

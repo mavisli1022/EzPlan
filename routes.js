@@ -2,6 +2,8 @@ var express = require('express');
 var util = require("util");
 var fs = require("fs");
 var MongoClient = require('mongodb').MongoClient;
+var md5 = require('js-md5');
+
 // @import url('https://fonts.googleapis.com/css?family=NTR');
 
 // Placeholder that contains all of the user objects to be searched through.
@@ -301,17 +303,79 @@ exports.delUser = function(req, res){
 
 exports.updateUser = function(req, res){
     // Update a user given a specified field, and new value.
+
+    var tempUser = req.body;
+
+    console.log(req.body);
+
+    var newUser = {
+        "userid" : tempUser.updateUseridInput,
+        "firstname" : tempUser.updateFirstnameInput,
+        "lastname" : tempUser.updateLastnameInput,
+        "email" : tempUser.updateEmailInput,
+        "password" : md5(tempUser.updatePasswordInput),
+        "level" : tempUser.dropDownLevelUpdate,
+        "emailverified" : true,
+        "fbconnected" : false,
+        "fbID" : null
+    };
+
+    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+        db.collection("users").updateOne({
+            "userid" : tempUser.updateUseridInput,
+        },
+        { $set:
+            {
+                "userid" : tempUser.updateUseridInput,
+                "firstname" : tempUser.updateFirstnameInput,
+                "lastname" : tempUser.updateLastnameInput,
+                "email" : tempUser.updateEmailInput,
+                "password" : md5(tempUser.updatePasswordInput),
+                "level" : tempUser.dropDownLevelUpdate
+            }
+        })
+    });
+
+    console.log(newUser);
+
+    res.send("Success");
 }
 
 exports.addUser = function(req, res){
     // Add a user with info delivered in the request body
-    var newUser = req.body;
+    var tempUser = req.body;
 
-    // TODO: MongoDB stuff that adds user with info specified in the request body.
+    console.log(req.body);
+
+    var newUser = {
+        "userid" : tempUser.addUseridInput,
+        "firstname" : tempUser.addFirstnameInput,
+        "lastname" : tempUser.addLastnameInput,
+        "email" : tempUser.addEmailInput,
+        "password" : md5(tempUser.addPasswordInput),
+        "level" : tempUser.dropDownLevel,
+        "emailverified" : true,
+        "fbconnected" : false,
+        "fbID" : null
+    };
+
+    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+        db.collection("users").insertOne({
+            "userid" : tempUser.addUseridInput,
+            "firstname" : tempUser.addFirstnameInput,
+            "lastname" : tempUser.addLastnameInput,
+            "email" : tempUser.addEmailInput,
+            "password" : md5(tempUser.addPasswordInput),
+            "level" : tempUser.dropDownLevel,
+            "emailverified" : true,
+            "fbconnected" : false,
+            "fbID" : null
+        })
+    });
+
+    console.log(newUser);
 
     res.send("Success");
-
-
 }
 
 // HELPER FUNCTION

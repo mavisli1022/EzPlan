@@ -556,6 +556,8 @@ app.get('/recommendedFriends', function(req, res) {
 });
 
 app.post('/addUser', routes.addUser);
+app.post('/delUser', routes.delUser);
+app.post('/updateUser', routes.updateUser);
 
 
 app.get('/recommendedFriendsGet', routes.recommendedFriends);
