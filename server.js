@@ -505,6 +505,9 @@ app.get('/dashboard', function(req, res){
 app.get('/dashboard/admin', function(req, res){
   res.sendfile("views/dashboardadmin.html");
 })
+app.get('/searchCourse', function(req, res){
+    res.sendfile("views/searchCourse.html");
+})
 
 //routes
 app.post('/login', login);
@@ -624,6 +627,20 @@ app.get('/findUser', routes.findOne);
 app.post('/tempstore', routes.tempstore);
 app.get('/tempget', routes.tempget);
 
+app.get('/recommendedFriends', function(req, res) {
+    res.sendfile('views/recommendedFriends.html');
+});
+
+app.post('/addUser', routes.addUser);
+app.post('/delUser', routes.delUser);
+app.post('/updateUser', routes.updateUser);
+
+
+app.get('/recommendedFriendsGet', routes.recommendedFriends);
+
+app.get('/searchCourse', routes.searchClassmates);
+
+
 app.get('/compare', routes.compare);
 
 app.get('/getUserID', function(req, res){
@@ -633,4 +650,5 @@ res.send(data);
 });
 
 app.listen(process.env.PORT || 3000);
+
 console.log('Listening on port 3000');
