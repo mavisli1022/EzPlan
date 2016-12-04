@@ -125,7 +125,7 @@ exports.compare= function(req, res){
 
                     for(var n=0; n<count; n++) {
                     //console.log(returnOBJ['commonCourse'][n].summary);
-                    if (returnOBJ['commonCourse'][n].summary == ttObj[1].courseSummary[m].summary){
+                    if (returnOBJ.commonCourse[n].summary == ttObj[1].courseSummary[m].summary){
                         exsist=true;
                         break;
                     }
