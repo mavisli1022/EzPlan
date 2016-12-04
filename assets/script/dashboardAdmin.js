@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    console.log("Hello");
+
     $("#addUser").submit(function (e) {
         e.preventDefault();
         $.post('/addUser', $("#addUser").serialize());

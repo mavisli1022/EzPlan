@@ -299,13 +299,22 @@ exports.recommendedFriends = function(req, res){
 
 exports.delUser = function(req, res){
     // Delete a user, specified by userid
+
+    var tempUser = req.body;
+
+    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+        db.collection("users").removeOne({
+            "userid" : tempUser.removeuid
+        });
+    });
+
+
 }
 
 exports.updateUser = function(req, res){
     // Update a user given a specified field, and new value.
 
     var tempUser = req.body;
-
     console.log(req.body);
 
     var newUser = {
@@ -320,21 +329,39 @@ exports.updateUser = function(req, res){
         "fbID" : null
     };
 
-    MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-        db.collection("users").updateOne({
-            "userid" : tempUser.updateUseridInput,
-        },
-        { $set:
-            {
-                "userid" : tempUser.updateUseridInput,
-                "firstname" : tempUser.updateFirstnameInput,
-                "lastname" : tempUser.updateLastnameInput,
-                "email" : tempUser.updateEmailInput,
-                "password" : md5(tempUser.updatePasswordInput),
-                "level" : tempUser.dropDownLevelUpdate
-            }
-        })
-    });
+    if (newUser.level != 'null'){
+        MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+            db.collection("users").updateOne({
+                    "userid" : tempUser.updateUseridInput,
+                },
+                { $set:
+                {
+                    "userid" : tempUser.updateUseridInput,
+                    "firstname" : tempUser.updateFirstnameInput,
+                    "lastname" : tempUser.updateLastnameInput,
+                    "email" : tempUser.updateEmailInput,
+                    "password" : md5(tempUser.updatePasswordInput),
+                    "level" : tempUser.dropDownLevelUpdate
+                }
+                })
+        });
+    }
+    else {
+        MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+            db.collection("users").updateOne({
+                    "userid" : tempUser.updateUseridInput,
+                },
+                { $set:
+                {
+                    "userid" : tempUser.updateUseridInput,
+                    "firstname" : tempUser.updateFirstnameInput,
+                    "lastname" : tempUser.updateLastnameInput,
+                    "email" : tempUser.updateEmailInput,
+                    "password" : md5(tempUser.updatePasswordInput),
+                }
+            });
+        });
+    }
 
     console.log(newUser);
 
