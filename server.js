@@ -553,10 +553,14 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
             }
 
             else{
-                db.collection("timetable").findOneAndUpdate({userid: userID}, {courseSummary: b['courseSummary']}, function(err, timetable){
-                    if (err) throw err;
-                    console.log("Update!")
-                    db.close();
+                db.collection("timetable").remove({userid: userID}, function(err, doc){
+                  console.log(err);
+                })
+                db.collection("timetable").insertOne({
+                  userid: userID,
+                  courseSummary: b['courseSummary']
+                }, function(err, doc){
+                   console.log(err)
                 })
 
             }
