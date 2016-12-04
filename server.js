@@ -511,6 +511,18 @@ app.get('/dashboard', function(req, res){
 app.get('/dashboard/admin', function(req, res){
   res.sendfile("views/dashboardadmin.html");
 })
+app.get('/dashboard/admin-adduser', function(req, res){
+  res.sendfile("views/addUser.html");
+})
+
+app.get('/dashboard/admin-delete', function(req, res){
+  res.sendfile("views/deleteuser.html");
+})
+
+app.get('/dashboard/admin-update', function(req, res){
+  res.sendfile("views/updateuser.html");
+})
+
 app.get('/searchCourse', function(req, res){
     res.sendfile("views/searchCourse.html");
 })
