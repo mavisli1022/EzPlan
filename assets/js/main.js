@@ -12,8 +12,7 @@ $(function(){
       FB.api('/me?fields=email,name', function(response) {
         if(response.error != null){
           alert("You need to authorize first!");
-        }
-        else{
+        } else{
         var fbID = response.id;
         var name = response.name;
         var email = response.email;
@@ -44,7 +43,7 @@ $(function(){
 
                               form.method = "POST";
                               form.action = "/main";
-     
+
                               document.body.appendChild(form);
                               form.submit();
                             }
@@ -54,7 +53,7 @@ $(function(){
 
                               form.method = "POST";
                               form.action = "/admin";
-     
+
                               document.body.appendChild(form);
                               form.submit();
                                 }
@@ -113,41 +112,65 @@ $(function(){
     var email = $(".login-box #email").val();
     var password = $(".login-box #password").val();
 
+    console.log(email);
+    console.log(password);
+
     //post request to login
     $.post("/login", {
       email: email,
       password: password
     }, function(data){
-             console.log(JSON.stringify(data));
-            if(data.error == null || data.error.length== 0){
-                        $.get("/getuser/" + data.userID, function(resp){
-                          if(resp.level == "user")
-                            {
-                              var form = document.createElement("form");
+      console.log(data);
+      $(".login-box .text-field").removeClass("error");
+      $(".error.msg").remove();
+      if(data.errors != "done"){
+        $(".login-box #password, .login-box #email").addClass("error");
+        $(".login-box #password").effect("shake");
+        $(".login-box #email").effect("shake");
+        $(".login-box #password").after("<div class='error msg'>" + data.errors + "</div>");
+      } else {
+        //check if current user is verified if not send to verified
+        $.get("/session", function(data){
+          if(data.emailverified){
+            //send to dashboard
+            $.get("/getuser/" + data.userid, function(resp){
+              if(resp.level == "user") {
+                  var form = document.createElement("form");
 
-                              form.method = "POST";
-                              form.action = "/main";
-     
-                              document.body.appendChild(form);
-                              form.submit();
-                            }
-                            else
-                                {
-                                var form = document.createElement("form");
+                  form.method = "POST";
+                  form.action = "/main";
 
-                              form.method = "POST";
-                              form.action = "/admin";
-     
-                              document.body.appendChild(form);
-                              form.submit();
-                                }
-                      });
+                  document.body.appendChild(form);
+                  form.submit();
+                } else if(resp.level == "admin") {
+                    var form = document.createElement("form");
+
+                  form.method = "POST";
+                  form.action = "/admin";
+
+                  document.body.appendChild(form);
+                  form.submit();
+                }
+              });
+            } else {
+              window.location.href = "/email";
             }
 
-            else{
+            if(typeof data.errors.field != "object"){
               for(var i = 0; i < data.errors.length; i++){
-              $(".login-box #" + data.errors[i].field).addClass("error");
-              $(".login-box #" + data.errors[i].field).effect("shake");
+                $(".login-box #" + data.errors[i].field).addClass("error");
+                $(".login-box #" + data.errors[i].field).effect("shake");
+              }
+            } else {
+              for(var i = 0; i < data.errors.length; i++){
+                for(var j = 0; j < data.errors[i].field.length; j++){
+                  $(".login-box #" + data.errors[i].field[j]).addClass("error");
+                  $(".login-box #" + data.errors[i].field[j]).effect("shake");
+                }
+              }
+            }
+          })
+
       }
     }
     });
@@ -172,6 +195,26 @@ $(function(){
       confirmpwd: confirmpwd
     }, function(data){
       console.log(data);
+      //remove errors from all text fields
+      $(".sign-up-box .text-field").removeClass("error");
+      $(".sign-up-box .error.msg").remove();
+
+      for(var i = 0; i < data.errors.length; i++){
+        if(typeof data.errors[i].field == "object"){
+          for(var j = 0; j < data.errors[i].field.length; j++){
+            $(".sign-up-box #" + data.errors[i].field[j]).addClass("error");
+            $(".sign-up-box #" + data.errors[i].field[j]).effect("shake");
+            $(".sign-up-box #" + data.errors[i].field[j]).after("<div class='error msg'>" + data.errors[i].msg + "</div>");
+          }
+
+        } else {
+          $(".sign-up-box #" + data.errors[i].field).addClass("error");
+          $(".sign-up-box #" + data.errors[i].field).effect("shake");
+
+          $(".sign-up-box #" + data.errors[i].field).after("<div class='error msg'>" + data.errors[i].msg + "</div>");
+        }
+
+      }
     })
 
   })
