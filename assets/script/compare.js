@@ -22,8 +22,6 @@ var form = document.createElement("form");
 
 form.method = "POST";
 form.action = "/comparePage";
-var element1 = document.createElement("input");
-form.appendChild(element1);
 document.body.appendChild(form);
 form.submit();
 
@@ -205,4 +203,15 @@ function mergeTimetable(){
                         }
                     }
     }
+
+
+function back(){
+var form = document.createElement("form");
+
+form.method = "POST";
+form.action = "/main";
+document.body.appendChild(form);
+form.submit();
+
+}
 
