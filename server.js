@@ -44,7 +44,7 @@ function login(req, res){
     }, function(err, doc){
       var ret = {"errors": [], "userID": ""};
       if(doc == null){
-        ret.errors = "Username and Password not found."; 
+        ret.errors = "Username and Password not found.";
         res.send(ret);
       } else {
         //login here
@@ -142,8 +142,14 @@ function signup(req, res){
                 //finish everything
 
                 if(err){ res.send(err)}
-                userID = newid;
-                db.close();
+                db.collection("friends").insertOne({
+                  userid: newid,
+                  friends: []
+                }, function(err, doc){
+                  userID = newid;
+                  db.close();
+                })
+
               })
             } catch(e){
               console.log(e);
@@ -632,6 +638,7 @@ function changePwd(req, res){
       userid: userID
     }, function(err, doc){
       if(doc.password != md5(pwd)){
+        console.log(ret.errors);
         ret.errors.push({
           field: "prevpass",
           msg: "Your current password does not match! Please try again."

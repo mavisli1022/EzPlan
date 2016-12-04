@@ -31,14 +31,14 @@ function displayFriends(data){
   var friendID = [];
   console.log(JSON.stringify(data));
   for(var i = 0; i < data.friends.length; i++){
-     friendID[i]= data.friends[i].userid;
+    friendID[i]= data.friends[i].userid;
     console.log(friendID);
   }
 
   for(var j=0; j<friendID.length;j++){
     $.get("/getuser/" + friendID[j], function(resp){
-      $("ul#friends-list").append("<li>" + resp.firstname + " " + resp.lastname + " " + 
-        "<button id='"+ resp.userid + "' onclick='prepare(this.id)'> Compare Timetable</button>"    
+      $("ul#friends-list").append("<li>" + resp.firstname + " " + resp.lastname + " " +
+        "<button id='"+ resp.userid + "' onclick='prepare(this.id)'> Compare Timetable</button>"
         + " <a class='remove' href='/removefriend/" + resp.userid + "'>Remove friend</a></li>");
     });
   }

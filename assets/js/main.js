@@ -181,6 +181,11 @@ $(function(){
       confirmpwd: confirmpwd
     }, function(data){
       console.log(data);
+      console.log(data.errors.length);
+      if(data.errors == null || data.errors.length == 0){
+        window.location.href = "/email";
+      }
+
       //remove errors from all text fields
       $(".sign-up-box .text-field").removeClass("error");
       $(".sign-up-box .error.msg").remove();
