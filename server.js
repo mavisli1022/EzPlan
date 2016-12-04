@@ -500,7 +500,7 @@ var upload = multer({ storage: multer.diskStorage({
       });
     },
     filename: (req, file, cb) => {
-      cb(null, file.originalname.split('/').pop().trim());
+      cb(null, userID + '.ics');
     }
   })
 });
@@ -521,7 +521,7 @@ app.post('/comparePage', function(req, res) {
 
 app.post('/upload', upload.single('calendar_user'), function(req, res, next){
     //var a = routes.convertCal('./upload/coursesCalendar.ics');
-    var c =  routes.convertCal('./upload/calendar.ics');
+    var c =  routes.convertCal('./upload/' + userID +'.ics');
     //var array = [];current_userid = userID;
     console.log(userID)
     var b = routes.processCourse(c, userID);
@@ -530,18 +530,16 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
             console.log(error)
         }
         db.collection("timetable").findOne({userid:userID}, function(err,doc){
-          console.log("2123")
-          console.log(doc)
             if(doc == null){
                 try {
-                    console.log("S-IN-INSERT")
+                    
                     db.collection("timetable").insertOne({
                         userid: userID,
                         courseSummary: b['courseSummary']
                     }, function(err, doc){
                         console.log(err)
                     })
-                    console.log("after insert")
+                    
                     db.close();
                 } catch(e){
                     console.log(e);
@@ -559,7 +557,7 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
             }
         })
     });
-    fs.unlinkSync('./upload/calendar.ics');
+    fs.unlinkSync('./upload/' + userID +'.ics');
     res.render('displayCalendar', {array: b['courseSummary']}); 
 });  
 
