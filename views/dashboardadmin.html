@@ -1,138 +1,22 @@
+
 <!DOCTYPE html>
 <html>
 <head>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="../assets/script/dashboardAdmin.js"></script>
-    <link href="../assets/css/style.css" rel="stylesheet" media="screen" />
+    <link href="../assets/css/dashboardadmin.css" rel="stylesheet" media="screen" />
 
 </head>
-<body>
-<h1>Admin Dashboard</h1>
-
 
 <table id="list-of-users"></table>
 
-<h2>Add User</h2>
-<div id="addFormDiv">
-    <form id="addUser" method="post">
 
-        <label id="addFirstname">
-            <span class="label">First Name: </span>
-            <input type="text" id="addFirstnameInput" name="addFirstnameInput">
-        </label>
-
-        <br>
-
-        <label id="addLastname">
-            <span class="label">Last Name: </span>
-            <input type="text" id="addLastnameInput" name="addLastnameInput">
-        </label>
-
-        <br>
-
-        <label id="addEmail">
-            <span class="label">Email: </span>
-            <input type="text" id="addEmailInput" name="addEmailInput">
-        </label>
-
-        <br>
-
-        <label id="addPassword">
-            <span class="label">Password: </span>
-            <input type="text" id="addPasswordInput" name="addPasswordInput">
-        </label>
-
-        <br>
-
-        <label id="addLevel">
-            <span class="label">Level</span>
-            <select id="dropDownLevel" name="dropDownLevel">
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-            </select>
-        </label>
-        <br>
-        <input id="addUserSubmit" type="submit" value="Submit">
-    </form>
-</div>
-
-<h2>Remove User</h2>
-<div id="removeFormDiv">
-    <form id="removeUserid" method="get">
-        <label>
-            <span class="label">Enter the User ID:</span>
-            <input type="text" id="removeuid" name="removeuid">
-            <input id="remove" type="submit" value="Remove">
-        </label>
-    </form>
-</div>
-<h2>Update User</h2>
-
-<div id="updateFormDiv">
-    <form id="updateUser" method="post">
+<body background="http://eskipaper.com/images/dark-universe-hd-1.jpg">
 
 
-        <label id="updateUserid">
-            <span class="label">User ID: </span>
-            <input type="text" id="updateUseridInput" name="updateUseridInput">
-        </label>
-
-        <br>
-
-        <label id="updateFirstname">
-            <span class="label">First Name: </span>
-            <input type="text" id="updateFirstnameInput" name="updateFirstnameInput">
-        </label>
-
-        <br>
-
-        <label id="updateLastname">
-            <span class="label">Last Name: </span>
-            <input type="text" id="updateLastnameInput" name="updateLastnameInput">
-        </label>
-
-        <br>
-
-        <label id="updateEmail">
-            <span class="label">Email: </span>
-            <input type="text" id="updateEmailInput" name="updateEmailInput">
-        </label>
-
-        <br>
-
-        <label id="updatePassword">
-            <span class="label">Password: </span>
-            <input type="text" id="updatePasswordInput" name="updatePasswordInput">
-        </label>
-
-        <br>
-
-        <label id="updateLevel">
-            <span class="label">Level</span>
-            <select id="dropDownLevelUpdate" name="dropDownLeveUpdate">
-                <option value="null"></option>
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-            </select>
-        </label>
-
-        <br>
-
-        <label id="updateDiscoverable">
-            <span class="label">Discoverable:</span>
-            <select id="dropDownLevelDiscoverable" name="dropDownDiscoverableUpdate">
-                <option value="null"></option>
-                <option value=true>Discoverable</option>
-                <option value=false>Not Discoverable</option>
-            </select>
-        </label>
-        <br>
-        <input id="updateUserSubmit" type="submit" value="Submit">
-    </form>
-</div>
-
+<button id = "btn1" onclick="window.location.href='/dashboard/admin-adduser'">ADD NEW USER</button>
+<button id = "btn2" onclick = "window.location.href = '/dashboard/admin-delete'">REMOVE USER</button>
+<button id = "btn3" onclick = "window.location.href = '/dashboard/admin-update'">UPDATE USER</button>
 
 </body>
 </html>
-
-
