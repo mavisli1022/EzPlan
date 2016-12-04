@@ -23,7 +23,8 @@ $(function(){
           firstname: firstname,
           lastname: lastname,
           email: email,
-          fbid: fbID
+          fbid: fbID,
+          friends: []
         }
 
         FB.api("/me/friends", function (response) {

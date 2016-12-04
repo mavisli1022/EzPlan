@@ -159,9 +159,18 @@ function signupFB(req, res){
   var firstname = req.body.firstname;
   var lastname = req.body.lastname;
   var email = req.body.email;
-  var friends = req.body.friends;
   var fbID = req.body.fbid;
+  var friends = [];
 
+  var totalKeys = Object.keys(req.body);
+  for(var i = 0; i < totalKeys.length; i++){
+    if(totalKeys[i].includes("friends")){
+      var thisKey = parseInt(totalKeys[i].substring(8, 9));
+      console.log(thisKey);
+    }
+  }
+
+  console.log(friends);
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
     if(err){console.log(err)}
     db.collection("users").count({email: email}, function(error, num){
@@ -447,6 +456,18 @@ function addFriendByID(req, res){
 
 }
 
+function getAllUsers(req, res){
+  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    var ret = [];
+    db.collection("users").find().forEach(function(doc, err){
+      ret.push(doc);
+    })
+    setTimeout(function(){
+      res.send(ret);
+    }, 500);
+  });
+}
+
 //routes
 app.post('/login', login);
 app.post('/signup', signup);
@@ -463,6 +484,7 @@ app.get('/findfriends/email/:email', getFriendsByEmail);
 app.get('/addfriend/:id', addFriendByID);
 
 //Admin functions
+app.get('/users', getAllUsers);
 
 
 //view routes
@@ -480,8 +502,6 @@ app.get('/dashboard/admin', function(req, res){
 })
 
 //routes
-app.post('/login', login);
-app.post('/signup', signup);
 app.set('view engine', 'pug');
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
