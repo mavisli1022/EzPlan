@@ -1,5 +1,3 @@
-
-
 doctype html
 html(lang = "en")
 
@@ -14,16 +12,14 @@ body
 
 	table#hiddenTable
 		for i in k
-			for m in i.courseSummary
-				tr 
-					td !{JSON.stringify(m.summary)}
-				tr 
-					td !{JSON.stringify(m.day)}
-				tr 	
-					td !{JSON.stringify(m.start)}
-				tr
-					td !{JSON.stringify(m.end)}
-				tr
-					td !{JSON.stringify(m.term)}
-
-
+				for j in i
+					tr 
+						td !{JSON.stringify(j.summary)}
+					tr 
+						td !{JSON.stringify(j.day)}
+					tr 	
+						td !{JSON.stringify(j.start)}
+					tr
+						td !{JSON.stringify(j.end)}
+					tr
+						td !{JSON.stringify(j.term)}
