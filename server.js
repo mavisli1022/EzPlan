@@ -181,6 +181,7 @@ function signupFB(req, res){
       }
     }
   }
+  //console.log(friends);
 
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
     if(err){res.send(err)}
@@ -242,6 +243,7 @@ function signupFB(req, res){
                   }
                 })
               }
+
 
               //wait for friends to finish populating
               setTimeout(function(){
@@ -609,6 +611,12 @@ app.post('/tempstore', routes.tempstore);
 app.get('/tempget', routes.tempget);
 
 app.get('/compare', routes.compare);
+
+app.get('/getUserID', function(req, res){
+  console.log(userID);
+  var data= userID.toString();
+res.send(data);
+});
 
 app.listen(process.env.PORT || 3000);
 console.log('Listening on port 3000');
