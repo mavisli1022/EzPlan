@@ -506,8 +506,8 @@ var upload = multer({ storage: multer.diskStorage({
 });
 
 app.get('/test', function(req, res) {
-    res.sendfile('./views/calander.html');
-    //res.sendfile('./views/test.html');
+    //res.sendfile('./views/calander.html');
+    res.sendfile('./views/test.html');
 });
 
 app.get('/uploadCalendar', function(req, res) {
@@ -553,6 +553,7 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
             }
 
             else{
+
                 db.collection("timetable").remove({userid: userID}, function(err, doc){
                   console.log(err);
                 })
@@ -561,10 +562,17 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
                   courseSummary: b['courseSummary']
                 }, function(err, doc){
                    console.log(err)
+
+                db.collection("timetable").findOneAndUpdate({userid: userID}, {userid: userID, courseSummary: b['courseSummary']}, function(err, timetable){
+                    if (err) throw err;
+                    console.log("Update!")
+                    db.close();
+
                 })
 
-            }
-        })
+            });
+        }
+              });
     });
     fs.unlinkSync('./upload/' + userID +'.ics');
     res.render('displayCalendar', {array: b['courseSummary']}); 
