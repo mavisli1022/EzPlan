@@ -19,7 +19,7 @@ friends: contains friend lists of all users<br>
 timetable: contains all uploaded timetable of each user<br>
 
 
-#To start
+#To start locally
 
 `npm install` - install all required packages<br><br>
 
