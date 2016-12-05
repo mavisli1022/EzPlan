@@ -17,3 +17,12 @@ collections:<br>
 users: contains all user profile data<br>
 friends: contains friend lists of all users<br>
 timetable: contains all uploaded timetable of each user<br>
+
+
+#To start
+
+`npm install` - install all required packages<br><br>
+
+`node server` - start the server<br><br>
+
+`localhost:3000`
