@@ -92,7 +92,7 @@ function signup(req, res){
   var ret = {errors: []};
 
   var validEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  var validPwd = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{5,}$/;
+  var validPwd = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&_]{5,}$/;
   var validFname = /^[A-Z][a-z]+$/;
   var validLname = /^[A-Z][a-z]+$/;
 
@@ -135,7 +135,7 @@ function signup(req, res){
       } else if(!validPwd.test(password)){
         ret.errors.push({
           field: "pwd",
-          msg: "Please enter a valid password.<br /> Passwords must include 1 uppercase, 1 lowercase, 1 special character and must have a minimum length of 5"
+          msg: "Please enter a valid password.<br /> Passwords must include 1 uppercase, 1 lowercase, 1 special character and must have a minimum length of 5. No Underscores!"
         })
       }
 
