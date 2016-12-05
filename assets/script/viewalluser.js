@@ -20,7 +20,7 @@ $(document).ready(function() {
         row.insertCell(6).innerHTML = "emailverified";
         row.insertCell(7).innerHTML = "discoverable";
         row.insertCell(8).innerHTML = "fbconnected";
-        row.insertCell(9).innerHTML = "fbid";
+        //row.insertCell(9).innerHTML = "fbid";
 
         for (var i = 0; i < data.length; i++) {
             row = parent.insertRow();
@@ -34,7 +34,7 @@ $(document).ready(function() {
             row.insertCell(6).innerHTML = data[i].emailverified.toString();
             row.insertCell(7).innerHTML = data[i].discoverable;
             row.insertCell(8).innerHTML = data[i].fbconnected.toString();
-            row.insertCell(9).innerHTML = data[i].fbid;
+            //row.insertCell(9).innerHTML = data[i].fbid;
 
         }
 

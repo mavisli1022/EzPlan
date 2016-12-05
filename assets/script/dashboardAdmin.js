@@ -63,8 +63,7 @@ $(document).ready(function() {
         location.reload(true);
     });
 
-    displayAllUsers();
+    //displayAllUsers();
 
 
 });
-
