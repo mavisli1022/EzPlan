@@ -3,7 +3,6 @@ function displayAllUsers() {
     var allRowsCount = 0;
 
     $.get('/allUsers', {}, function (data) {
-        console.log(data);
 
         var table = document.getElementById("list-of-users");
         for (var i = 0; i < allRowsCount; i++) {
@@ -21,7 +20,6 @@ function displayAllUsers() {
         row.insertCell(6).innerHTML = "emailverified";
         row.insertCell(7).innerHTML = "discoverable";
         row.insertCell(8).innerHTML = "fbconnected";
-        row.insertCell(9).innerHTML = "fbid";
 
         for (var i = 0; i < data.length; i++) {
             row = parent.insertRow();
@@ -33,9 +31,8 @@ function displayAllUsers() {
             row.insertCell(4).innerHTML = data[i].password;
             row.insertCell(5).innerHTML = data[i].level;
             row.insertCell(6).innerHTML = data[i].emailverified.toString();
-            row.insertCell(7).innerHTML = data[i].discoverable;
+            row.insertCell(7).innerHTML = data[i].discoverable.toString();
             row.insertCell(8).innerHTML = data[i].fbconnected.toString();
-            row.insertCell(9).innerHTML = data[i].fbid;
 
         }
 
@@ -61,7 +58,8 @@ $(document).ready(function() {
 
     $("#updateUser").submit(function (e) {
         e.preventDefault();
-        $.post('/updateUser', $("#updateUser").serialize());
+        console.log("Hello");
+        $.post('/updateUser', $("#updateUser"));
         location.reload(true);
     });
 
