@@ -25,4 +25,4 @@ timetable: contains all uploaded timetable of each user<br>
 
 `node server` - start the server<br><br>
 
-`localhost:3000`
+`localhost:3000` - start the application
