@@ -15,4 +15,4 @@ username: ezplan , password:12ezplan34 <br>
 collections:<br>
 users: contains all user profile data<br>
 friends: contains friend lists of all users<br>
-timetables: contains all uploaded timetable of each user<br>
+timetable: contains all uploaded timetable of each user<br>
