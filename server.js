@@ -336,8 +336,8 @@ function verifyEmail(req, res){
     from: '"EzPlan" <shrey.kumar.ca@gmail.com>',
     to: email,
     subject: name + ', confirm your email',
-    text: "What's up " + name + ", Welcome to Ezplan! We just need you to do 1 more thing...Click this link to confirm your email: http://localhost:3000/verify/" + code,
-    html: "<h1>What's up " + name + ",</h1><br><p>Welcome to <b>Ezplan</b>!</p> <p>We just need you to do 1 more thing...Click this <a href='http://localhost:3000/verify/" + code +"'>link</a> to confirm your email.</p>"
+    text: "What's up " + name + ", Welcome to Ezplan! We just need you to do 1 more thing...Click this link to confirm your email: http://ezplan.herokuapp.com/verify/" + code,
+    html: "<h1>What's up " + name + ",</h1><br><p>Welcome to <b>Ezplan</b>!</p> <p>We just need you to do 1 more thing...Click this <a href='http://ezplan.herokuapp.com/verify/" + code +"'>link</a> to confirm your email.</p>"
   }
 
   transporter.sendMail(mailOptions, function(error, info){
@@ -912,4 +912,3 @@ app.get('/getUserID', function(req, res){
 app.listen(process.env.PORT || 3000);
 
 console.log('Listening on port 3000');
-
