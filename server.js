@@ -7,21 +7,43 @@ var nodemailer = require('nodemailer');
 var fs = require('fs');
 var multer = require('multer');
 var routes = require('./routes.js');
-//create nodemailer transport system
 var transporter = nodemailer.createTransport('smtps://shrey.kumar.ca%40gmail.com:8809asAS@smtp.gmail.com');
 
 var app = express();
 
 var userID = "";
 
-//assets and files
+
 app.use(express.static(__dirname + '/assets'));
 app.use(express.static(__dirname + '/views'));
+app.use(express.static(__dirname + '/'));
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: false
 }));
+
+app.set('view engine', 'pug');
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+    extended: true
+}));
+
+
+
+
+var upload = multer({ storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      now = Date.now().toString();
+      require('fs').mkdir('upload/', err => {
+        cb(null, 'upload/');
+      });
+    },
+    filename: (req, file, cb) => {
+      cb(null, userID + '.ics');
+    }
+  })
+});
 
 //define session variable
 app.use(session({
@@ -32,6 +54,7 @@ app.use(session({
 }))
 
 
+/* User log in*/
 function login(req, res){
   var email = req.body.email;
   var password = req.body.password;
@@ -59,6 +82,7 @@ function login(req, res){
   });
 }
 
+/*User sign up*/
 function signup(req, res){
   var firstname = req.body.firstname;
   var lastname = req.body.lastname;
@@ -165,6 +189,7 @@ function signup(req, res){
   });
 }
 
+/*User sign up by Facebook account*/
 function signupFB(req, res){
   var firstname = req.body.firstname;
   var lastname = req.body.lastname;
@@ -287,6 +312,7 @@ function signupFB(req, res){
   }); //end mongo connet
 }
 
+/*Get current user profile*/
 function getProfile(req, res){
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
     var userid = userID;
@@ -298,6 +324,7 @@ function getProfile(req, res){
   });
 }
 
+/*Verify user email address*/
 function verifyEmail(req, res){
   var email = req.body.email;
   var userid = req.body.userid;
@@ -322,33 +349,26 @@ function verifyEmail(req, res){
 
 }
 
-function confirmEmail(req, res){
-  var code = req.params.code;
-
+/*Show timetable for current user*/
+function showtt(req, res){
+  var b;
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-    db.collection("users").findOne({
-      userid: parseInt(userID)
-    }, function(err, doc){
-      if(err){ res.send(err); }
-      if(md5(doc.email) == code){
-        //set emailverified to true
-        db.collection("users").update(
-          {userid: parseInt(userID)},
-          {$set: {emailverified: true}},
-          function(err, doc){
-            if(!err){
-              res.redirect("/dashboard");
-            } else {
-              res.send(err);
-            }
-          }
-        )
+      if (err){
+        res.send(err);
       }
-    })
+      db.collection("timetable").findOne({userid:userID}, function(err,doc){
+        b = doc.courseSummary
+        res.render('displayCalendar', {array: b});
+        //return doc.courseSummary;
+      })
+      db.close();
   });
-
 }
 
+
+
+
+/*Get current user's friends list*/
 function getFriends(req, res){
   var sessionUser = userID;
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
@@ -363,6 +383,7 @@ function getFriends(req, res){
 
 }
 
+/*Search user by user id*/
 function getUserByID(req, res){
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
     var currentID = req.params.id;
@@ -377,6 +398,7 @@ function getUserByID(req, res){
   });
 }
 
+/*Remove friends by user ID*/
 function removeFriendByID(req, res){
   var sessionID = userID;
   var currentID = parseInt(req.params.id);
@@ -400,6 +422,7 @@ function removeFriendByID(req, res){
   });
 }
 
+/*Get friends by their first name*/
 function getFriendsByFname(req, res){
   var name = req.params.name;
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
@@ -420,6 +443,7 @@ function getFriendsByFname(req, res){
   });
 }
 
+/*Get friends by their email address*/
 function getFriendsByEmail(req, res){
   var email = req.params.email;
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
@@ -440,6 +464,7 @@ function getFriendsByEmail(req, res){
   });
 }
 
+/*Get friends by their full name*/
 function getFriendsByFullName(req, res){
   var firstname = req.params.first;
   var lastname = req.params.last;
@@ -464,6 +489,7 @@ function getFriendsByFullName(req, res){
 
 }
 
+/* Add user by user ID*/
 function addFriendByID(req, res){
   //check if user already a friend, if not add it in
   var friendID = req.params.id;
@@ -498,6 +524,7 @@ function addFriendByID(req, res){
 
 }
 
+/*Get all users*/
 function getAllUsers(req, res){
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
     var ret = [];
@@ -511,6 +538,7 @@ function getAllUsers(req, res){
   });
 }
 
+/*Get user's friends*/
 function getFriends(req, res){
   var sessionUser = userID;
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
@@ -522,30 +550,9 @@ function getFriends(req, res){
   });
 
 }
-function verifyEmail(req, res){
-  var email = req.body.email;
-  var userid = req.body.userid;
-  var name = req.body.fname;
 
-  var code = md5(email);
-  //send email to "email"
-  var mailOptions = {
-    from: '"EzPlan" <shrey.kumar.ca@gmail.com>',
-    to: email,
-    subject: name + ', confirm your email',
-    text: "What's up " + name + ", Welcome to Ezplan! We just need you to do 1 more thing...Click this link to confirm your email: http://localhost:3000/verify/" + code,
-    html: "<h1>What's up " + name + ",</h1><br><p>Welcome to <b>Ezplan</b>!</p> <p>We just need you to do 1 more thing...Click this <a href='http://localhost:3000/verify/" + code +"'>link</a> to confirm your email.</p>"
-  }
 
-  transporter.sendMail(mailOptions, function(error, info){
-    if(error){
-      return res.send(error);
-    }
-    res.send(info.response);
-  });
-
-}
-
+/*Confirm user's email*/
 function confirmEmail(req, res){
   var code = req.params.code;
 
@@ -583,6 +590,7 @@ function confirmEmail(req, res){
   });
 }
 
+/*set discoverability for user*/
 function toggleDiscoverability(req, res){
   var changed;
   if(req.params.changed == "true"){
@@ -605,6 +613,7 @@ function toggleDiscoverability(req, res){
   });
 }
 
+/*change users password*/
 function changePwd(req, res){
   var pwd = req.body.current;
   var newpwd = req.body.newPass;
@@ -673,6 +682,7 @@ function changePwd(req, res){
 
 }
 
+/*Edit user's profile*/
 function editProfile(req, res){
   var first = req.body.firstname;
   var last = req.body.lastname;
@@ -737,10 +747,12 @@ function editProfile(req, res){
     });
 }
 
+/*Log out current user*/
 function logout(req, res){
   userID = "";
   res.redirect("/");
 }
+
 //routes
 app.post('/login', login);
 app.post('/signup', signup);
@@ -759,12 +771,24 @@ app.post('/toggledisc/:changed', toggleDiscoverability);
 app.post('/changepwd', changePwd);
 app.post('/edit', editProfile);
 app.get('/logout', logout);
-
-//Admin functions
 app.get('/users', getAllUsers);
+app.get('/timetable', showtt);
+app.get('/findUser', routes.findOne);
+app.post('/tempstore', routes.tempstore);
+app.get('/tempget', routes.tempget);
+app.post('/addUser', routes.addUser);
+app.post('/delUser', routes.delUser);
+app.post('/updateUser', routes.updateUser);
+app.get('/recommendedFriendsGet', routes.recommendedFriends);
+app.get('/searchCourseGet', routes.searchClassmates);
+app.get('/allUsers', routes.allUsers);
 
 
+app.get('/compare', routes.compare);
 //view routes
+app.get('/recommendedFriends', function(req, res) {
+    res.sendfile('views/recommendedFriends.html');
+});
 app.get('/email', function(req, res){
   res.sendfile("views/email.html");
 });
@@ -798,42 +822,15 @@ app.get('/searchCourse', function(req, res){
     res.sendfile("views/searchCourse.html");
 })
 
-//routes
-app.set('view engine', 'pug');
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-    extended: true
-}));
-
-app.use(express.static(__dirname + '/assets'));
-app.use(express.static(__dirname + '/'));
-
-
-var upload = multer({ storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      now = Date.now().toString();
-      require('fs').mkdir('upload/', err => {
-        cb(null, 'upload/');
-      });
-    },
-    filename: (req, file, cb) => {
-      cb(null, userID + '.ics');
-    }
-  })
-});
-
-
 app.get('/uploadCalendar', function(req, res) {
     res.sendfile('./views/calander.html');
 });
 
 app.post('/comparePage', function(req, res) {
-    //res.sendfile('./views/calander.html');
     res.sendfile('./views/comparison.html');
 });
 
 app.post('/main', function(req, res) {
-    //res.sendfile('./views/calander.html');
     res.sendfile('./views/mainPage.html');
 });
 
@@ -841,30 +838,9 @@ app.post('/admin', function(req, res) {
     res.sendfile('./views/dashboardadmin.html');
 });
 
-app.get('/timetable', showtt);
-
-function showtt(req, res){
-  var b;
-  MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-      if (err){
-        res.send(err);
-      }
-      db.collection("timetable").findOne({userid:userID}, function(err,doc){
-        b = doc.courseSummary
-        res.render('displayCalendar', {array: b});
-        //return doc.courseSummary;
-      })
-      db.close();
-  });
-  //res.render('displayCalendar', {array: b['courseSummary']});
-}
-
 
 app.post('/upload', upload.single('calendar_user'), function(req, res, next){
-    //var a = routes.convertCal('./upload/coursesCalendar.ics');
     var c =  routes.convertCal('./upload/' + userID +'.ics');
-    //var array = [];current_userid = userID;
-    //console.log(userID)
     var b = routes.processCourse(c, userID);
     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
         if (err){
@@ -873,21 +849,18 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
         db.collection("timetable").findOne({userid:userID}, function(err,doc){
             if(doc == null){
                 try {
-
                     db.collection("timetable").insertOne({
                         userid: userID,
                         courseSummary: b['courseSummary']
                     }, function(err, doc){
                         console.log(err)
                     })
-
                     db.close();
                 } catch(e){
                     console.log(e);
                 }
 
             }
-
             else{
                 db.collection("timetable").remove({userid: userID}, function(err, doc){
                   console.log(err);
@@ -913,35 +886,15 @@ app.post('/upload', upload.single('calendar_user'), function(req, res, next){
     res.render('displayCalendar', {array: b['courseSummary']});
 });
 
-app.get('/findUser', routes.findOne);
 
-app.post('/tempstore', routes.tempstore);
-app.get('/tempget', routes.tempget);
-
-app.get('/recommendedFriends', function(req, res) {
-    res.sendfile('views/recommendedFriends.html');
-});
-
-app.post('/addUser', routes.addUser);
-app.post('/delUser', routes.delUser);
-app.post('/updateUser', routes.updateUser);
-
-
-app.get('/recommendedFriendsGet', routes.recommendedFriends);
-
-app.get('/searchCourseGet', routes.searchClassmates);
-app.get('/allUsers', routes.allUsers);
-
-
-app.get('/compare', routes.compare);
 
 app.get('/getUserID', function(req, res){
   console.log(userID);
   var data= userID.toString();
-
   res.send(data);
 });
 
 app.listen(process.env.PORT || 3000);
 
 console.log('Listening on port 3000');
+
