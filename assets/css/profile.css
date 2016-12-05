@@ -116,3 +116,12 @@
   color: green;
   font-weight: bold;
 }
+#profile-body .profile-row .form-button {
+  width: 100%;
+  padding-top: 8px;
+  text-align: center;
+}
+#profile-body .profile-row .form-button a {
+  text-decoration: none;
+  color: #fff;
+}

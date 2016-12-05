@@ -35,7 +35,7 @@ $(function(){
         email: $(".edit-email").val()
       }
       $.post("/edit", change, function(data){
-        if(data == "done"){
+        if(data == "done" || $.inArray("name changed", data.errors)){
           //change fields back to normal
           $(".edit-name").parent().html("<h2 class='name'>" + firstname + " " + lastname + "</h2>");
           $(".edit-email").parent().removeClass("edit");
@@ -138,3 +138,12 @@ $(function(){
   })
 
 })
+
+function back(){
+  var form = document.createElement("form");
+
+  form.method = "POST";
+  form.action = "/main";
+  document.body.appendChild(form);
+  form.submit();
+}

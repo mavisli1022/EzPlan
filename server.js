@@ -677,6 +677,7 @@ function editProfile(req, res){
   var first = req.body.firstname;
   var last = req.body.lastname;
   var email = req.body.email;
+  var verified = false;
   var ret = {errors: []};
 
   MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
@@ -688,6 +689,17 @@ function editProfile(req, res){
         if(err){
           ret.errors.push(err);
         } else {
+          ret.errors.push("name added");
+
+          db.collection("users").findOne(function(err, doc){
+            //current email
+            if(doc.email == email && doc.emailverified){
+              verified = true;
+            } else {
+              verified = false;
+            }
+          })
+
           db.collection("users").count({
             email: email
           }, function(err, count){
@@ -707,7 +719,7 @@ function editProfile(req, res){
                   //no other email exists, take this email
                   db.collection("users").update(
                     {userid: parseInt(userID)},
-                    {$set: {emailverified: false, email: email}},
+                    {$set: {emailverified: verified, email: email}},
                     function(err, doc){
                       if(err){
                         ret.errors.push(err)
@@ -781,6 +793,9 @@ app.get('/profile', function(req, res){
   res.sendfile("views/profile.html");
 
 });
+app.get('/dashboard/admin-view', function(req, res){
+  res.sendfile("views/viewallusers.html");
+})
 
 app.get('/dashboard/admin-adduser', function(req, res){
   res.sendfile("views/addUser.html");
