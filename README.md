@@ -10,4 +10,4 @@ Live site: http://ezplan.herokuapp.com/
 `imports/` - contains imported icon files <br>
 
 Database: https://mlab.com/databases/ezplan<br>
-username: ezplan </t>  password:12ezplan34
+username: ezplan , password:12ezplan34
