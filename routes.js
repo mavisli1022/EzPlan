@@ -267,7 +267,7 @@ exports.searchClassmates = function(req, res){
                 }
                 res.send(results);
 
-                db.close();
+                //db.close();
 
             });
 
@@ -292,59 +292,134 @@ exports.delUser = function(req, res){
 }
 
 exports.updateUser = function(req, res){
-    // Update a user given a specified field, and new value.
 
     var tempUser = req.body;
+    console.log(tempUser.updateFirstnameInput);
+    console.log(tempUser.updateUseridInput);
+    console.log(tempUser.dropDownLevelUpdate);
 
-    var newUser = {
-        "userid" : tempUser.updateUseridInput,
-        "firstname" : tempUser.updateFirstnameInput,
-        "lastname" : tempUser.updateLastnameInput,
-        "email" : tempUser.updateEmailInput,
-        "password" : md5(tempUser.updatePasswordInput),
-        "level" : tempUser.dropDownLevelUpdate,
-        "emailverified" : true,
-        "fbconnected" : false,
-        "fbID" : null
-    };
+    if (tempUser.updateFirstnameInput != ''){
 
-    if (newUser.level != 'null'){
         MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
             db.collection("users").updateOne({
-                    "userid" : tempUser.updateUseridInput
+                    "userid" : parseInt(tempUser.updateUseridInput)
                 },
                 { $set:
-                {
-                    "userid" : parseInt(tempUser.updateUseridInput),
-                    "firstname" : tempUser.updateFirstnameInput,
-                    "lastname" : tempUser.updateLastnameInput,
-                    "email" : tempUser.updateEmailInput,
-                    "password" : md5(tempUser.updatePasswordInput),
-                    "level" : tempUser.dropDownLevelUpdate,
-                    "discoverable": tempUser.updateDiscoverable
-                }
-                })
-        });
-    }
-    else {
-        MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
-            db.collection("users").updateOne({
-                    "userid" : tempUser.updateUseridInput
-                },
-                { $set:
-                {
-                    "userid" : tempUser.updateUseridInput,
-                    "firstname" : tempUser.updateFirstnameInput,
-                    "lastname" : tempUser.updateLastnameInput,
-                    "email" : tempUser.updateEmailInput,
-                    "password" : md5(tempUser.updatePasswordInput),
-                }
-            });
+                    {
+                        "firstname" : tempUser.updateFirstnameInput
+                    }
+                });
         });
     }
 
+    if (tempUser.updateLastnameInput != ''){
+        MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+            db.collection("users").updateOne({
+                    "userid" : parseInt(tempUser.updateUseridInput)
+                },
+                { $set:
+                    {
+                        "lastname" : tempUser.updateLastnameInput
+                    }
+                });
+        });
+    }
+
+    if (tempUser.updateEmailInput != ''){
+        MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+            db.collection("users").updateOne({
+                    "userid" : parseInt(tempUser.updateUseridInput)
+                },
+                { $set:
+                    {
+                        "email" : tempUser.updateEmailInput
+                    }
+                });
+        });
+    }
+
+    if (tempUser.updatePasswordInput != ''){
+        MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+            db.collection("users").updateOne({
+                    "userid" : parseInt(tempUser.updateUseridInput)
+                },
+                { $set:
+                    {
+
+                        "password" : md5(tempUser.updatePasswordInput)
+                    }
+                });
+        });
+    }
+
+    if (tempUser.dropDownLevelUpdate != null){
+        MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+            db.collection("users").updateOne({
+                    "userid" : parseInt(tempUser.updateUseridInput)
+                },
+                { $set:
+                    {
+                        "level" : tempUser.dropDownLevelUpdate
+                    }
+                });
+        });
+    }
+    if (tempUser.dropDownDiscoverableUpdate != null){
+        MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+            db.collection("users").updateOne({
+                    "userid" : parseInt(tempUser.updateUseridInput)
+                },
+                { $set:
+                {
+                    "discoverable" : tempUser.dropDownDiscoverableUpdate
+                }
+                });
+        });
+    }
     res.send("Success");
+
+
+
+    // if (newUser.level != 'null'){
+    //     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    //
+    //         db.collection("users").updateOne({
+    //                 "userid" : tempUser.updateUseridInput
+    //             },
+    //             { $set:
+    //             {
+    //                 "userid" : parseInt(new_obj.updateUseridInput),
+    //                 "firstname" : new_obj.updateFirstnameInput,
+    //                 "lastname" : new_obj.updateLastnameInput,
+    //                 "email" : new_obj.updateEmailInput,
+    //                 "password" : md5(new_obj.updatePasswordInput),
+    //                 "level" : new_obj.dropDownLevelUpdate,
+    //                 "discoverable": new_obj.updateDiscoverable
+    //             }
+    //             })
+    //     });
+    // }
+    // else {
+    //     MongoClient.connect("mongodb://ezplan:12ezplan34@ds013916.mlab.com:13916/ezplan", function(err, db){
+    //         db.collection("users").updateOne({
+    //                 "userid" : tempUser.updateUseridInput
+    //             },
+    //             { $set:
+    //             {
+    //                 "userid" : new_obj.updateUseridInput,
+    //                 "firstname" : new_obj.updateFirstnameInput,
+    //                 "lastname" : new_obj.updateLastnameInput,
+    //                 "email" : new_obj.updateEmailInput,
+    //                 "password" : md5(new_obj.updatePasswordInput),
+    //                 "discoverable": new_obj.updateDiscoverable
+    //
+    //             }
+    //         });
+    //     });
+    // }
+
 }
+
 
 exports.allUsers = function(req,res){
 
@@ -382,7 +457,7 @@ exports.addUser = function(req, res){
                     "fbID" : null
                 }, function(err, doc){
                     userID = newid;
-                    db.close();
+                    //db.close();
                 })
             } catch(e){
                 console.log(e);
@@ -461,7 +536,6 @@ function compare_users(usera, userb) {
 
         courseList.push(usera["courseSummary"][i])
     }
-    console.log(counter);
     return counter;
 
 }

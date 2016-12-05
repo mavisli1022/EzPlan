@@ -12,7 +12,7 @@ function displayRecommended(uid) {
                     first = friendInfo["firstname"];
                     last = friendInfo["lastname"];
                     id = friendInfo["userid"];
-                    if (friendInfo["discoverable"]) {
+                    if (friendInfo["discoverable"] && resultsArray[i].common > 0) {
                         $("ul#recommended-friends-results").append("<li>" + first + " " + last + " (Common Courses: " + resultsArray[i].common + ")" +" <a class='add' href='/addfriend/" + id + "'>Add friend</a></li>");
                     }
                 }
