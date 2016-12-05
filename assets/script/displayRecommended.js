@@ -6,14 +6,14 @@ function displayRecommended(uid) {
         $.get('/recommendedFriendsGet', {userid: uid}, function (data) {
             var resultsArray = data;
             if (resultsArray != null && resultsArray.length != 0){
-                for (var i = 0; i < resultsArray.length; i++) {
-                    var friendInfo = resultsArray[i];
+                for (var i = resultsArray.length - 1; i >= 0; i--) {
+                    var friendInfo = resultsArray[i].user;
                     var first, last, id;
                     first = friendInfo["firstname"];
                     last = friendInfo["lastname"];
                     id = friendInfo["userid"];
-                    if (friendInfo["discoverable"]) {
-                        $("ul#recommended-friends-results").append("<li>" + first + " " + last + " <a class='add' href='/addfriend/" + id + "'>Add friend</a></li>");
+                    if (friendInfo["discoverable"] && resultsArray[i].common > 0) {
+                        $("ul#recommended-friends-results").append("<li>" + first + " " + last + " (Common Courses: " + resultsArray[i].common + ")" +" <a class='add' href='/addfriend/" + id + "'>Add friend</a></li>");
                     }
                 }
             }
