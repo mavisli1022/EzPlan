@@ -9,5 +9,5 @@ Live site: http://ezplan.herokuapp.com/
 `script/` - contains some JS files for the views <br>
 `imports/` - contains imported icon files <br>
 
-Database: https://mlab.com/databases/ezplan
-username: ezplan  password:12ezplan34
+Database: https://mlab.com/databases/ezplan<br>
+username: ezplan </t>  password:12ezplan34
